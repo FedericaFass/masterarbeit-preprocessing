@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+.venv/
+venv/
+env/
+.env
+
+# Data & outputs (zu groß / sensibel)
+outputs/
+data/raw/
+data/processed/
+*.joblib
+*.pkl
+*.parquet
+*.csv
+*.xes
+*.xes.gz
+
+# Reports & notebooks outputs
+reports/
+*.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Claude memory (lokal)
+.claude/
