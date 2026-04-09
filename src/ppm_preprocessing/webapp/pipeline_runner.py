@@ -33,6 +33,14 @@ from ppm_preprocessing.steps.stable_sort import StableSortStep, StableSortConfig
 from ppm_preprocessing.steps.drop_columns import DropColumnsStep, DropColumnsConfig
 from ppm_preprocessing.steps.filter_rare_variants import FilterRareVariantsStep, FilterRareVariantsConfig
 from ppm_preprocessing.steps.concept_drift_window import ConceptDriftWindowStep, ConceptDriftWindowConfig
+from ppm_preprocessing.steps.filter_short_cases import FilterShortCasesStep, FilterShortCasesConfig
+from ppm_preprocessing.steps.normalize_activities import NormalizeActivitiesStep, NormalizeActivitiesConfig
+from ppm_preprocessing.steps.filter_infrequent_activities import FilterInfrequentActivitiesStep, FilterInfrequentActivitiesConfig
+from ppm_preprocessing.steps.filter_zero_duration_cases import FilterZeroDurationCasesStep, FilterZeroDurationCasesConfig
+from ppm_preprocessing.steps.filter_case_length import FilterCaseLengthStep, FilterCaseLengthConfig
+from ppm_preprocessing.steps.filter_consecutive_duplicates import FilterConsecutiveDuplicatesStep, FilterConsecutiveDuplicatesConfig
+from ppm_preprocessing.steps.impute_missing_attributes import ImputeMissingAttributesStep, ImputeMissingAttributesConfig
+from ppm_preprocessing.steps.repair_timestamps import RepairTimestampsStep, RepairTimestampsConfig
 
 from ppm_preprocessing.bucketing.no_bucket import NoBucketer
 from ppm_preprocessing.bucketing.prefix_length_bins import PrefixLenBinsBucketer
@@ -67,6 +75,24 @@ from ppm_preprocessing.steps.visualize_results import (
 )
 
 
+def _sanitize_for_json(obj):
+    """Recursively replace NaN/Inf floats with None so json.dumps produces valid JSON."""
+    import math
+    if isinstance(obj, dict):
+        return {k: _sanitize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_sanitize_for_json(v) for v in obj]
+    if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
+        return None
+    try:
+        import numpy as _np
+        if isinstance(obj, _np.floating) and not math.isfinite(float(obj)):
+            return None
+    except ImportError:
+        pass
+    return obj
+
+
 def run_pipeline(
     log_path: Path,
     out_dir: Path,
@@ -88,7 +114,10 @@ def run_pipeline(
     rare_variant_filter: bool = False,
     min_variant_count: int = 5,
     concept_drift_window: bool = False,
-    recent_pct: float = 80.0,
+    since_date: str = "",
+    filter_consecutive_duplicates: bool = False,
+    impute_missing: bool = False,
+    col_mapping: dict | None = None,
     on_progress: Any = None,
 ) -> Dict[str, Any]:
 
@@ -96,10 +125,34 @@ def run_pipeline(
         if on_progress:
             on_progress(msg)
 
+    def _step_data(data: dict) -> None:
+        import json
+        _progress(f"__STEP__:{json.dumps(_sanitize_for_json(data), default=str)}")
+
     def _run_step(step, ctx, label: str) -> PipelineContext:
-        """Run a single pipeline step with progress reporting."""
+        """Run a single pipeline step with progress reporting and before/after stats."""
+        import json
+        before_rows = int(len(ctx.log.df)) if ctx.log is not None else None
+        before_cases = int(ctx.log.df["case_id"].nunique()) if ctx.log is not None and "case_id" in ctx.log.df.columns else None
         _progress(label)
-        return step.run(ctx)
+        new_ctx = step.run(ctx)
+        after_rows = int(len(new_ctx.log.df)) if new_ctx.log is not None else None
+        after_cases = int(new_ctx.log.df["case_id"].nunique()) if new_ctx.log is not None and "case_id" in new_ctx.log.df.columns else None
+
+        # collect any extra QC details the step may have written to artifacts
+        qc_key = getattr(step, "name", "") + "_qc"
+        qc = new_ctx.artifacts.get(qc_key, {}) or {}
+
+        _step_data({
+            "step": getattr(step, "name", type(step).__name__),
+            "label": label,
+            "before_rows": before_rows,
+            "after_rows": after_rows,
+            "before_cases": before_cases,
+            "after_cases": after_cases,
+            "qc": {k: v for k, v in qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k not in ("step",)},
+        })
+        return new_ctx
 
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -159,30 +212,90 @@ def run_pipeline(
         )
 
         # ---------------------------------------------------------------
+        # Configuration summary
+        # ---------------------------------------------------------------
+        test_ratio_pct = int(round((1.0 - train_ratio - val_ratio) * 100))
+        split_method = "temporal ordering" if temporal_split else "random"
+        active_opts = []
+        if outlier_enabled:
+            active_opts.append("outlier detection")
+        if temporal_split:
+            active_opts.append("temporal ordering")
+        if concept_drift_window and since_date:
+            active_opts.append(f"time window from {since_date}")
+        if rare_variant_filter:
+            active_opts.append(f"rare variant filter (min={min_variant_count})")
+        if filter_consecutive_duplicates:
+            active_opts.append("filter consecutive duplicates")
+        if impute_missing:
+            active_opts.append("impute missing attributes")
+        if lifecycle_drop_values:
+            active_opts.append(f"lifecycle filter ({lifecycle_drop_values})")
+        if columns_to_drop:
+            active_opts.append(f"drop {len(columns_to_drop)} column(s)")
+        if is_classification and min_class_samples > 0:
+            active_opts.append(f"min class samples={min_class_samples}")
+
+        _progress(
+            f"Configuration: task={task_name}"
+            + (f" | outcome={outcome_col}" if task_name == "outcome" and outcome_col else "")
+            + (f" | attr={next_event_attr_col}" if next_event_attr_col and next_event_attr_col != "activity" else "")
+            + f" | split={int(train_ratio*100)}/{int(val_ratio*100)}/{test_ratio_pct}% ({split_method})"
+            + f" | max_prefix={max_prefix_len}"
+            + f" | budget={time_budget_s}s"
+        )
+        if active_opts:
+            _progress("Active options: " + " · ".join(active_opts))
+        else:
+            _progress("Active options: none (default settings)")
+
+        # ---------------------------------------------------------------
         # Run steps individually with progress reporting
         # ---------------------------------------------------------------
 
         # 1. Load
         ctx = _run_step(load_step, ctx, f"Loading {file_format.upper()} file...")
 
-        # 1b. CSV transform if needed
+        # 1b. CSV transform if needed (aggregated format: one row per case with wf_* columns)
+        _used_transform = False
         if file_format == "csv":
-            ctx = _run_step(
-                TransformAggregatedToEventsStep(
-                    TransformAggregatedConfig(
-                        case_id_col="id",
-                        start_time_col="started",
-                        end_time_col="ended",
-                        workflow_duration_prefix="wf_",
-                        workflow_event_count_prefix="wfe_",
-                    )
-                ),
-                ctx,
-                "Transforming aggregated CSV to events...",
-            )
+            raw_cols = list(ctx.raw_df.columns) if ctx.raw_df is not None else []
+            wf_cols = [c for c in raw_cols if c.startswith("wf_")]
+            if wf_cols:
+                _used_transform = True
+                _case_id_col = (col_mapping.get("case_col") or "id") if col_mapping else "id"
+                _start_col = (col_mapping.get("ts_col") or "started") if col_mapping else "started"
+                # detect end time column automatically
+                _end_candidates = ["ended", "end_time", "endtime", "completed", "end", "finish"]
+                _end_col = next((c for c in _end_candidates if c in raw_cols), None) or "ended"
+                ctx = _run_step(
+                    TransformAggregatedToEventsStep(
+                        TransformAggregatedConfig(
+                            case_id_col=_case_id_col,
+                            start_time_col=_start_col,
+                            end_time_col=_end_col,
+                            workflow_duration_prefix="wf_",
+                            workflow_event_count_prefix="wfe_",
+                        )
+                    ),
+                    ctx,
+                    "Transforming aggregated CSV to events...",
+                )
 
         # 2. Normalize + clean
-        ctx = _run_step(NormalizeSchemaStep(), ctx, "Normalizing schema...")
+        # After TransformAggregatedToEventsStep output is already canonical → use default detection.
+        # For regular event-log CSVs (no wf_ cols), use col_mapping to guide column detection.
+        if col_mapping and not _used_transform:
+            from ppm_preprocessing.steps.normalize_schema import NormalizeSchemaConfig
+            _cm = col_mapping
+            _ns_cfg = NormalizeSchemaConfig(
+                case_candidates=[_cm["case_col"]] if _cm.get("case_col") else None,
+                act_candidates=[_cm["act_col"]] if _cm.get("act_col") else None,
+                ts_candidates=[_cm["ts_col"]] if _cm.get("ts_col") else None,
+            )
+            ctx = _run_step(NormalizeSchemaStep(_ns_cfg), ctx, "Normalizing schema (custom mapping)...")
+        else:
+            ctx = _run_step(NormalizeSchemaStep(), ctx, "Normalizing schema...")
 
         # 2a. Filter lifecycle:transition events
         if lifecycle_drop_values and ctx.log is not None:
@@ -221,19 +334,67 @@ def run_pipeline(
         )
         ctx = _run_step(QcReportStep(), ctx, "Running QC report...")
 
-        # 2c. Concept Drift Window — keep only the most recent X% of cases
+        # Repair backwards timestamps (auto)
+        ctx = _run_step(RepairTimestampsStep(), ctx, "Repairing backwards timestamps...")
+        rt_qc = ctx.artifacts.get("repair_timestamps_qc", {})
+        if rt_qc.get("backwards_timestamps_repaired", 0):
+            _progress(f"Timestamp repair: fixed {rt_qc['backwards_timestamps_repaired']} backwards events")
+
+        # --- Auto preprocessing steps (literature-based) ---
+        # 2a-i: Filter short cases (< 2 events)
+        ctx = _run_step(FilterShortCasesStep(), ctx, "Filtering short cases (< 2 events)...")
+        short_qc = ctx.artifacts.get("filter_short_cases_qc", {})
+        if short_qc.get("short_cases_removed", 0):
+            _progress(f"Short cases removed: {short_qc['short_cases_removed']} ({short_qc.get('short_cases_pct', 0):.1f}%)")
+
+        # 2a-ii: Normalize activity labels (strip whitespace, fill nulls)
+        ctx = _run_step(NormalizeActivitiesStep(), ctx, "Normalizing activity labels...")
+
+        # 2a-iii: Filter infrequent activities (< 0.5% of traces)
+        ctx = _run_step(FilterInfrequentActivitiesStep(), ctx, "Filtering infrequent activities...")
+        infreq_qc = ctx.artifacts.get("filter_infrequent_activities_qc", {})
+        if infreq_qc.get("rare_activities_removed", 0):
+            _progress(f"Infrequent activities removed: {infreq_qc['rare_activities_removed']} types, {infreq_qc.get('rows_dropped', 0)} events")
+
+        # 2a-iv: Filter zero-duration cases
+        ctx = _run_step(FilterZeroDurationCasesStep(), ctx, "Filtering zero-duration cases...")
+        zdur_qc = ctx.artifacts.get("filter_zero_duration_cases_qc", {})
+        if zdur_qc.get("zero_duration_cases_removed", 0):
+            _progress(f"Zero-duration cases removed: {zdur_qc['zero_duration_cases_removed']} ({zdur_qc.get('zero_duration_pct', 0):.1f}%)")
+
+        # 2a-v: Filter max case length (p99)
+        ctx = _run_step(FilterCaseLengthStep(), ctx, "Filtering extreme-length cases (p99)...")
+        clen_qc = ctx.artifacts.get("filter_case_length_qc", {})
+        if clen_qc.get("long_cases_removed", 0):
+            _progress(f"Long cases removed: {clen_qc['long_cases_removed']} ({clen_qc.get('long_cases_pct', 0):.1f}%), threshold={clen_qc.get('computed_threshold')}")
+
+        # 2b-opt: Optional — filter consecutive duplicate events
+        if filter_consecutive_duplicates:
+            ctx = _run_step(FilterConsecutiveDuplicatesStep(), ctx, "Filtering consecutive duplicate events...")
+            cdup_qc = ctx.artifacts.get("filter_consecutive_duplicates_qc", {})
+            if cdup_qc.get("consecutive_duplicate_events_removed", 0):
+                _progress(f"Consecutive duplicates removed: {cdup_qc['consecutive_duplicate_events_removed']} events")
+
+        # 2b-opt: Optional — impute missing attribute values
+        if impute_missing:
+            ctx = _run_step(ImputeMissingAttributesStep(), ctx, "Imputing missing attribute values...")
+            imp_qc = ctx.artifacts.get("impute_missing_attributes_qc", {})
+            if imp_qc.get("columns_imputed", 0):
+                _progress(f"Imputed {imp_qc['columns_imputed']} columns with missing values")
+
+        # 2c. Time Window Filter — discard cases before a cutoff date
         ctx = _run_step(
             ConceptDriftWindowStep(ConceptDriftWindowConfig(
                 enabled=concept_drift_window,
-                recent_pct=recent_pct,
+                since_date=since_date or None,
             )),
             ctx,
-            f"Concept drift window: keeping most recent {recent_pct:.0f}% of cases..." if concept_drift_window else "Concept drift window: disabled",
+            f"Time window filter: keeping cases from {since_date}..." if concept_drift_window else "Time window filter: disabled",
         )
         cdw_qc = ctx.artifacts.get("concept_drift_window_qc", {})
         if cdw_qc.get("enabled") and cdw_qc.get("cases_removed", 0):
             _progress(
-                f"Concept drift window: removed {cdw_qc['cases_removed']} old cases "
+                f"Time window filter: removed {cdw_qc['cases_removed']} old cases "
                 f"({cdw_qc['cases_removed_pct']:.1f}%), {cdw_qc['cases_after']} remaining"
             )
 
@@ -282,29 +443,67 @@ def run_pipeline(
         if ps is not None:
             _progress(f"Prefix samples: {len(ps)} rows")
 
+        # Emit feature info step card
+        _step_data({
+            "step": "prefix_features",
+            "label": "Prefix & Feature Extraction",
+            "before_rows": None,
+            "after_rows": int(len(ps)) if ps is not None else None,
+            "before_cases": None,
+            "after_cases": None,
+            "qc": {
+                "label_column": task.label_col,
+                "time_features_added": [
+                    "feat_elapsed_time_sec",
+                    "feat_time_since_last_event_sec",
+                    "feat_elapsed_time_log1p",
+                    "feat_time_since_last_log1p",
+                    "feat_prefix_end_hour",
+                    "feat_prefix_end_weekday",
+                    "feat_prefix_end_is_weekend",
+                    "feat_prefix_end_month",
+                ],
+                "max_prefix_len": max_prefix_len,
+                "total_prefix_rows": int(len(ps)) if ps is not None else None,
+            },
+        })
+
         # 5. Case split
         test_ratio = round(1.0 - train_ratio - val_ratio, 4)
         split_method = "temporal" if temporal_split else "random"
-        ctx = _run_step(
-            CaseSplitStep(CaseSplitConfig(
-                train_ratio=train_ratio, val_ratio=val_ratio, random_state=42,
-                temporal_split=temporal_split,
-            )),
-            ctx,
-            f"Splitting cases ({int(train_ratio*100)}/{int(val_ratio*100)}/{int(test_ratio*100)}, {split_method})...",
-        )
+        _progress(f"Splitting cases ({int(train_ratio*100)}/{int(val_ratio*100)}/{int(test_ratio*100)}, {split_method})...")
+        ctx = CaseSplitStep(CaseSplitConfig(
+            train_ratio=train_ratio, val_ratio=val_ratio, random_state=42,
+            temporal_split=temporal_split,
+        )).run(ctx)
         splits = ctx.artifacts.get("case_splits", {})
-        _progress(
-            f"Split: {len(splits.get('train', []))} train, "
-            f"{len(splits.get('val', []))} val, "
-            f"{len(splits.get('test', []))} test cases"
-        )
+        n_train = len(splits.get("train", []))
+        n_val   = len(splits.get("val", []))
+        n_test  = len(splits.get("test", []))
+        _progress(f"Split: {n_train} train, {n_val} val, {n_test} test cases")
+        _step_data({
+            "step": "case_split",
+            "label": f"Case Split ({split_method})",
+            "before_rows": None,
+            "after_rows": None,
+            "before_cases": None,
+            "after_cases": None,
+            "qc": {
+                "split_method": split_method,
+                "train_cases": n_train,
+                "val_cases": n_val,
+                "test_cases": n_test,
+                "train_pct": int(train_ratio * 100),
+                "val_pct": int(val_ratio * 100),
+                "test_pct": int(round((1 - train_ratio - val_ratio) * 100)),
+            },
+        })
 
-        # 5b. Outlier detection (IQR on train labels) — skip for classification
+        # 5b. Outlier detection (IQR on case duration / remaining time)
         ctx = _run_step(
-            OutlierDetectionStep(OutlierDetectionConfig(enabled=outlier_enabled and not is_classification)),
+            OutlierDetectionStep(OutlierDetectionConfig(enabled=outlier_enabled)),
             ctx,
-            "Detecting label outliers (IQR)...",
+            "Detecting case duration outliers (IQR)...",
         )
         outlier_qc = ctx.artifacts.get("outlier_detection_qc", {})
         n_removed = outlier_qc.get("outlier_rows_removed", 0)
@@ -486,7 +685,10 @@ def run_strategy_search_only(
     rare_variant_filter: bool = False,
     min_variant_count: int = 5,
     concept_drift_window: bool = False,
-    recent_pct: float = 80.0,
+    since_date: str = "",
+    filter_consecutive_duplicates: bool = False,
+    impute_missing: bool = False,
+    col_mapping: Dict[str, str] | None = None,
     on_progress: Any = None,
 ) -> Dict[str, Any]:
     """
@@ -499,9 +701,30 @@ def run_strategy_search_only(
         if on_progress:
             on_progress(msg)
 
+    def _step_data(data: dict) -> None:
+        import json
+        _progress(f"__STEP__:{json.dumps(_sanitize_for_json(data), default=str)}")
+
     def _run_step(step, ctx, label: str) -> PipelineContext:
+        import json
+        before_rows = int(len(ctx.log.df)) if ctx.log is not None else None
+        before_cases = int(ctx.log.df["case_id"].nunique()) if ctx.log is not None and "case_id" in ctx.log.df.columns else None
         _progress(label)
-        return step.run(ctx)
+        new_ctx = step.run(ctx)
+        after_rows = int(len(new_ctx.log.df)) if new_ctx.log is not None else None
+        after_cases = int(new_ctx.log.df["case_id"].nunique()) if new_ctx.log is not None and "case_id" in new_ctx.log.df.columns else None
+        qc_key = getattr(step, "name", "") + "_qc"
+        qc = new_ctx.artifacts.get(qc_key, {}) or {}
+        _step_data({
+            "step": getattr(step, "name", type(step).__name__),
+            "label": label,
+            "before_rows": before_rows,
+            "after_rows": after_rows,
+            "before_cases": before_cases,
+            "after_cases": after_cases,
+            "qc": {k: v for k, v in qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k not in ("step",)},
+        })
+        return new_ctx
 
     try:
         # Resolve task spec — support custom next-event attribute prediction
@@ -551,30 +774,49 @@ def run_strategy_search_only(
             encodings=encodings,
             min_bucket_samples=min_bucket_samples,
             skip_single_class=True,
-            use_probe_model=True,
+            use_probe_model=False,
         )
 
         # 1. Load
         ctx = _run_step(load_step, ctx, f"Loading {file_format.upper()} file...")
 
-        # 1b. CSV transform if needed
+        # 1b. CSV transform if needed (aggregated format: one row per case with wf_* columns)
+        _used_transform = False
         if file_format == "csv":
-            ctx = _run_step(
-                TransformAggregatedToEventsStep(
-                    TransformAggregatedConfig(
-                        case_id_col="id",
-                        start_time_col="started",
-                        end_time_col="ended",
-                        workflow_duration_prefix="wf_",
-                        workflow_event_count_prefix="wfe_",
-                    )
-                ),
-                ctx,
-                "Transforming aggregated CSV to events...",
-            )
+            raw_cols = list(ctx.raw_df.columns) if ctx.raw_df is not None else []
+            wf_cols = [c for c in raw_cols if c.startswith("wf_")]
+            if wf_cols:
+                _used_transform = True
+                _case_id_col = (col_mapping.get("case_col") or "id") if col_mapping else "id"
+                _start_col = (col_mapping.get("ts_col") or "started") if col_mapping else "started"
+                _end_candidates = ["ended", "end_time", "endtime", "completed", "end", "finish"]
+                _end_col = next((c for c in _end_candidates if c in raw_cols), None) or "ended"
+                ctx = _run_step(
+                    TransformAggregatedToEventsStep(
+                        TransformAggregatedConfig(
+                            case_id_col=_case_id_col,
+                            start_time_col=_start_col,
+                            end_time_col=_end_col,
+                            workflow_duration_prefix="wf_",
+                            workflow_event_count_prefix="wfe_",
+                        )
+                    ),
+                    ctx,
+                    "Transforming aggregated CSV to events...",
+                )
 
         # 2. Normalize
-        ctx = _run_step(NormalizeSchemaStep(), ctx, "Normalizing schema...")
+        if col_mapping and not _used_transform:
+            from ppm_preprocessing.steps.normalize_schema import NormalizeSchemaConfig
+            _cm = col_mapping
+            _ns_cfg = NormalizeSchemaConfig(
+                case_candidates=[_cm["case_col"]] if _cm.get("case_col") else None,
+                act_candidates=[_cm["act_col"]] if _cm.get("act_col") else None,
+                ts_candidates=[_cm["ts_col"]] if _cm.get("ts_col") else None,
+            )
+            ctx = _run_step(NormalizeSchemaStep(_ns_cfg), ctx, "Normalizing schema (custom mapping)...")
+        else:
+            ctx = _run_step(NormalizeSchemaStep(), ctx, "Normalizing schema...")
 
         # 2a. Filter lifecycle:transition events
         if lifecycle_drop_values and ctx.log is not None:
@@ -607,19 +849,34 @@ def run_strategy_search_only(
         )
         ctx = _run_step(QcReportStep(), ctx, "Running QC report...")
 
-        # 3c. Concept drift window
+        # Repair backwards timestamps (auto)
+        ctx = _run_step(RepairTimestampsStep(), ctx, "Repairing backwards timestamps...")
+
+        # --- Auto preprocessing steps (literature-based) ---
+        ctx = _run_step(FilterShortCasesStep(), ctx, "Filtering short cases (< 2 events)...")
+        ctx = _run_step(NormalizeActivitiesStep(), ctx, "Normalizing activity labels...")
+        ctx = _run_step(FilterInfrequentActivitiesStep(), ctx, "Filtering infrequent activities...")
+        ctx = _run_step(FilterZeroDurationCasesStep(), ctx, "Filtering zero-duration cases...")
+        ctx = _run_step(FilterCaseLengthStep(), ctx, "Filtering extreme-length cases (p99)...")
+
+        if filter_consecutive_duplicates:
+            ctx = _run_step(FilterConsecutiveDuplicatesStep(), ctx, "Filtering consecutive duplicate events...")
+        if impute_missing:
+            ctx = _run_step(ImputeMissingAttributesStep(), ctx, "Imputing missing attribute values...")
+
+        # 3c. Time window filter
         ctx = _run_step(
             ConceptDriftWindowStep(ConceptDriftWindowConfig(
                 enabled=concept_drift_window,
-                recent_pct=recent_pct,
+                since_date=since_date or None,
             )),
             ctx,
-            f"Concept drift window: keeping most recent {recent_pct:.0f}%..." if concept_drift_window else "Concept drift window: disabled",
+            f"Time window filter: keeping cases from {since_date}..." if concept_drift_window else "Time window filter: disabled",
         )
         cdw_qc = ctx.artifacts.get("concept_drift_window_qc", {})
         if cdw_qc.get("enabled") and cdw_qc.get("cases_removed", 0):
             _progress(
-                f"Concept drift window: removed {cdw_qc['cases_removed']} old cases "
+                f"Time window filter: removed {cdw_qc['cases_removed']} old cases "
                 f"({cdw_qc['cases_removed_pct']:.1f}%), {cdw_qc['cases_after']} remaining"
             )
 
@@ -666,18 +923,37 @@ def run_strategy_search_only(
 
         # 6. Case split
         split_method2 = "temporal" if temporal_split else "random"
-        ctx = _run_step(
-            CaseSplitStep(CaseSplitConfig(
-                train_ratio=train_ratio, val_ratio=val_ratio, random_state=42,
-                temporal_split=temporal_split,
-            )),
-            ctx,
-            f"Splitting cases ({int(train_ratio*100)}/{int(val_ratio*100)}/{int(round(1-train_ratio-val_ratio,4)*100)}, {split_method2})...",
-        )
+        _test_ratio2 = round(1.0 - train_ratio - val_ratio, 4)
+        _progress(f"Splitting cases ({int(train_ratio*100)}/{int(val_ratio*100)}/{int(round(_test_ratio2*100))}, {split_method2})...")
+        ctx = CaseSplitStep(CaseSplitConfig(
+            train_ratio=train_ratio, val_ratio=val_ratio, random_state=42,
+            temporal_split=temporal_split,
+        )).run(ctx)
+        _splits2 = ctx.artifacts.get("case_splits", {})
+        _n_train2 = len(_splits2.get("train", []))
+        _n_val2   = len(_splits2.get("val", []))
+        _n_test2  = len(_splits2.get("test", []))
+        _step_data({
+            "step": "case_split",
+            "label": f"Case Split ({split_method2})",
+            "before_rows": None,
+            "after_rows": None,
+            "before_cases": None,
+            "after_cases": None,
+            "qc": {
+                "split_method": split_method2,
+                "train_cases": _n_train2,
+                "val_cases": _n_val2,
+                "test_cases": _n_test2,
+                "train_pct": int(train_ratio * 100),
+                "val_pct": int(val_ratio * 100),
+                "test_pct": int(round((1 - train_ratio - val_ratio) * 100)),
+            },
+        })
 
         # 7. Outlier detection (skip for classification)
         ctx = _run_step(
-            OutlierDetectionStep(OutlierDetectionConfig(enabled=outlier_enabled and not is_classification)),
+            OutlierDetectionStep(OutlierDetectionConfig(enabled=outlier_enabled)),
             ctx,
             "Detecting label outliers...",
         )

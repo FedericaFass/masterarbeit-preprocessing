@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Optional
 
 import pandas as pd
 
@@ -11,17 +12,22 @@ from ppm_preprocessing.domain.context import PipelineContext
 @dataclass
 class ConceptDriftWindowConfig:
     enabled: bool = False
-    recent_pct: float = 80.0  # keep only the most recent X% of cases (by start time)
+    # Keep only cases that started on or after this date (ISO string, e.g. "2022-01-01")
+    since_date: Optional[str] = None
+    # Legacy: keep only the most recent X% of cases (used when since_date is None)
+    recent_pct: float = 80.0
 
 
 class ConceptDriftWindowStep(Step):
     """
-    Concept-drift mitigation: keep only the most recent `recent_pct`% of cases
-    (ranked by their first event timestamp).
+    Time window filter: discard cases that started before a user-defined cutoff date.
 
-    Old cases may reflect an outdated process version. Discarding them focuses
-    training on recent behaviour — the key insight that Nirdizati explicitly
-    lacks. Must run before CaseSplitStep.
+    When since_date is set, only cases whose first event is >= since_date are kept.
+    Falls back to recent_pct (keep last X% by rank) if since_date is not set.
+
+    Rationale: older cases may reflect outdated process versions. Focusing training
+    on recent data improves generalisation to the current process.
+    Must run before CaseSplitStep.
     """
     name = "concept_drift_window"
 
@@ -45,18 +51,22 @@ class ConceptDriftWindowStep(Step):
         case_start = df.groupby("case_id")["timestamp"].min().sort_values()
         n_cases = len(case_start)
 
-        skip_n = int(n_cases * (1.0 - self.config.recent_pct / 100.0))
-        keep_cases = set(case_start.index[skip_n:].astype(str))
+        if self.config.since_date:
+            cutoff = pd.Timestamp(self.config.since_date, tz="UTC")
+            keep_cases = set(case_start[case_start >= cutoff].index.astype(str))
+            cutoff_time = cutoff
+        else:
+            skip_n = int(n_cases * (1.0 - self.config.recent_pct / 100.0))
+            keep_cases = set(case_start.index[skip_n:].astype(str))
+            cutoff_time = case_start.iloc[skip_n] if skip_n < n_cases else None
 
         ctx.log.df = df[df["case_id"].astype(str).isin(keep_cases)].reset_index(drop=True)
         cases_after = int(ctx.log.df["case_id"].nunique())
 
-        # Report the time range of kept vs discarded cases
-        cutoff_time = case_start.iloc[skip_n] if skip_n < n_cases else None
-
         ctx.artifacts[qc_key] = {
             "enabled": True,
-            "recent_pct": self.config.recent_pct,
+            "since_date": self.config.since_date,
+            "recent_pct": self.config.recent_pct if not self.config.since_date else None,
             "cases_before": n_cases,
             "cases_after": cases_after,
             "cases_removed": n_cases - cases_after,

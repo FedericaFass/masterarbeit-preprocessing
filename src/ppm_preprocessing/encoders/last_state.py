@@ -39,8 +39,9 @@ class LastStateConfig:
     extra_numeric_cols: Optional[List[str]] = None
     extra_categorical_cols: Optional[List[str]] = None
 
-    max_categories_per_col: int = 50
+    max_categories_per_col: int = 20
     min_freq_per_category: int = 50
+    max_categorical_cols: int = 30
 
     feature_prefix: str = "feat__"
 
@@ -132,7 +133,7 @@ class LastStateEncoder(Encoder):
         if c.include_extra_features:
             num_cols, cat_cols = self._infer_extra_cols(df)
             self.numeric_cols_ = num_cols
-            self.categorical_cols_ = cat_cols
+            self.categorical_cols_ = cat_cols[: int(c.max_categorical_cols)]
 
             for col in self.categorical_cols_:
                 s = df[col].astype(str).fillna(UNK_TOKEN)

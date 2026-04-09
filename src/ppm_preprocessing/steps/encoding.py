@@ -231,8 +231,9 @@ class EncodingStep(Step):
                     label_col=label_col,
                     label_is_numeric=label_is_numeric,
                     snapshot_prefixes=("case__", "event_last__", "feat_"),
-                    max_categories_per_col=50,
+                    max_categories_per_col=20,
                     min_freq_per_category=50,
+                    max_categorical_cols=30,
                     # You can ignore noisy IDs here too if needed
                     ignore_cols=[
                         "event_last__EventID",
@@ -259,8 +260,9 @@ class EncodingStep(Step):
                     label_is_numeric=label_is_numeric,
                     include_prefix_len=True,
                     include_extra_features=True,
-                    max_categories_per_col=50,
+                    max_categories_per_col=20,
                     min_freq_per_category=50,
+                    max_categorical_cols=30,
                     ignore_cols=[
                         "event_last__EventID",
                         "event_last___event_index",

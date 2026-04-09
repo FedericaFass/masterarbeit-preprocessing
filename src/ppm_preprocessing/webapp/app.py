@@ -57,6 +57,7 @@ def _ss(sid: str) -> dict:
                 # Training
                 "train_status": "idle",
                 "train_progress": "",
+                "train_steps": [],
                 "train_result": None,
                 "train_lock": threading.Lock(),
                 "scanned_file": None,
@@ -66,6 +67,7 @@ def _ss(sid: str) -> dict:
                 "compare_status": "idle",
                 "compare_progress": "",
                 "compare_results": None,
+                "compare_steps": [],
                 "compare_lock": threading.Lock(),
                 # Bookkeeping
                 "created_at": time.time(),
@@ -176,6 +178,257 @@ def index():
     return render_template("index.html", has_model=has_model)
 
 
+def _auto_detect_cols(df, fmt):
+    """Return (case_col, ts_col, act_col) best guesses. Any may be None."""
+    import pandas as pd
+    cols_lower = {c.lower(): c for c in df.columns}
+
+    if fmt == "csv":
+        _case_cands = ["case_id", "caseid", "case:concept:name", "case id", "case",
+                       "trace_id", "traceid", "instance_id", "process_instance_id",
+                       "issue_num", "id"]
+        case_col = next((cols_lower[k] for k in _case_cands if k in cols_lower), None)
+        if case_col is None:
+            case_col = next((c for c in df.columns
+                             if any(k in c.lower() for k in ("case", "trace", "instance", "issue"))), None)
+
+        _ts_cands = ["timestamp", "time:timestamp", "time", "datetime",
+                     "start_time", "starttime", "started", "start", "begin_time",
+                     "event_time", "eventtime", "created", "creation_time", "date", "event_date"]
+        ts_col = next((cols_lower[k] for k in _ts_cands if k in cols_lower), None)
+        if ts_col is None:
+            ts_col = next((c for c in df.columns
+                           if any(k in c.lower() for k in ("time", "date", "start", "created"))), None)
+    else:
+        case_col = next((c for c in ["case:concept:name", "case_id"] if c in df.columns), None)
+        ts_col = next((c for c in ["time:timestamp", "timestamp"] if c in df.columns), None)
+
+    _act_exact = {"concept:name", "activity", "Activity", "ACTIVITY", "act", "event",
+                  "task", "action", "event_type", "eventtype", "ActivityName", "event_name"}
+    act_col = next((c for c in df.columns if c in _act_exact), None)
+    if act_col is None:
+        act_col = next((c for c in df.columns if c.lower() in {a.lower() for a in _act_exact}), None)
+    if act_col is None:
+        act_col = next((c for c in df.columns
+                        if any(k in c.lower() for k in ("activity", "event_type", "task", "action"))), None)
+
+    return case_col, ts_col, act_col
+
+
+def _run_scan(df, case_col, ts_col, act_col_raw, ss_state, file_path):
+    """Run the full column analysis and return a JSON-ready dict. Saves file_path to session."""
+    import pandas as pd
+    import numpy as np
+
+    df[ts_col] = pd.to_datetime(df[ts_col], utc=True, errors="coerce")
+    df_sorted = df.sort_values([case_col, ts_col])
+    last_events = df_sorted.groupby(case_col, sort=False).last()
+
+    skip_cols = {case_col, ts_col, "time:timestamp", "case:concept:name", "@@index",
+                 "concept:name", "activity", "case:id", "id"}
+    if act_col_raw:
+        skip_cols.add(act_col_raw)
+    n_total = len(df)
+
+    columns_info = []
+    empty_columns_info = []
+    for col in df.columns:
+        if col in skip_cols or col.startswith("@@"):
+            continue
+        null_count = int(df[col].isna().sum())
+        empty_str_count = int((df[col].astype(str).str.strip() == "").sum()) if df[col].dtype == object else 0
+        total_empty = null_count + empty_str_count
+        empty_pct = round(100.0 * total_empty / n_total, 1) if n_total > 0 else 0.0
+        empty_columns_info.append({"column": col, "null_count": total_empty, "null_pct": empty_pct})
+        vals = last_events[col].dropna().astype(str)
+        unique_vals = vals.unique().tolist()
+        n_unique = len(unique_vals)
+        if n_unique == 0 or n_unique > 500:
+            continue
+        columns_info.append({"column": col, "n_unique": n_unique,
+                              "values": sorted(unique_vals)[:30], "sample": sorted(unique_vals)[:5]})
+
+    columns_info.sort(key=lambda x: x["n_unique"])
+    empty_columns_info.sort(key=lambda x: x["null_pct"], reverse=True)
+
+    outcome_skip = {case_col, ts_col, "time:timestamp", "timestamp", "@@index"}
+    outcome_columns = []
+    for col in df.columns:
+        if col in outcome_skip or col.startswith("@@"):
+            continue
+        vals_oc = last_events[col].dropna().astype(str)
+        n_uniq_oc = int(vals_oc.nunique())
+        if n_uniq_oc < 2 or n_uniq_oc > 100:
+            continue
+        outcome_columns.append({"column": col, "n_unique": n_uniq_oc})
+    outcome_columns.sort(key=lambda x: x["n_unique"])
+
+    activity_counts = []
+    if act_col_raw:
+        vc = df[act_col_raw].dropna().astype(str).value_counts()
+        total_events = int(vc.sum())
+        for name, cnt in vc.head(30).items():
+            activity_counts.append({"name": str(name), "count": int(cnt),
+                                    "pct": round(100.0 * cnt / total_events, 1) if total_events else 0})
+
+    case_duration_stats = None
+    case_duration_hist = []
+    try:
+        ts_series = pd.to_datetime(df[ts_col], utc=True, errors="coerce")
+        df_tmp = df[[case_col]].copy()
+        df_tmp["ts"] = ts_series
+        grp = df_tmp.groupby(case_col)["ts"]
+        durations_days = (grp.max() - grp.min()).dt.total_seconds() / 86400
+        durations_days = durations_days.dropna()
+        if len(durations_days) > 0:
+            case_duration_stats = {
+                "min": round(float(durations_days.min()), 2),
+                "max": round(float(durations_days.max()), 2),
+                "mean": round(float(durations_days.mean()), 2),
+                "median": round(float(durations_days.median()), 2),
+                "p25": round(float(durations_days.quantile(0.25)), 2),
+                "p75": round(float(durations_days.quantile(0.75)), 2),
+                "p90": round(float(durations_days.quantile(0.90)), 2),
+            }
+            p95 = float(durations_days.quantile(0.95))
+            clipped = durations_days[durations_days <= p95]
+            if len(clipped) > 0 and p95 > 0:
+                counts, edges = np.histogram(clipped, bins=8)
+                for i in range(len(counts)):
+                    lo, hi = edges[i], edges[i + 1]
+                    if hi < 1:
+                        label = f"{lo*24:.0f}h\u2013{hi*24:.0f}h"
+                    elif hi < 30:
+                        label = f"{lo:.1f}\u2013{hi:.1f}d"
+                    else:
+                        label = f"{lo/30:.1f}\u2013{hi/30:.1f}mo"
+                    case_duration_hist.append({"label": label, "count": int(counts[i])})
+    except Exception:
+        pass
+
+    event_attr_columns = []
+    if act_col_raw:
+        n_uniq_act = int(df[act_col_raw].dropna().astype(str).nunique())
+        sample_acts = sorted(df[act_col_raw].dropna().astype(str).unique().tolist()[:5])
+        event_attr_columns.append({"column": "activity", "n_unique": n_uniq_act, "sample": sample_acts})
+    for col in df.columns:
+        if col in skip_cols or col.startswith("@@") or col.startswith("case:") or col == act_col_raw:
+            continue
+        vals_all = df[col].dropna().astype(str)
+        n_uniq = int(vals_all.nunique())
+        if n_uniq == 0 or n_uniq > 50:
+            continue
+        event_attr_columns.append({"column": col, "n_unique": n_uniq,
+                                   "sample": sorted(vals_all.unique().tolist()[:5])})
+
+    lc_col = next((c for c in df.columns if c in ("lifecycle:transition", "lifecycle")), None)
+    lifecycle_info = None
+    if lc_col:
+        lifecycle_info = {"column": lc_col,
+                          "values": sorted(df[lc_col].dropna().astype(str).unique().tolist())}
+
+    auto_max_prefix_len = 30
+    case_length_stats = None
+    case_length_hist = []
+    try:
+        case_lengths = df.groupby(case_col).size()
+        p95_len = int(case_lengths.quantile(0.95))
+        auto_max_prefix_len = max(5, min(100, p95_len))
+        case_length_stats = {
+            "min": int(case_lengths.min()),
+            "max": int(case_lengths.max()),
+            "mean": round(float(case_lengths.mean()), 1),
+            "median": round(float(case_lengths.median()), 1),
+        }
+        clipped_len = case_lengths[case_lengths <= p95_len]
+        if len(clipped_len) > 0:
+            counts_l, edges_l = np.histogram(clipped_len, bins=min(8, p95_len))
+            for i in range(len(counts_l)):
+                case_length_hist.append({
+                    "label": f"{int(edges_l[i])}\u2013{int(edges_l[i+1])}",
+                    "count": int(counts_l[i])
+                })
+    except Exception:
+        pass
+
+    # Unique trace variants + top variants
+    unique_variants = 0
+    top_variants = []
+    try:
+        if act_col_raw:
+            variant_series = df.sort_values([case_col, ts_col]).groupby(case_col)[act_col_raw].apply(
+                lambda x: " → ".join(x.dropna().astype(str))
+            )
+            vc_var = variant_series.value_counts()
+            unique_variants = int(len(vc_var))
+            n_cases_var = int(len(variant_series))
+            for var_name, var_cnt in vc_var.head(10).items():
+                full = str(var_name)
+                acts = full.split(" → ")
+                if len(acts) <= 4:
+                    short = full
+                else:
+                    short = " → ".join(acts[:2]) + f" → … ({len(acts)} steps) → " + acts[-1]
+                top_variants.append({
+                    "name": short,
+                    "full": full,
+                    "count": int(var_cnt),
+                    "pct": round(100.0 * var_cnt / n_cases_var, 1) if n_cases_var else 0,
+                })
+    except Exception:
+        pass
+
+    # Overall missing value rate
+    missing_rate = 0.0
+    try:
+        feature_cols = [c for c in df.columns if c not in {case_col, ts_col} and not c.startswith("@@")]
+        if feature_cols:
+            total_cells = len(df) * len(feature_cols)
+            missing_cells = int(df[feature_cols].isna().sum().sum())
+            missing_rate = round(100.0 * missing_cells / total_cells, 1) if total_cells else 0.0
+    except Exception:
+        pass
+
+    # Events over time (monthly buckets)
+    events_over_time = []
+    try:
+        ts_series2 = pd.to_datetime(df[ts_col], utc=True, errors="coerce").dropna()
+        if len(ts_series2) > 0:
+            ts_month = ts_series2.dt.to_period("M").astype(str)
+            monthly = ts_month.value_counts().sort_index()
+            for period, cnt in monthly.items():
+                events_over_time.append({"label": str(period), "count": int(cnt)})
+    except Exception:
+        pass
+
+    ss_state["scanned_file"] = file_path
+    ss_state["col_mapping"] = {"case_col": case_col, "ts_col": ts_col, "act_col": act_col_raw}
+
+    return {
+        "columns": columns_info,
+        "empty_columns": empty_columns_info,
+        "outcome_columns": outcome_columns,
+        "event_attr_columns": event_attr_columns,
+        "lifecycle_info": lifecycle_info,
+        "num_cases": int(last_events.shape[0]),
+        "num_events": n_total,
+        "file_path": file_path,
+        "activity_counts": activity_counts,
+        "case_duration_stats": case_duration_stats,
+        "case_duration_hist": case_duration_hist,
+        "case_length_stats": case_length_stats,
+        "case_length_hist": case_length_hist,
+        "unique_variants": unique_variants,
+        "top_variants": top_variants,
+        "missing_rate": missing_rate,
+        "events_over_time": events_over_time,
+        "auto_max_prefix_len": auto_max_prefix_len,
+        "detected_case_col": case_col,
+        "detected_ts_col": ts_col,
+        "detected_act_col": act_col_raw,
+    }
+
+
 @app.route("/api/scan-columns", methods=["POST"])
 def api_scan_columns():
     sid = _sid()
@@ -195,166 +448,82 @@ def api_scan_columns():
     file.save(tmp.name)
     tmp.close()
 
+    # Save immediately so mapping endpoint can load it without re-upload
+    ss_state["pending_file"] = tmp.name
+
     try:
         import pandas as pd
-        from pm4py.objects.log.importer.xes import importer as xes_importer
-        from pm4py.objects.conversion.log import converter as log_converter
+        from ppm_preprocessing.io.format_detection import detect_format
 
-        log = xes_importer.apply(tmp.name)
-        df = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
+        fmt = detect_format(tmp.name)
 
-        case_col = next((c for c in ["case:concept:name", "case_id"] if c in df.columns), None)
-        ts_col = next((c for c in ["time:timestamp", "timestamp"] if c in df.columns), None)
+        if fmt == "csv":
+            df = pd.read_csv(tmp.name, low_memory=False)
+        else:
+            from pm4py.objects.log.importer.xes import importer as xes_importer
+            from pm4py.objects.conversion.log import converter as log_converter
+            log = xes_importer.apply(tmp.name)
+            df = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
 
-        if not case_col or not ts_col:
-            return jsonify({"error": "Cannot detect case_id or timestamp columns"}), 400
+        case_col, ts_col, act_col = _auto_detect_cols(df, fmt)
 
-        df[ts_col] = pd.to_datetime(df[ts_col], utc=True, errors="coerce")
-        df_sorted = df.sort_values([case_col, ts_col])
-        last_events = df_sorted.groupby(case_col, sort=False).last()
-
-        skip_cols = {case_col, ts_col, "time:timestamp", "case:concept:name", "@@index",
-                     "concept:name", "activity",
-                     "case:id", "id"}  # case/event IDs must never be droppable
-        columns_info = []
-        empty_columns_info = []
-        n_total = len(df)
-
-        for col in df.columns:
-            if col in skip_cols or col.startswith("@@"):
-                continue
-
-            null_count = int(df[col].isna().sum())
-            empty_str_count = int((df[col].astype(str).str.strip() == "").sum()) if df[col].dtype == object else 0
-            total_empty = null_count + empty_str_count
-            empty_pct = round(100.0 * total_empty / n_total, 1) if n_total > 0 else 0.0
-
-            empty_columns_info.append({
-                "column": col,
-                "null_count": total_empty,
-                "null_pct": empty_pct,
+        # For CSV: always show mapping UI (non-standard column names need user confirmation)
+        # For XES: only show if required columns are missing
+        if fmt == "csv" or not case_col or not ts_col:
+            return jsonify({
+                "mapping_needed": True,
+                "all_columns": list(df.columns),
+                "guessed_case_col": case_col,
+                "guessed_ts_col": ts_col,
+                "guessed_act_col": act_col,
             })
 
-            vals = last_events[col].dropna().astype(str)
-            unique_vals = vals.unique().tolist()
-            n_unique = len(unique_vals)
-
-            if n_unique == 0 or n_unique > 500:
-                continue
-
-            columns_info.append({
-                "column": col,
-                "n_unique": n_unique,
-                "values": sorted(unique_vals)[:30],
-                "sample": sorted(unique_vals)[:5],
-            })
-
-        columns_info.sort(key=lambda x: x["n_unique"])
-        empty_columns_info.sort(key=lambda x: x["null_pct"], reverse=True)
-
-        act_col_raw = next((c for c in ["concept:name", "activity"] if c in df.columns), None)
-        activity_counts = []
-        if act_col_raw:
-            vc = df[act_col_raw].dropna().astype(str).value_counts()
-            total_events = int(vc.sum())
-            for name, cnt in vc.head(30).items():
-                activity_counts.append({
-                    "name": str(name),
-                    "count": int(cnt),
-                    "pct": round(100.0 * cnt / total_events, 1) if total_events else 0,
-                })
-
-        case_duration_stats = None
-        case_duration_hist = []
-        try:
-            ts_series = pd.to_datetime(df[ts_col], utc=True, errors="coerce")
-            df_tmp = df[[case_col]].copy()
-            df_tmp["ts"] = ts_series
-            grp = df_tmp.groupby(case_col)["ts"]
-            durations_days = (grp.max() - grp.min()).dt.total_seconds() / 86400
-            durations_days = durations_days.dropna()
-            if len(durations_days) > 0:
-                case_duration_stats = {
-                    "min": round(float(durations_days.min()), 2),
-                    "max": round(float(durations_days.max()), 2),
-                    "mean": round(float(durations_days.mean()), 2),
-                    "median": round(float(durations_days.median()), 2),
-                    "p25": round(float(durations_days.quantile(0.25)), 2),
-                    "p75": round(float(durations_days.quantile(0.75)), 2),
-                    "p90": round(float(durations_days.quantile(0.90)), 2),
-                }
-                p95 = float(durations_days.quantile(0.95))
-                clipped = durations_days[durations_days <= p95]
-                if len(clipped) > 0 and p95 > 0:
-                    import numpy as np
-                    counts, edges = np.histogram(clipped, bins=10)
-                    for i in range(len(counts)):
-                        lo, hi = edges[i], edges[i + 1]
-                        if hi < 1:
-                            label = f"{lo*24:.0f}h\u2013{hi*24:.0f}h"
-                        elif hi < 30:
-                            label = f"{lo:.1f}\u2013{hi:.1f}d"
-                        else:
-                            label = f"{lo/30:.1f}\u2013{hi/30:.1f}mo"
-                        case_duration_hist.append({"label": label, "count": int(counts[i])})
-        except Exception:
-            pass
-
-        event_attr_columns = []
-        if act_col_raw:
-            n_uniq_act = int(df[act_col_raw].dropna().astype(str).nunique())
-            sample_acts = sorted(df[act_col_raw].dropna().astype(str).unique().tolist()[:5])
-            event_attr_columns.append({
-                "column": "activity",
-                "n_unique": n_uniq_act,
-                "sample": sample_acts,
-            })
-        for col in df.columns:
-            if col in skip_cols or col.startswith("@@") or col.startswith("case:") or col == act_col_raw:
-                continue
-            vals_all = df[col].dropna().astype(str)
-            n_uniq = int(vals_all.nunique())
-            if n_uniq == 0 or n_uniq > 50:
-                continue
-            event_attr_columns.append({
-                "column": col,
-                "n_unique": n_uniq,
-                "sample": sorted(vals_all.unique().tolist()[:5]),
-            })
-
-        lc_col = next((c for c in df.columns if c in ("lifecycle:transition", "lifecycle")), None)
-        lifecycle_info = None
-        if lc_col:
-            lc_vals = sorted(df[lc_col].dropna().astype(str).unique().tolist())
-            lifecycle_info = {"column": lc_col, "values": lc_vals}
-
-        auto_max_prefix_len = 30
-        try:
-            case_lengths = df.groupby(case_col).size()
-            p95 = int(case_lengths.quantile(0.95))
-            auto_max_prefix_len = max(5, min(100, p95))
-        except Exception:
-            pass
-
-        # Store scanned file path in session state for training reuse
-        ss_state["scanned_file"] = tmp.name
-
-        return jsonify({
-            "columns": columns_info,
-            "empty_columns": empty_columns_info,
-            "event_attr_columns": event_attr_columns,
-            "lifecycle_info": lifecycle_info,
-            "num_cases": int(last_events.shape[0]),
-            "num_events": n_total,
-            "file_path": tmp.name,
-            "activity_counts": activity_counts,
-            "case_duration_stats": case_duration_stats,
-            "case_duration_hist": case_duration_hist,
-            "auto_max_prefix_len": auto_max_prefix_len,
-        })
+        return jsonify(_run_scan(df, case_col, ts_col, act_col, ss_state, tmp.name))
 
     except Exception as e:
-        Path(tmp.name).unlink(missing_ok=True)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/apply-column-mapping", methods=["POST"])
+def api_apply_column_mapping():
+    """Re-run scan with user-selected column mapping (no file re-upload needed)."""
+    sid = _sid()
+    ss_state = _ss(sid)
+
+    file_path = ss_state.get("pending_file")
+    if not file_path or not Path(file_path).exists():
+        return jsonify({"error": "No pending file found. Please upload the file again."}), 400
+
+    case_col = request.form.get("case_col", "").strip()
+    ts_col = request.form.get("ts_col", "").strip()
+    act_col = request.form.get("act_col", "").strip() or None
+
+    if not case_col or not ts_col:
+        return jsonify({"error": "case_col and ts_col are required."}), 400
+
+    try:
+        import pandas as pd
+        from ppm_preprocessing.io.format_detection import detect_format
+
+        fmt = detect_format(file_path)
+        if fmt == "csv":
+            df = pd.read_csv(file_path, low_memory=False)
+        else:
+            from pm4py.objects.log.importer.xes import importer as xes_importer
+            from pm4py.objects.conversion.log import converter as log_converter
+            log = xes_importer.apply(file_path)
+            df = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
+
+        if case_col not in df.columns:
+            return jsonify({"error": f"Column '{case_col}' not found in file."}), 400
+        if ts_col not in df.columns:
+            return jsonify({"error": f"Column '{ts_col}' not found in file."}), 400
+        if act_col and act_col not in df.columns:
+            act_col = None
+
+        return jsonify(_run_scan(df, case_col, ts_col, act_col, ss_state, file_path))
+
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
@@ -389,10 +558,19 @@ def api_train():
         ss_state["train_progress"] = "Starting pipeline..."
         ss_state["train_result"] = None
         ss_state["bundle_path"] = None
+        ss_state["train_steps"] = []
 
     def _on_progress(msg: str):
+        import json as _json
+        import logging as _logging
         with ss_state["train_lock"]:
-            ss_state["train_progress"] = msg
+            if msg.startswith("__STEP__:"):
+                try:
+                    ss_state["train_steps"].append(_json.loads(msg[9:]))
+                except Exception as _e:
+                    _logging.warning(f"[train_steps] JSON parse failed: {_e!r} | msg[:200]={msg[:200]!r}")
+            else:
+                ss_state["train_progress"] = msg
 
     task_name = request.form.get("task_name", "remaining_time")
     outlier_enabled = request.form.get("outlier_enabled", "true").lower() == "true"
@@ -427,16 +605,29 @@ def api_train():
     rare_variant_filter = request.form.get("rare_variant_filter", "false").lower() == "true"
     min_variant_count = max(2, min(100, int(request.form.get("min_variant_count", "5"))))
     concept_drift_window = request.form.get("concept_drift_window", "false").lower() == "true"
-    recent_pct = max(10.0, min(99.0, float(request.form.get("recent_pct", "80"))))
+    since_date = request.form.get("since_date", "").strip()
+    filter_consecutive_duplicates = request.form.get("filter_consecutive_duplicates", "false").lower() == "true"
+    impute_missing = request.form.get("impute_missing", "false").lower() == "true"
+    col_mapping = ss_state.get("col_mapping")  # set by scan or apply-column-mapping
 
     run_config = {
         "file": file.filename,
         "task_name": task_name,
-        "outlier_enabled": outlier_enabled,
+        "outcome_col": outcome_col,
+        "next_event_attr_col": next_event_attr_col,
+        "time_budget_s": time_budget_s,
+        "max_prefix_len": max_prefix_len,
+        "train_val_test": f"{int(train_ratio*100)}/{int(val_ratio*100)}/{int(round(1-train_ratio-val_ratio,2)*100)}",
+        "temporal_ordering": temporal_split,
+        "outlier_detection": outlier_enabled,
         "min_class_samples": min_class_samples,
         "columns_to_drop": columns_to_drop,
-        "max_prefix_len": max_prefix_len,
-        "time_budget_s": time_budget_s,
+        "lifecycle_drop_values": lifecycle_drop_values,
+        "time_window_filter": since_date if concept_drift_window else None,
+        "rare_variant_filter": rare_variant_filter,
+        "min_variant_count": min_variant_count if rare_variant_filter else None,
+        "filter_consecutive_duplicates": filter_consecutive_duplicates,
+        "impute_missing": impute_missing,
         "min_bucket_samples": min_bucket_samples,
         "bin_size": bin_size,
     }
@@ -464,7 +655,10 @@ def api_train():
                 rare_variant_filter=rare_variant_filter,
                 min_variant_count=min_variant_count,
                 concept_drift_window=concept_drift_window,
-                recent_pct=recent_pct,
+                since_date=since_date,
+                filter_consecutive_duplicates=filter_consecutive_duplicates,
+                impute_missing=impute_missing,
+                col_mapping=col_mapping,
                 on_progress=_on_progress,
             )
             with ss_state["train_lock"]:
@@ -496,27 +690,21 @@ def api_train():
 
 @app.route("/api/train/status")
 def api_train_status():
+    import logging as _logging
     sid = _sid()
     ss_state = _ss(sid)
     with ss_state["train_lock"]:
+        steps = list(ss_state.get("train_steps", []))
+        _logging.info(f"[api_train_status] sid={sid[:8]} status={ss_state['train_status']} steps={len(steps)}")
         resp = {
             "status": ss_state["train_status"],
             "progress": ss_state["train_progress"],
+            "steps": steps,
         }
         if ss_state["train_status"] in ("done", "error"):
             resp["result"] = ss_state["train_result"]
         return jsonify(resp)
 
-
-@app.route("/api/download/model")
-def api_download_model():
-    sid = _sid()
-    ss_state = _ss(sid)
-    bundle = ss_state.get("bundle_path") or str(_bundle_path(sid))
-    p = Path(bundle)
-    if not p.exists():
-        return jsonify({"error": "No model bundle found. Train a model first."}), 404
-    return send_file(str(p), as_attachment=True, download_name="model_bundle.joblib")
 
 
 @app.route("/api/predict", methods=["POST"])
@@ -591,15 +779,25 @@ def api_predict_batch():
 
     try:
         import pandas as pd
-        from pm4py.objects.log.importer.xes import importer as xes_importer
-        from pm4py.objects.conversion.log import converter as log_converter
+        from ppm_preprocessing.io.format_detection import detect_format
 
-        log = xes_importer.apply(tmp.name)
-        df = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
+        fmt = detect_format(tmp.name)
+        if fmt == "csv":
+            df = pd.read_csv(tmp.name, low_memory=False)
+        else:
+            from pm4py.objects.log.importer.xes import importer as xes_importer
+            from pm4py.objects.conversion.log import converter as log_converter
+            log = xes_importer.apply(tmp.name)
+            df = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
 
-        case_col = next((c for c in ["case:concept:name", "case_id"] if c in df.columns), None)
-        act_col = next((c for c in ["concept:name", "activity"] if c in df.columns), None)
-        ts_col = next((c for c in ["time:timestamp", "timestamp"] if c in df.columns), None)
+        # Use stored col_mapping from training scan if available
+        cm = ss_state.get("col_mapping") or {}
+        _case_cands = [cm.get("case_col"), "case:concept:name", "case_id", "caseid", "id"]
+        _act_cands  = [cm.get("act_col"),  "concept:name", "activity", "Activity"]
+        _ts_cands   = [cm.get("ts_col"),   "time:timestamp", "timestamp", "started", "time"]
+        case_col = next((c for c in _case_cands if c and c in df.columns), None)
+        act_col  = next((c for c in _act_cands  if c and c in df.columns), None)
+        ts_col   = next((c for c in _ts_cands   if c and c in df.columns), None)
 
         if not all([case_col, act_col, ts_col]):
             return jsonify({"error": f"Cannot detect required columns. Found: {list(df.columns)}"}), 400
@@ -739,13 +937,17 @@ def api_quick_compare():
     cmp_rare_variant = request.form.get("rare_variant_filter", "false").lower() == "true"
     cmp_min_variant = max(2, min(100, int(request.form.get("min_variant_count", "5"))))
     cmp_drift_window = request.form.get("concept_drift_window", "false").lower() == "true"
-    cmp_recent_pct = max(10.0, min(99.0, float(request.form.get("recent_pct", "80"))))
+    cmp_since_date = request.form.get("since_date", "").strip()
+    cmp_consec_dup = request.form.get("filter_consecutive_duplicates", "false").lower() == "true"
+    cmp_impute = request.form.get("impute_missing", "false").lower() == "true"
+    col_mapping = ss_state.get("col_mapping")
     log_path = Path(log_path_str)
 
     with ss_state["compare_lock"]:
         ss_state["compare_status"] = "running"
         ss_state["compare_progress"] = "Starting Baseline vs Your Config comparison..."
         ss_state["compare_results"] = None
+        ss_state["compare_steps"] = []
 
     def _on_progress(msg: str):
         with ss_state["compare_lock"]:
@@ -753,18 +955,30 @@ def api_quick_compare():
 
     def _run():
         is_classification = task_name in ("next_activity", "outcome")
-        # Baseline: no outlier, no drops, no rare class, no temporal, no drift window, no rare variant
+        # Baseline: no optional steps, no time filter
         variants = [
-            ("Baseline",    False,           [],             0,                  False, False, 5,               False, 80.0),
-            ("Your Config", outlier_enabled, columns_to_drop, effective_min_class, cmp_temporal_split, cmp_rare_variant, cmp_min_variant, cmp_drift_window, cmp_recent_pct),
+            ("Baseline",    False,           [],             0,                  False, False, 5,               False, "",              False,        False),
+            ("Your Config", outlier_enabled, columns_to_drop, effective_min_class, cmp_temporal_split, cmp_rare_variant, cmp_min_variant, cmp_drift_window, cmp_since_date, cmp_consec_dup, cmp_impute),
         ]
 
         results = []
-        for i, (label, oe, cols, mcs, ts, rvf, mvc, cdw, rp) in enumerate(variants):
+        for i, (label, oe, cols, mcs, ts, rvf, mvc, cdw, sd, fcd, imp) in enumerate(variants):
             _on_progress(f"[{i + 1}/2] {label} — loading & preprocessing...")
 
             def _variant_progress(msg, _label=label, _i=i):
-                _on_progress(f"[{_i + 1}/2] {_label}: {msg}")
+                import json as _json
+                import logging as _logging
+                if msg.startswith("__STEP__:"):
+                    try:
+                        step_data = _json.loads(msg[9:])
+                        step_data["variant"] = _label
+                        step_data["variant_index"] = _i
+                        with ss_state["compare_lock"]:
+                            ss_state["compare_steps"].append(step_data)
+                    except Exception as _e:
+                        _logging.warning(f"[compare_steps] JSON parse failed: {_e!r}")
+                else:
+                    _on_progress(f"[{_i + 1}/2] {_label}: {msg}")
 
             r = run_strategy_search_only(
                 log_path=log_path,
@@ -785,7 +999,10 @@ def api_quick_compare():
                 rare_variant_filter=rvf,
                 min_variant_count=mvc,
                 concept_drift_window=cdw,
-                recent_pct=rp,
+                since_date=sd,
+                filter_consecutive_duplicates=fcd,
+                impute_missing=imp,
+                col_mapping=col_mapping,
                 on_progress=_variant_progress,
             )
             results.append({
@@ -817,6 +1034,7 @@ def api_quick_compare_status():
         resp = {
             "status": ss_state["compare_status"],
             "progress": ss_state["compare_progress"],
+            "steps": list(ss_state["compare_steps"]),
         }
         if ss_state["compare_status"] in ("done", "error"):
             resp["results"] = ss_state["compare_results"]
@@ -867,22 +1085,32 @@ PREDICTION TASKS:
 - Next Event Attribute — predict next value of any event column (activity, resource, etc.), metric: F1-macro
 
 PREPROCESSING OPTIONS:
-- Outlier Detection: removes cases with unusual duration (IQR-based)
-- Column Drops: remove irrelevant or data-leaking columns
-- Rare Class Filter (classification): merge low-frequency classes into "other"
-- Lifecycle Filter: drop lifecycle phases (e.g. keep only "complete" events)
-- Train/Val/Test Split: default 70/15/15%
+- Outlier Detection (IQR): removes cases with extreme durations regardless of task type. Uses the remaining-time label as a case-duration proxy even for classification tasks.
+- Column Drops: remove irrelevant or potentially data-leaking columns. Activity, timestamp, case ID, and the target column are always protected and cannot be dropped.
+- Rare Class Filter (classification only): merge low-frequency outcome classes into "other" to avoid degenerate training.
+- Lifecycle Filter: drop unwanted lifecycle phases (e.g. keep only "complete" events).
+- Temporal Split: split train/val/test chronologically by case start time instead of random shuffle. Prevents future-data leakage and simulates real deployment.
+- Concept Drift Window: keep only the most recent X% of cases (by start time). Old cases may reflect an outdated process version. Discarding them focuses training on recent behaviour.
+- Rare Variant Filter: remove cases whose exact activity sequence (variant) appears fewer than N times. Eliminates one-off traces that cannot be learned reliably.
+- Zeit-Features (Time Features): always enabled by default. Adds hour-of-day, day-of-week, month, and elapsed-time features derived from timestamps.
+- Train/Val/Test Split: default 70/15/15% (configurable).
 
 STRATEGY SEARCH (5 bucketers × 4 encodings = 20 combos tested with LightGBM probe on val set):
 Bucketing: No Bucket (global) | Last Activity | Fixed-Width | Adaptive | Cluster
 Encoding:  Last State | Aggregated | Index-Latest | Embedding
 → Best combo is used for full AutoML training, evaluated on held-out test set.
 
-BASELINE COMPARISON: Baseline = all options OFF (same split/lifecycle for fairness).
+BASELINE COMPARISON: Baseline runs with all advanced options OFF (same split, lifecycle filter, and file for fairness). Use it to measure the actual impact of each preprocessing step.
 
 METRICS:
-- MAE (lower is better) — regression
-- F1-macro (higher is better) — classification
+- MAE (lower is better) — regression (remaining time)
+- F1-macro (higher is better) — classification (outcome, next event attribute)
+
+KEY CONCEPTS:
+- Prefix = the first k events of a case. Models predict from partial traces seen so far.
+- Bucketing groups prefixes so each bucket gets a dedicated model or encoding.
+- Encoding converts a variable-length prefix into a fixed-size feature vector.
+- Concept drift in processes means older cases may follow different rules than recent ones; the Concept Drift Window addresses this.
 
 Keep answers short and practical."""
 
@@ -994,7 +1222,7 @@ def api_chat():
 def main():
     print("\n  PPM Predictive Process Monitoring")
     print("  http://localhost:5000\n")
-    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
+    app.run(host="0.0.0.0", port=5000, debug=True, threaded=True)
 
 
 if __name__ == "__main__":

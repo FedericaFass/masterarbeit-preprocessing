@@ -103,8 +103,9 @@ class IndexLatestPayloadConfig:
     extra_numeric_cols: Optional[List[str]] = None
     extra_categorical_cols: Optional[List[str]] = None
 
-    max_categories_per_col: int = 50
+    max_categories_per_col: int = 20
     min_freq_per_category: int = 50
+    max_categorical_cols: int = 30
 
     # Categorical encoding strategy
     categorical_encoding: str = "target"  # Options: "onehot", "target", "label"
@@ -225,6 +226,18 @@ class IndexLatestPayloadEncoder(Encoder):
                 self.temporal_numeric_cols_.append(col)
             else:
                 self.temporal_categorical_cols_.append(col)
+
+        # Cap total categorical columns to prevent OOM on wide datasets
+        _max_cat = int(self.config.max_categorical_cols)
+        _total_cat = (self.case_categorical_cols_ + self.last_event_categorical_cols_
+                      + self.temporal_categorical_cols_)
+        if len(_total_cat) > _max_cat:
+            # keep case attrs first, then event, then temporal
+            _kept = _total_cat[:_max_cat]
+            _kept_set = set(_kept)
+            self.case_categorical_cols_ = [c for c in self.case_categorical_cols_ if c in _kept_set]
+            self.last_event_categorical_cols_ = [c for c in self.last_event_categorical_cols_ if c in _kept_set]
+            self.temporal_categorical_cols_ = [c for c in self.temporal_categorical_cols_ if c in _kept_set]
 
     @staticmethod
     def _parse_activities(activities_val) -> List[str]:

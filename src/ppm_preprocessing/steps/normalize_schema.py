@@ -68,21 +68,23 @@ class NormalizeSchemaStep(Step):
     def __init__(self, config: NormalizeSchemaConfig | None = None):
         self.config = config or NormalizeSchemaConfig()
 
+        _default_case = ["case:concept:name", "case_id", "CaseID", "case", "trace_id", "Case", "CaseId", "caseid"]
+        _default_act  = ["concept:name", "activity", "Activity", "task", "event", "Action", "EventName", "activity_name", "activityNameEN"]
+        _default_ts   = ["time:timestamp", "timestamp", "time", "datetime", "event_time", "Timestamp", "start_time", "end_time"]
+
         if self.config.case_candidates is None:
-            self.config.case_candidates = [
-                "case:concept:name", "case_id", "CaseID", "case", "trace_id",
-                "Case", "CaseId", "caseid"
-            ]
+            self.config.case_candidates = _default_case
+        else:
+            # custom candidates first, then defaults as fallback
+            self.config.case_candidates = self.config.case_candidates + [c for c in _default_case if c not in self.config.case_candidates]
         if self.config.act_candidates is None:
-            self.config.act_candidates = [
-                "concept:name", "activity", "Activity", "task", "event",
-                "Action", "EventName", "activity_name" , "activityNameEN"
-            ]
+            self.config.act_candidates = _default_act
+        else:
+            self.config.act_candidates = self.config.act_candidates + [c for c in _default_act if c not in self.config.act_candidates]
         if self.config.ts_candidates is None:
-            self.config.ts_candidates = [
-                "time:timestamp", "timestamp", "time", "datetime", "event_time",
-                "Timestamp", "start_time", "end_time"
-            ]
+            self.config.ts_candidates = _default_ts
+        else:
+            self.config.ts_candidates = self.config.ts_candidates + [c for c in _default_ts if c not in self.config.ts_candidates]
 
     def run(self, ctx: PipelineContext) -> PipelineContext:
         if ctx.raw_df is None:
@@ -123,6 +125,15 @@ class NormalizeSchemaStep(Step):
         tmin = out["timestamp"].min()
         tmax = out["timestamp"].max()
 
+        # Sample one row before and after renaming for the UI
+        sample_before: Dict[str, Any] = {}
+        sample_after: Dict[str, Any] = {}
+        if num_rows:
+            raw_row = df.iloc[0]
+            sample_before = {k: _jsonable(v) for k, v in raw_row.to_dict().items()}
+            out_row = out.iloc[0]
+            sample_after = {k: _jsonable(v) for k, v in out_row.to_dict().items()}
+
         sample_rows: List[Dict[str, Any]] = []
         if num_rows:
             sample = out.head(int(self.config.n_sample_rows)).copy()
@@ -146,6 +157,9 @@ class NormalizeSchemaStep(Step):
             "available_semantic_columns": extra,
             "sample_rows": sample_rows,
             "note": "Only case/activity/timestamp were renamed. All other columns are preserved unchanged.",
+            "col_mapping": {case_col: "case_id", act_col: "activity", ts_col: "timestamp"},
+            "sample_before": sample_before,
+            "sample_after": sample_after,
         }
 
         # Put canonical log into ctx

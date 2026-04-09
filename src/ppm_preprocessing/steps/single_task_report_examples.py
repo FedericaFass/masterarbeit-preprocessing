@@ -44,7 +44,7 @@ class SingleTaskReportExamplesStep(Step):
         self.config = config
 
     def _get_reports_dir(self, ctx: PipelineContext) -> Path:
-        out_dir = getattr(ctx, "output_dir", None)
+        out_dir = ctx.artifacts.get("out_dir") or getattr(ctx, "output_dir", None)
         if out_dir:
             return Path(out_dir) / self.config.reports_subdir
         return Path("outputs") / self.config.reports_subdir
