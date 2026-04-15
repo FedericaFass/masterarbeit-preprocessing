@@ -576,6 +576,7 @@ def run_pipeline(
                 skip_single_class=True,
                 time_budget_s=time_budget_s,
                 seed=42,
+                n_jobs=1,  # sequential trials — parallel causes thread overhead that breaks the time budget
                 estimator_list=None,
                 n_example_rows=3,
                 examples_policy="all",
