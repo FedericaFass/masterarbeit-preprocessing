@@ -1,5 +1,5 @@
 anthropic==0.84.0
-flaml==2.3.6
+flaml[automl]==2.3.6
 flask==3.1.2
 gunicorn==23.0.0
 lxml==6.0.2
