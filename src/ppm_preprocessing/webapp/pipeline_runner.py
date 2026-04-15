@@ -75,6 +75,20 @@ from ppm_preprocessing.steps.visualize_results import (
 )
 
 
+def _safe_int(val, fallback=None):
+    """Convert val to int, returning fallback if val is None, NaN, or Inf."""
+    import math
+    if val is None:
+        return fallback
+    try:
+        f = float(val)
+        if math.isnan(f) or math.isinf(f):
+            return fallback
+        return int(f)
+    except (TypeError, ValueError):
+        return fallback
+
+
 def _sanitize_for_json(obj):
     """Recursively replace NaN/Inf floats with None so json.dumps produces valid JSON."""
     import math
@@ -510,7 +524,7 @@ def run_pipeline(
             "step": "outlier_detection",
             "label": "Detecting case duration outliers (IQR)...",
             "before_rows": _ps_before_rows,
-            "after_rows": int(_ps_after_rows) if _ps_after_rows is not None else _ps_before_rows,
+            "after_rows": _safe_int(_ps_after_rows, _ps_before_rows),
             "before_cases": None,
             "after_cases": None,
             "qc": {k: v for k, v in outlier_qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k != "step"},
@@ -531,7 +545,7 @@ def run_pipeline(
             "step": "filter_rare_classes",
             "label": "Filtering rare classes...",
             "before_rows": _ps_before_rows2,
-            "after_rows": int(_ps_after_rows2) if _ps_after_rows2 is not None else _ps_before_rows2,
+            "after_rows": _safe_int(_ps_after_rows2, _ps_before_rows2),
             "before_cases": None,
             "after_cases": None,
             "qc": {k: v for k, v in filter_qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k != "step"},
@@ -969,7 +983,7 @@ def run_strategy_search_only(
             "step": "outlier_detection",
             "label": "Detecting label outliers...",
             "before_rows": _ps_b_rows,
-            "after_rows": int(_ps_a_rows) if _ps_a_rows is not None else _ps_b_rows,
+            "after_rows": _safe_int(_ps_a_rows, _ps_b_rows),
             "before_cases": None,
             "after_cases": None,
             "qc": {k: v for k, v in _o_qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k != "step"},
@@ -990,7 +1004,7 @@ def run_strategy_search_only(
             "step": "filter_rare_classes",
             "label": "Filtering rare classes...",
             "before_rows": _ps_b_rows2,
-            "after_rows": int(_ps_a_rows2) if _ps_a_rows2 is not None else _ps_b_rows2,
+            "after_rows": _safe_int(_ps_a_rows2, _ps_b_rows2),
             "before_cases": None,
             "after_cases": None,
             "qc": {k: v for k, v in _f_qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k != "step"},
