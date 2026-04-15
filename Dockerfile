@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 
 EXPOSE 8080
 
-CMD gunicorn "ppm_preprocessing.webapp.app:app" --bind 0.0.0.0:$PORT --timeout 600 --workers 1 --threads 4 --worker-class gthread
+CMD ["/bin/sh", "-c", "gunicorn ppm_preprocessing.webapp.app:app --bind 0.0.0.0:${PORT:-8080} --timeout 600 --workers 1 --threads 4 --worker-class gthread"]
