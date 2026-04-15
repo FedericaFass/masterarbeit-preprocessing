@@ -290,7 +290,24 @@ class SingleTaskStrategySearchStep(Step):
                             continue
 
                     ctx.artifacts["encoded_data"] = {"X": X, "y": y, "case_id": case_ids}
-                    TrainEvaluateTaskStep().run(ctx)
+                    try:
+                        TrainEvaluateTaskStep().run(ctx)
+                    except Exception as _train_err:
+                        strategy_time = time.time() - strategy_start_time
+                        print(f"SKIPPED (train error: {_train_err}) [{strategy_time:.1f}s]")
+                        results.append({
+                            "task": task.name,
+                            "bucketing": bucketing_name,
+                            "encoding": encoding_name,
+                            "mode": "global_model",
+                            "primary_metric": task.primary_metric,
+                            "primary_score": None,
+                            "time_s": round(strategy_time, 2),
+                            "feature_dim": None,
+                            "metrics": {},
+                            "details": {"note": f"train error: {_train_err}"},
+                        })
+                        continue
                     ev = ctx.artifacts.get("evaluation", {})
                     strategy_time = time.time() - strategy_start_time
 
@@ -361,7 +378,10 @@ class SingleTaskStrategySearchStep(Step):
                             continue
 
                     ctx.artifacts["encoded_data"] = {"X": X, "y": y, "case_id": case_ids}
-                    TrainEvaluateTaskStep().run(ctx)
+                    try:
+                        TrainEvaluateTaskStep().run(ctx)
+                    except Exception:
+                        continue
                     ev = ctx.artifacts.get("evaluation", {})
 
                     score = ev.get("primary_score")

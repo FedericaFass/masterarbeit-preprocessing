@@ -1074,45 +1074,70 @@ _CHAT_SYSTEM = """You are a concise assistant embedded in a Predictive Process M
 TOOL WORKFLOW:
 1. Upload event log (XES or CSV)
 2. Select prediction task
-3. Configure preprocessing & optional baseline comparison
+3. Configure preprocessing & compare against baseline
 4. Train model (AutoML)
 5. View results & charts
-6. Predict running cases
+6. Predict on running (incomplete) cases
 
 PREDICTION TASKS:
-- Remaining Time — regression, metric: MAE (days)
-- Outcome — multiclass classification, metric: F1-macro
-- Next Event Attribute — predict next value of any event column (activity, resource, etc.), metric: F1-macro
+- Remaining Time — regression, predicts how long until a case completes. Metric: MAE (days, lower is better).
+- Outcome — multiclass classification, predicts the final outcome of a case using the last activity or a chosen case attribute as label. Metric: F1-macro (higher is better).
+- Next Event Attribute — predicts the next value of any event-level column (e.g. activity, resource). Metric: F1-macro.
 
-PREPROCESSING OPTIONS:
-- Outlier Detection (IQR): removes cases with extreme durations regardless of task type. Uses the remaining-time label as a case-duration proxy even for classification tasks.
-- Column Drops: remove irrelevant or potentially data-leaking columns. Activity, timestamp, case ID, and the target column are always protected and cannot be dropped.
-- Rare Class Filter (classification only): merge low-frequency outcome classes into "other" to avoid degenerate training.
-- Lifecycle Filter: drop unwanted lifecycle phases (e.g. keep only "complete" events).
-- Temporal Split: split train/val/test chronologically by case start time instead of random shuffle. Prevents future-data leakage and simulates real deployment.
-- Concept Drift Window: keep only the most recent X% of cases (by start time). Old cases may reflect an outdated process version. Discarding them focuses training on recent behaviour.
-- Rare Variant Filter: remove cases whose exact activity sequence (variant) appears fewer than N times. Eliminates one-off traces that cannot be learned reliably.
-- Zeit-Features (Time Features): always enabled by default. Adds hour-of-day, day-of-week, month, and elapsed-time features derived from timestamps.
-- Train/Val/Test Split: default 70/15/15% (configurable).
+MANDATORY PIPELINE STEPS (always run, cannot be disabled):
+1. Load XES / Load CSV — parses the uploaded file.
+2. Normalize Schema — maps XES standard columns (case:concept:name, concept:name, time:timestamp) to internal names (case_id, activity, timestamp).
+3. Deduplicate Events — removes exact duplicate event rows.
+4. Clean & Sort — validates and parses timestamps, drops rows with unparseable timestamps, sorts events by case and time.
+5. Stable Sort — re-sorts using a stable mergesort with an internal tie-breaker index so events with identical timestamps always appear in a deterministic order.
+6. Repair Timestamps — detects and corrects backwards timestamps within a case.
+7. Filter Short Cases — removes cases with fewer than 2 events (single-event cases carry no sequential information).
+8. Normalize Activities — strips whitespace and standardises activity label formatting.
+9. Filter Infrequent Activities — removes events whose activity type appears in fewer than 10 cases.
+10. Filter Zero-Duration Cases — removes cases where start and end timestamps are identical.
+11. Filter Case Length Outliers — removes cases longer than the 99th percentile of case length (computed on training split only).
+12. Case Labels — assigns the prediction target label to each case (e.g. remaining time in seconds, outcome class).
+13. Prefix Extraction — generates one training instance per (case, prefix length) pair up to Max Prefix Length.
+14. Case Split — partitions cases into train / validation / test sets (default 70/15/15%).
 
-STRATEGY SEARCH (5 bucketers × 4 encodings = 20 combos tested with LightGBM probe on val set):
-Bucketing: No Bucket (global) | Last Activity | Fixed-Width | Adaptive | Cluster
-Encoding:  Last State | Aggregated | Index-Latest | Embedding
-→ Best combo is used for full AutoML training, evaluated on held-out test set.
+OPTIONAL PREPROCESSING STEPS (user-configurable):
+- Outlier Detection (IQR): after prefix extraction and case split, removes training prefix rows whose case duration falls outside IQR bounds (computed on train only). Works for all task types. Validation and test sets are never modified.
+- Filter Rare Classes: removes training prefix rows whose outcome class has fewer than N training samples. Prevents the model from learning from near-zero evidence. Classification tasks only.
+- Time Window Filter: discards cases that started before a chosen date. Useful when older data reflects a superseded process version.
+- Rare Variant Filter: removes cases whose exact activity sequence (trace variant) appears fewer than N times. Eliminates one-off traces that cannot be generalised.
+- Filter Consecutive Duplicates: collapses repeated consecutive identical activities within a case (A→A→B becomes A→B). Removes logging artefacts.
+- Impute Missing Attributes: fills missing case attribute values with column median (numeric) or mode (categorical). Ensures complete feature vectors for all encoders.
+- Drop Columns: exclude specific case attributes before encoding. Columns with ≥50% missing values are pre-checked. Activity, timestamp, case ID, and the target column are always protected.
+- Temporal Ordering: sorts cases chronologically before splitting so oldest cases go to train and newest to test. Prevents future-data leakage and simulates real deployment.
 
-BASELINE COMPARISON: Baseline runs with all advanced options OFF (same split, lifecycle filter, and file for fairness). Use it to measure the actual impact of each preprocessing step.
+ADVANCED SETTINGS:
+- Max Prefix Length: longest prefix used for training. Auto = 95th percentile of case lengths.
+- AutoML Time Budget: seconds allowed for AutoML model search. Auto = 300 s.
+- Min Bucket Samples: buckets with fewer training samples than this threshold are skipped. Auto = 100.
+- Fixed-Width Bin Size: events per bucket for the Prefix Length Bins bucketing strategy. Auto = 5.
+
+STRATEGY SEARCH (5 bucketers × 4 encoders = 20 combinations, scored by linear probe on validation set):
+Bucketers: No Bucket (global model) | Last Activity | Prefix Length Bins (fixed-width) | Prefix Length Adaptive | Cluster
+Encoders:  Last State | Aggregation | Index Latest Payload | Embedding (sentence-transformer)
+→ Best combination is selected for full AutoML training, evaluated on the held-out test set.
+→ Per-bucket mode: each bucket trains its own model. Improves accuracy when different process stages behave differently.
+
+BASELINE COMPARISON:
+Runs the pipeline twice simultaneously — once with all optional steps disabled (Baseline) and once with the user's configuration. Both use the same file, split ratios, and random seed. Scores are computed with fast linear probe models, not full AutoML. Use the comparison to decide whether the configured preprocessing actually improves over the uncleaned baseline before committing to full training.
 
 METRICS:
-- MAE (lower is better) — regression (remaining time)
-- F1-macro (higher is better) — classification (outcome, next event attribute)
+- MAE in days (lower is better) — remaining time regression
+- F1-macro (higher is better) — outcome and next-event classification
+- F1-micro also shown for classification — reflects accuracy on the dominant class; macro treats all classes equally regardless of frequency.
 
 KEY CONCEPTS:
-- Prefix = the first k events of a case. Models predict from partial traces seen so far.
-- Bucketing groups prefixes so each bucket gets a dedicated model or encoding.
-- Encoding converts a variable-length prefix into a fixed-size feature vector.
-- Concept drift in processes means older cases may follow different rules than recent ones; the Concept Drift Window addresses this.
+- Prefix: the first k events of a case. The model sees only the partial trace observed so far and predicts the future.
+- Bucketing: groups prefixes by a criterion (e.g. last activity, prefix length) so each group can receive a dedicated model or encoding strategy.
+- Encoding: converts a variable-length prefix into a fixed-size numeric feature vector suitable for standard ML models.
+- Concept drift: the process behaviour changes over time. Older cases may follow different rules; the Time Window Filter and Temporal Ordering address this.
+- IQR (Interquartile Range): a robust measure of spread. Outliers are defined as values below Q1 − 1.5×IQR or above Q3 + 1.5×IQR.
 
-Keep answers short and practical."""
+Keep answers short and practical. When the user asks about their specific results, refer to the CURRENT TRAINING RESULT and BASELINE COMPARISON RESULTS blocks provided below."""
 
 
 @app.route("/api/chat-ping")
@@ -1159,6 +1184,45 @@ def _build_context_block(ss_state: dict, sid: str) -> str:
 
     if cr and cs == "done":
         parts.append("BASELINE COMPARISON RESULTS:\n" + json.dumps(cr, indent=2, default=str))
+
+    # Preprocessing steps from training run
+    train_steps = ss_state.get("train_steps", [])
+    if train_steps:
+        step_summary = []
+        for s in train_steps:
+            if s.get("step") == "qc_report":
+                continue
+            before = s.get("before_rows")
+            after = s.get("after_rows")
+            removed = (before - after) if (before is not None and after is not None) else None
+            step_summary.append({
+                "step": s.get("step"),
+                "before_rows": before,
+                "after_rows": after,
+                "rows_removed": removed,
+                "cases_removed": (s.get("before_cases") - s.get("after_cases"))
+                    if (s.get("before_cases") is not None and s.get("after_cases") is not None) else None,
+            })
+        parts.append("TRAINING PIPELINE STEPS (row counts):\n" + json.dumps(step_summary, indent=2, default=str))
+
+    # Preprocessing steps from comparison run
+    compare_steps = ss_state.get("compare_steps", [])
+    if compare_steps:
+        step_summary = []
+        for s in compare_steps:
+            if s.get("step") == "qc_report":
+                continue
+            before = s.get("before_rows")
+            after = s.get("after_rows")
+            removed = (before - after) if (before is not None and after is not None) else None
+            step_summary.append({
+                "step": s.get("step"),
+                "variant": s.get("variant", ""),
+                "before_rows": before,
+                "after_rows": after,
+                "rows_removed": removed,
+            })
+        parts.append("COMPARISON PIPELINE STEPS (row counts):\n" + json.dumps(step_summary, indent=2, default=str))
 
     history = _load_run_history(sid)
     if history:
@@ -1220,9 +1284,12 @@ def api_chat():
 # Main
 # ---------------------------------------------------------------------------
 def main():
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
     print("\n  PPM Predictive Process Monitoring")
-    print("  http://localhost:5000\n")
-    app.run(host="0.0.0.0", port=5000, debug=True, threaded=True)
+    print(f"  http://localhost:{port}\n")
+    app.run(host="0.0.0.0", port=port, debug=debug, threaded=True)
 
 
 if __name__ == "__main__":

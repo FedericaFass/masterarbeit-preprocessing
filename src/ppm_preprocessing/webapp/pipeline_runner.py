@@ -500,35 +500,42 @@ def run_pipeline(
         })
 
         # 5b. Outlier detection (IQR on case duration / remaining time)
-        ctx = _run_step(
-            OutlierDetectionStep(OutlierDetectionConfig(enabled=outlier_enabled)),
-            ctx,
-            "Detecting case duration outliers (IQR)...",
-        )
+        _progress("Detecting case duration outliers (IQR)...")
+        _ps_before = ctx.artifacts.get("prefix_samples")
+        _ps_before_rows = int(len(_ps_before)) if _ps_before is not None else None
+        ctx = OutlierDetectionStep(OutlierDetectionConfig(enabled=outlier_enabled)).run(ctx)
         outlier_qc = ctx.artifacts.get("outlier_detection_qc", {})
-        n_removed = outlier_qc.get("outlier_rows_removed", 0)
-        if n_removed:
-            _progress(
-                f"Outlier detection: removed {n_removed} train rows "
-                f"({outlier_qc.get('outlier_pct', 0):.1f}%)"
-            )
+        _ps_after_rows = outlier_qc.get("total_rows_after", _ps_before_rows)
+        _step_data({
+            "step": "outlier_detection",
+            "label": "Detecting case duration outliers (IQR)...",
+            "before_rows": _ps_before_rows,
+            "after_rows": int(_ps_after_rows) if _ps_after_rows is not None else _ps_before_rows,
+            "before_cases": None,
+            "after_cases": None,
+            "qc": {k: v for k, v in outlier_qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k != "step"},
+        })
 
         # 5c. Filter rare classes — only for classification
-        ctx = _run_step(
-            FilterRareClassesStep(FilterRareClassesConfig(
-                enabled=is_classification and min_class_samples > 0,
-                min_class_samples=min_class_samples,
-                label_col=task.label_col,
-            )),
-            ctx,
-            "Filtering rare classes...",
-        )
+        _progress("Filtering rare classes...")
+        _ps_before2 = ctx.artifacts.get("prefix_samples")
+        _ps_before_rows2 = int(len(_ps_before2)) if _ps_before2 is not None else None
+        ctx = FilterRareClassesStep(FilterRareClassesConfig(
+            enabled=is_classification and min_class_samples > 0,
+            min_class_samples=min_class_samples,
+            label_col=task.label_col,
+        )).run(ctx)
         filter_qc = ctx.artifacts.get("filter_rare_classes_qc", {})
-        if filter_qc.get("rows_removed", 0):
-            _progress(
-                f"Rare class filter: removed {filter_qc['rare_classes_removed']} classes "
-                f"({filter_qc['rows_removed']} rows, {filter_qc.get('rows_removed_pct', 0):.1f}%)"
-            )
+        _ps_after_rows2 = filter_qc.get("rows_after", _ps_before_rows2)
+        _step_data({
+            "step": "filter_rare_classes",
+            "label": "Filtering rare classes...",
+            "before_rows": _ps_before_rows2,
+            "after_rows": int(_ps_after_rows2) if _ps_after_rows2 is not None else _ps_before_rows2,
+            "before_cases": None,
+            "after_cases": None,
+            "qc": {k: v for k, v in filter_qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k != "step"},
+        })
 
         # 6. Strategy search
         _progress("Strategy search: testing 5 bucketers × 4 encodings = 20 strategies...")
@@ -952,28 +959,48 @@ def run_strategy_search_only(
         })
 
         # 7. Outlier detection (skip for classification)
-        ctx = _run_step(
-            OutlierDetectionStep(OutlierDetectionConfig(enabled=outlier_enabled)),
-            ctx,
-            "Detecting label outliers...",
-        )
+        _progress("Detecting label outliers...")
+        _ps_b = ctx.artifacts.get("prefix_samples")
+        _ps_b_rows = int(len(_ps_b)) if _ps_b is not None else None
+        ctx = OutlierDetectionStep(OutlierDetectionConfig(enabled=outlier_enabled)).run(ctx)
+        _o_qc = ctx.artifacts.get("outlier_detection_qc", {})
+        _ps_a_rows = _o_qc.get("total_rows_after", _ps_b_rows)
+        _step_data({
+            "step": "outlier_detection",
+            "label": "Detecting label outliers...",
+            "before_rows": _ps_b_rows,
+            "after_rows": int(_ps_a_rows) if _ps_a_rows is not None else _ps_b_rows,
+            "before_cases": None,
+            "after_cases": None,
+            "qc": {k: v for k, v in _o_qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k != "step"},
+        })
 
         # 8. Filter rare classes
-        ctx = _run_step(
-            FilterRareClassesStep(FilterRareClassesConfig(
-                enabled=is_classification and min_class_samples > 0,
-                min_class_samples=min_class_samples,
-                label_col=task.label_col,
-            )),
-            ctx,
-            "Filtering rare classes...",
-        )
+        _progress("Filtering rare classes...")
+        _ps_b2 = ctx.artifacts.get("prefix_samples")
+        _ps_b_rows2 = int(len(_ps_b2)) if _ps_b2 is not None else None
+        ctx = FilterRareClassesStep(FilterRareClassesConfig(
+            enabled=is_classification and min_class_samples > 0,
+            min_class_samples=min_class_samples,
+            label_col=task.label_col,
+        )).run(ctx)
+        _f_qc = ctx.artifacts.get("filter_rare_classes_qc", {})
+        _ps_a_rows2 = _f_qc.get("rows_after", _ps_b_rows2)
+        _step_data({
+            "step": "filter_rare_classes",
+            "label": "Filtering rare classes...",
+            "before_rows": _ps_b_rows2,
+            "after_rows": int(_ps_a_rows2) if _ps_a_rows2 is not None else _ps_b_rows2,
+            "before_cases": None,
+            "after_cases": None,
+            "qc": {k: v for k, v in _f_qc.items() if isinstance(v, (int, float, str, bool, list, dict)) and k != "step"},
+        })
 
         # 9. Strategy search
         _progress("Strategy search: testing 5 bucketers × 4 encodings = 20 strategies...")
         ctx = SingleTaskStrategySearchStep(strategy_cfg).run(ctx)
 
-        best = ctx.artifacts.get("best_strategy", {})
+        best = ctx.artifacts.get("best_strategy") or {}
         comparison = ctx.artifacts.get("single_task_comparison", [])
 
         score = best.get("primary_score")
@@ -984,6 +1011,21 @@ def run_strategy_search_only(
             f"Best: {best.get('bucketing')} + {best.get('encoding')} "
             f"| {metric_label} = {score_str}"
         )
+
+        if score is None:
+            skipped = [r for r in comparison if r.get("primary_score") is None]
+            return {
+                "status": "no_strategy",
+                "error": (
+                    f"No valid strategy found — all {len(skipped)} strategies were skipped "
+                    f"(too few samples per bucket or training failed). "
+                    f"Try lowering min_bucket_samples or uploading a larger log."
+                ),
+                "best_strategy": best,
+                "comparison": comparison,
+                "primary_score": None,
+                "is_classification": is_clf,
+            }
 
         return {
             "status": "success",

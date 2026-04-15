@@ -1,0 +1,17 @@
+anthropic==0.84.0
+flaml==2.3.6
+flask==3.1.2
+gunicorn==23.0.0
+lxml==6.0.2
+numpy==2.4.0
+pandas==2.3.3
+pm4py==2.7.19.5
+pyarrow==22.0.0
+scikit-learn==1.8.0
+scipy==1.16.3
+sentence-transformers==5.2.2
+tokenizers==0.22.2
+torch==2.10.0
+transformers==5.1.0
+tqdm==4.67.1
+huggingface_hub==1.4.1
