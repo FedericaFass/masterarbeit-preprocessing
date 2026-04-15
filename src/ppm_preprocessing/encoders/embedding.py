@@ -18,6 +18,16 @@ from .base import Encoder, EncodedDataset
 
 UNK_TOKEN = "<UNK>"
 
+# Module-level cache so the model is loaded once per process, not once per fit() call.
+_ST_MODEL_CACHE: dict = {}
+
+
+def _get_st_model(model_name: str):
+    if model_name not in _ST_MODEL_CACHE:
+        from sentence_transformers import SentenceTransformer
+        _ST_MODEL_CACHE[model_name] = SentenceTransformer(model_name)
+    return _ST_MODEL_CACHE[model_name]
+
 
 @dataclass
 class EmbeddingConfig:
@@ -114,9 +124,8 @@ class EmbeddingEncoder(Encoder):
         if c.label_col not in df.columns:
             raise ValueError(f"Missing column '{c.label_col}'")
 
-        # --- load sentence-transformer model ---
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer(c.model_name)
+        # --- load sentence-transformer model (cached per process) ---
+        model = _get_st_model(c.model_name)
 
         # --- collect unique activities ---
         vocab: set[str] = set()
