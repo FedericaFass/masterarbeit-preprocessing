@@ -1,5 +1,5 @@
 [build]
-buildCommand = "pip install -r requirements.txt && pip install -e ."
+buildCommand = "apt-get install -y libgomp1 graphviz && pip install -r requirements.txt && pip install -e ."
 
 [deploy]
 startCommand = "gunicorn 'ppm_preprocessing.webapp.app:app' --bind 0.0.0.0:$PORT --timeout 600 --workers 1 --threads 4 --worker-class gthread"
