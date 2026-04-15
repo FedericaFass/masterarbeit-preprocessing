@@ -20,6 +20,8 @@ UNK_TOKEN = "<UNK>"
 
 # Module-level cache so the model is loaded once per process, not once per fit() call.
 _ST_MODEL_CACHE: dict = {}
+# Cache computed embedding vectors: (model_name, text) -> np.ndarray
+_ST_VECTOR_CACHE: dict = {}
 
 
 def _get_st_model(model_name: str):
@@ -27,6 +29,28 @@ def _get_st_model(model_name: str):
         from sentence_transformers import SentenceTransformer
         _ST_MODEL_CACHE[model_name] = SentenceTransformer(model_name)
     return _ST_MODEL_CACHE[model_name]
+
+
+def _encode_texts(model, model_name: str, texts: list) -> "np.ndarray":
+    """Encode texts using cached vectors where possible."""
+    import numpy as np
+    result = [None] * len(texts)
+    to_encode_idx = []
+    to_encode_txt = []
+    for i, t in enumerate(texts):
+        key = (model_name, t)
+        if key in _ST_VECTOR_CACHE:
+            result[i] = _ST_VECTOR_CACHE[key]
+        else:
+            to_encode_idx.append(i)
+            to_encode_txt.append(t)
+    if to_encode_txt:
+        vecs = model.encode(to_encode_txt, show_progress_bar=False, convert_to_numpy=True)
+        for j, (idx, txt) in enumerate(zip(to_encode_idx, to_encode_txt)):
+            v = vecs[j].astype(np.float32)
+            _ST_VECTOR_CACHE[(model_name, txt)] = v
+            result[idx] = v
+    return np.array(result, dtype=np.float32)
 
 
 @dataclass
@@ -137,8 +161,8 @@ class EmbeddingEncoder(Encoder):
         if not activities:
             raise ValueError("No activities found in prefix_activities.")
 
-        # --- encode all activities at once (batch) ---
-        vectors = model.encode(activities, show_progress_bar=False, convert_to_numpy=True)
+        # --- encode all activities (vectors cached globally across fit() calls) ---
+        vectors = _encode_texts(model, c.model_name, activities)
         self.emb_dim_ = int(vectors.shape[1])
 
         self.activity_embeddings_ = {
@@ -175,10 +199,10 @@ class EmbeddingEncoder(Encoder):
                 col_values[col] = unique_vals
                 all_unique_values.update(unique_vals)
 
-            # Batch-encode all unique categorical values at once
+            # Encode all unique categorical values (cached globally across fit() calls)
             all_values_list = sorted(all_unique_values)
             if all_values_list:
-                cat_vectors = model.encode(all_values_list, show_progress_bar=False, convert_to_numpy=True)
+                cat_vectors = _encode_texts(model, c.model_name, all_values_list)
                 value_to_emb = {
                     val: cat_vectors[i].astype(np.float32)
                     for i, val in enumerate(all_values_list)
