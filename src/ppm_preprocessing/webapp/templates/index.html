@@ -1,0 +1,2824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPM - Predictive Process Monitoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f6fa;
+            --bg-white: #ffffff;
+            --bg-hover: #f0f1f5;
+            --bg-input: #f8f9fb;
+            --border: #e2e4ec;
+            --border-hover: #c9cdd8;
+            --text: #1a1d2e;
+            --text-secondary: #4a5068;
+            --text-muted: #8b90a5;
+            --accent: #5046e5;
+            --accent-light: #ededfd;
+            --accent-text: #5046e5;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --success-border: #a7f3d0;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --warning-border: #fde68a;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --danger-border: #fecaca;
+            --info: #3b82f6;
+            --info-light: #eff6ff;
+            --info-border: #bfdbfe;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.08);
+            --transition: 0.2s ease;
+            --sidebar-width: 240px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Chat Assistant ── */
+        #chatBtn {
+            position: fixed; bottom: 28px; right: 28px; z-index: 1000;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: var(--accent); color: #fff; border: none;
+            font-size: 22px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 4px 16px rgba(80,70,229,0.35);
+            transition: var(--transition);
+        }
+        #chatBtn:hover { background: #3d33c7; transform: scale(1.07); }
+        #chatPanel {
+            position: fixed; bottom: 92px; right: 28px; z-index: 999;
+            width: 360px; height: 480px; background: var(--bg-white);
+            border: 1px solid var(--border); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg); display: none;
+            flex-direction: column; overflow: hidden;
+        }
+        #chatPanel.open { display: flex; }
+        .chat-header {
+            padding: 14px 16px; background: var(--accent);
+            color: #fff; font-weight: 600; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .chat-header span { opacity: 0.85; font-size: 0.75rem; font-weight: 400; }
+        .chat-header button { background: none; border: none; color: #fff; cursor: pointer; font-size: 18px; line-height: 1; opacity: 0.8; }
+        .chat-header button:hover { opacity: 1; }
+        #chatMessages {
+            flex: 1; overflow-y: auto; padding: 14px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .chat-msg { max-width: 88%; font-size: 0.85rem; line-height: 1.5; }
+        .chat-msg.user { align-self: flex-end; background: var(--accent-light);
+            color: var(--accent-text); padding: 9px 13px; border-radius: 14px 14px 4px 14px; }
+        .chat-msg.assistant { align-self: flex-start; background: var(--bg);
+            color: var(--text); padding: 9px 13px; border-radius: 14px 14px 14px 4px;
+            border: 1px solid var(--border); white-space: pre-wrap; }
+        .chat-msg.assistant.streaming::after { content: '▋'; animation: blink 0.8s step-start infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .chat-msg.error-msg { align-self: center; color: var(--danger);
+            font-size: 0.8rem; background: var(--danger-light);
+            border: 1px solid var(--danger-border); padding: 6px 12px; border-radius: 8px; }
+        #chatInputRow {
+            display: flex; gap: 8px; padding: 12px;
+            border-top: 1px solid var(--border); flex-shrink: 0;
+        }
+        #chatInput {
+            flex: 1; padding: 9px 12px; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-size: 0.85rem;
+            font-family: inherit; resize: none; background: var(--bg-input);
+            outline: none; max-height: 96px;
+        }
+        #chatInput:focus { border-color: var(--accent); }
+        #chatSendBtn {
+            padding: 9px 14px; background: var(--accent); color: #fff;
+            border: none; border-radius: var(--radius-sm); cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; flex-shrink: 0;
+            transition: var(--transition);
+        }
+        #chatSendBtn:hover:not(:disabled) { background: #3d33c7; }
+        #chatSendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg-white);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .sidebar-header {
+            padding: 1.4rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .sidebar-logo {
+            width: 32px; height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.85rem; color: white;
+            flex-shrink: 0;
+        }
+        .sidebar-brand h1 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.2;
+        }
+        .sidebar-brand span {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 0.8rem 0;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.55rem 1.2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            font-weight: 500;
+            transition: all var(--transition);
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+        .nav-item:hover {
+            background: var(--bg);
+            color: var(--text-secondary);
+        }
+        .nav-item.active {
+            color: var(--accent);
+            background: var(--accent-light);
+            border-left-color: var(--accent);
+            font-weight: 600;
+        }
+        .nav-item.completed .nav-num {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        .nav-num {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 700;
+            border: 2px solid var(--border);
+            background: var(--bg-white);
+            flex-shrink: 0;
+            transition: all var(--transition);
+        }
+        .nav-item.active .nav-num {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+        .nav-connector {
+            position: absolute;
+            left: 22px;
+            top: 36px;
+            width: 2px;
+            height: 12px;
+            background: var(--border);
+        }
+        .nav-item.completed .nav-connector { background: var(--success); }
+        .nav-item:last-child .nav-connector { display: none; }
+
+        /* ── Main content ── */
+        .main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            padding: 1.2rem 2.5rem;
+        }
+        .page-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .page-header p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 0.1rem;
+        }
+
+        .page-body {
+            padding: 2rem 2.5rem 3rem;
+            max-width: 1100px;
+        }
+
+        /* ── Step panels ── */
+        .step-panel {
+            display: none;
+            animation: fadeUp 0.25s ease;
+        }
+        .step-panel.active { display: block; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        .card + .card { margin-top: 1rem; }
+        .card-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+        }
+
+        /* ── Dropzone ── */
+        .dropzone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            background: var(--bg-input);
+        }
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+        .dropzone-icon {
+            width: 48px; height: 48px;
+            background: var(--accent-light);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 0.8rem;
+            font-size: 1.4rem;
+        }
+        .dropzone p { color: var(--text-secondary); font-size: 0.9rem; }
+        .dropzone .hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+        .dropzone .filename {
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.2rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition);
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover:not(:disabled) { background: #4338ca; box-shadow: 0 2px 8px rgba(80,70,229,0.3); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover:not(:disabled) { background: #059669; }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover:not(:disabled) { background: var(--bg); border-color: var(--border-hover); }
+        .btn-danger { background: var(--danger); color: white; font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 6px; }
+        .btn-row { display: flex; gap: 0.6rem; margin-top: 1.5rem; justify-content: flex-end; }
+
+        .btn-train {
+            width: 100%;
+            justify-content: center;
+            padding: 0.85rem 2rem;
+            font-size: 0.95rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 700;
+            font-family: inherit;
+            transition: all var(--transition);
+        }
+        .btn-train:hover:not(:disabled) { background: #4338ca; box-shadow: 0 4px 16px rgba(80,70,229,0.25); }
+        .btn-train:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── Option cards (task selection) ── */
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+        }
+        @media (max-width: 800px) { .task-grid { grid-template-columns: 1fr; } }
+        .task-card {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.4rem 1.2rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: center;
+            background: var(--bg-white);
+        }
+        .task-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-md); }
+        .task-card.selected {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+        .task-card.disabled { opacity: 0.4; cursor: not-allowed; }
+        .task-card-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            margin: 0 auto 0.6rem;
+        }
+        .task-card.selected .task-card-icon { }
+        .task-card .tc-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.2rem; }
+        .task-card .tc-desc { font-size: 0.78rem; color: var(--text-muted); }
+        .task-card .tc-badge {
+            display: inline-block;
+            padding: 0.12rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background: var(--success-light);
+            color: var(--success);
+            border: 1px solid var(--success-border);
+        }
+
+        /* ── Toggle ── */
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: border-color var(--transition);
+        }
+        .option-row + .option-row { margin-top: 0.6rem; }
+        .option-row:hover { border-color: var(--border-hover); }
+        .option-row .opt-text { flex: 1; }
+        .option-row .opt-text strong { display: block; font-size: 0.88rem; }
+        .option-row .opt-text span { font-size: 0.78rem; color: var(--text-muted); }
+        .toggle { position: relative; width: 42px; height: 22px; flex-shrink: 0; }
+        .toggle input { display: none; }
+        .toggle .slider {
+            position: absolute; inset: 0;
+            background: #d1d5db;
+            border-radius: 22px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+        .toggle .slider::before {
+            content: '';
+            position: absolute;
+            width: 16px; height: 16px;
+            left: 3px; bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.25s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .toggle input:checked + .slider { background: var(--success); }
+        .toggle input:checked + .slider::before { transform: translateX(20px); }
+
+        /* ── Config section ── */
+        .config-block {
+            margin-top: 1rem;
+            padding: 1.2rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+        .config-block strong { font-size: 0.88rem; }
+        .config-block p { font-size: 0.8rem; color: var(--text-muted); margin: 0.2rem 0 0.5rem; }
+        .config-block select, .config-block input[type="number"] {
+            width: 100%;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            background: var(--bg-white);
+            color: var(--text);
+            font-family: inherit;
+            transition: border-color var(--transition);
+        }
+        .config-block select:focus, .config-block input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(80,70,229,0.1);
+        }
+        .outcome-tag {
+            display: inline-block;
+            background: var(--accent-light);
+            color: var(--accent-text);
+            padding: 2px 10px;
+            margin: 2px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* ── Summary ── */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .summary-table th, .summary-table td {
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .summary-table th { font-weight: 600; color: var(--text-muted); width: 35%; font-size: 0.8rem; }
+        .summary-table td { color: var(--text); font-weight: 500; }
+
+        /* ── Status ── */
+        .status-box {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            display: none;
+        }
+        .status-box.running {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: var(--info-light);
+            border: 1px solid var(--info-border);
+            color: var(--info);
+        }
+        .status-box.done {
+            display: block;
+            background: var(--success-light);
+            border: 1px solid var(--success-border);
+            color: #065f46;
+        }
+        .status-box.error {
+            display: block;
+            background: var(--danger-light);
+            border: 1px solid var(--danger-border);
+            color: var(--danger);
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 0.78rem;
+        }
+        .spinner {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border: 2px solid rgba(59,130,246,0.2);
+            border-top: 2px solid var(--info);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Results ── */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+        @media (max-width: 700px) { .metrics-grid { grid-template-columns: 1fr; } }
+        .metric-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.4rem;
+        }
+        .metric-card .mc-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+        }
+        .metric-card .mc-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-top: 0.15rem;
+        }
+        .metric-card .mc-value .mc-unit { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+        .metric-card .mc-sub { font-size: 0.78rem; color: var(--text-muted); }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .detail-table th, .detail-table td {
+            padding: 0.55rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .detail-table th { font-weight: 600; color: var(--text-muted); width: 40%; }
+
+        /* ── Charts ── */
+        .charts-section { margin-top: 1rem; }
+        .charts-section h3 { font-size: 0.95rem; margin-bottom: 0.8rem; }
+        .chart-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .chart-tab {
+            padding: 0.45rem 0.8rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: -1px;
+            white-space: nowrap;
+            font-family: inherit;
+            font-weight: 500;
+            transition: color var(--transition);
+            border-bottom: 2px solid transparent;
+        }
+        .chart-tab:hover { color: var(--text-secondary); }
+        .chart-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .chart-img { width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+
+        /* ── Predict ── */
+        .pred-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.2rem;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 3px;
+            border: 1px solid var(--border);
+        }
+        .pred-tab {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            text-align: center;
+            font-family: inherit;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all var(--transition);
+        }
+        .pred-tab:hover { color: var(--text); }
+        .pred-tab.active { background: var(--bg-white); color: var(--text); box-shadow: var(--shadow); }
+
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        .events-table th, .events-table td {
+            padding: 0.45rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.84rem;
+        }
+        .events-table th {
+            background: var(--bg);
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .events-table input {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.84rem;
+            background: var(--bg-white);
+            color: var(--text);
+            font-family: inherit;
+        }
+        .events-table input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(80,70,229,0.1); }
+
+        .pred-result {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: var(--success-light);
+            border-radius: var(--radius);
+            border: 1px solid var(--success-border);
+            display: none;
+        }
+        .pred-result .big-num { font-size: 1.8rem; font-weight: 800; color: #065f46; }
+        .pred-result .details { font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.3rem; }
+
+        .pred-error {
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            background: var(--danger-light);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--danger-border);
+            display: none;
+            font-size: 0.84rem;
+            color: var(--danger);
+        }
+
+        .batch-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .batch-table th, .batch-table td {
+            padding: 0.5rem 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .batch-table th {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            background: var(--bg);
+            position: sticky; top: 0;
+        }
+        .batch-table tbody tr { transition: background var(--transition); }
+        .batch-table tbody tr:hover { background: var(--bg-input); }
+
+        .num-input {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.84rem;
+            background: var(--bg-white);
+            color: var(--text);
+            font-family: inherit;
+            text-align: center;
+        }
+        .num-input:focus { outline: none; border-color: var(--accent); }
+        .num-input:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-input); }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+        .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+        .empty-state p { font-size: 0.9rem; margin-bottom: 1.2rem; }
+
+        /* ── Two-column layout for results ── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+        /* ── Responsive sidebar ── */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+        }
+
+        /* Log overview panel */
+        #logOverview { display: none; margin-top: 1.2rem; }
+        .eda-stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
+        .eda-stat { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.9rem 1rem; }
+        .eda-stat .es-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
+        .eda-stat .es-value { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-top: 0.1rem; }
+        .eda-stat .es-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
+        .eda-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .eda-section-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 0.6rem; }
+        .eda-bar-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; font-size: 0.8rem; }
+        .eda-bar-label { width: 200px; min-width: 200px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); text-align: right; }
+        #edaTopVariants .eda-bar-label { width: 340px; min-width: 340px; text-align: left; font-size: 0.75rem; }
+        .eda-bar-track { flex: 1; background: var(--border); border-radius: 3px; height: 10px; overflow: hidden; }
+        .eda-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s; }
+        .eda-bar-pct { width: 52px; min-width: 52px; font-size: 0.75rem; color: var(--text-muted); text-align: right; }
+        .eda-hist-row { display: flex; align-items: flex-end; gap: 3px; height: 100px; margin-bottom: 0.3rem; }
+        .eda-hist-bar { flex: 1; background: var(--accent); border-radius: 3px 3px 0 0; transition: height 0.4s; min-height: 2px; }
+        .eda-hist-labels { display: flex; gap: 3px; }
+        .eda-hist-label { flex: 1; font-size: 0.58rem; color: var(--text-muted); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .eda-hist-labels-rotated { display: flex; gap: 3px; height: 52px; overflow: hidden; }
+        .eda-hist-label-rotated { flex: 1; position: relative; }
+        .eda-hist-label-rotated span { position: absolute; top: 2px; left: 50%; font-size: 0.6rem; color: var(--text-muted); white-space: nowrap; transform-origin: top left; transform: rotate(40deg); }
+        .eda-scroll { max-height: 260px; overflow-y: auto; padding-right: 4px; }
+
+        /* Pipeline step cards */
+        .pipe-step { background: var(--bg-card,#fff); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; margin-bottom: 0.5rem; animation: fadeSlideIn 0.3s ease; }
+        @keyframes fadeSlideIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+        .pipe-step-header { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; }
+        .pipe-step-icon { width:20px; height:20px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.65rem; font-weight:700; flex-shrink:0; }
+        .pipe-step-icon.drop { background:#e53e3e; }
+        .pipe-step-icon.ok { background:#38a169; }
+        .pipe-step-name { font-size:0.8rem; font-weight:600; color:var(--text,#1a1d2e); }
+        .pipe-step-label { font-size:0.72rem; color:var(--text-muted); margin-left:auto; }
+        .pipe-bar-row { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem; font-size:0.72rem; }
+        .pipe-bar-label { width:80px; color:var(--text-muted); text-align:right; flex-shrink:0; }
+        .pipe-bar-track { flex:1; background:var(--border); border-radius:3px; height:8px; position:relative; overflow:visible; }
+        .pipe-bar-fill { height:100%; border-radius:3px; transition:width 0.5s ease; }
+        .pipe-bar-fill.before { background:#a0aec0; }
+        .pipe-bar-fill.after { background:var(--accent); }
+        .pipe-bar-val { width:70px; color:var(--text-secondary,#4a5068); font-weight:600; }
+        .pipe-dropped { font-size:0.72rem; color:#e53e3e; font-weight:600; margin-top:0.25rem; }
+        .pipe-ok { font-size:0.72rem; color:#38a169; font-weight:600; margin-top:0.25rem; }
+        .pipe-detail { font-size:0.7rem; color:var(--text-muted); margin-top:0.3rem; }
+    </style>
+</head>
+<body>
+    <!-- ============ SIDEBAR ============ -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">P</div>
+                <div>
+                    <h1>PPM</h1>
+                    <span>Process Monitoring</span>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-item active" data-step="1" onclick="goToStep(1)">
+                <span class="nav-num">1</span> Upload File
+                <div class="nav-connector"></div>
+            </div>
+            <div class="nav-item" data-step="2" onclick="goToStep(2)">
+                <span class="nav-num">2</span> Select Task
+                <div class="nav-connector"></div>
+            </div>
+            <div class="nav-item" data-step="3" onclick="goToStep(3)">
+                <span class="nav-num">3</span> Configure &amp; Compare
+                <div class="nav-connector"></div>
+            </div>
+            <div class="nav-item" data-step="4" onclick="goToStep(4)">
+                <span class="nav-num">4</span> Train Model
+                <div class="nav-connector"></div>
+            </div>
+            <div class="nav-item" data-step="5" onclick="goToStep(5)">
+                <span class="nav-num">5</span> Results
+                <div class="nav-connector"></div>
+            </div>
+            <div class="nav-item" data-step="6" onclick="goToStep(6)">
+                <span class="nav-num">6</span> Predict
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main">
+        <!-- STEP 1 -->
+        <div class="step-panel active" id="step1">
+            <div class="page-header">
+                <h2>Upload Event Log</h2>
+                <p>Upload an XES or CSV event log file to get started</p>
+            </div>
+            <div class="page-body">
+                <div class="card">
+                    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                        <div class="dropzone-icon">&#128194;</div>
+                        <p>Drag & drop your file here, or click to browse</p>
+                        <div class="hint">Supports .xes and .csv files (up to 500 MB)</div>
+                        <div class="filename" id="selectedFile"></div>
+                        <input type="file" id="fileInput" accept=".xes,.csv" style="display:none">
+                    </div>
+                </div>
+
+                <!-- Column mapping UI (shown after upload when columns need confirmation) -->
+                <div id="colMappingSection" style="display:none; margin-top:1rem;">
+                    <div class="card">
+                        <div class="card-title">Map Columns</div>
+                        <div style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:1rem;">
+                            Select which columns in your file correspond to each required role.
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+                            <div>
+                                <label style="font-size:0.82rem; font-weight:600; display:block; margin-bottom:0.3rem;">Case ID <span style="color:#c0392b">*</span></label>
+                                <select id="mapCaseCol" style="width:100%; padding:0.35rem 0.5rem; border:1px solid var(--border); border-radius:4px; font-size:0.82rem;"></select>
+                            </div>
+                            <div>
+                                <label style="font-size:0.82rem; font-weight:600; display:block; margin-bottom:0.3rem;">Timestamp <span style="color:#c0392b">*</span></label>
+                                <select id="mapTsCol" style="width:100%; padding:0.35rem 0.5rem; border:1px solid var(--border); border-radius:4px; font-size:0.82rem;"></select>
+                            </div>
+                            <div>
+                                <label style="font-size:0.82rem; font-weight:600; display:block; margin-bottom:0.3rem;">Activity <span style="font-size:0.78rem; color:var(--text-muted); font-weight:400">(optional)</span></label>
+                                <select id="mapActCol" style="width:100%; padding:0.35rem 0.5rem; border:1px solid var(--border); border-radius:4px; font-size:0.82rem;"></select>
+                            </div>
+                        </div>
+                        <button onclick="applyColumnMapping()" class="btn btn-primary" style="font-size:0.85rem;">Apply &rarr;</button>
+                        <span id="colMappingError" style="margin-left:1rem; font-size:0.82rem; color:#c0392b; display:none;"></span>
+                    </div>
+                </div>
+
+                <!-- Log Overview EDA Panel -->
+                <div id="logOverview">
+                    <div class="card">
+                        <div class="card-title">Log Overview</div>
+                        <div class="eda-stats-row" id="edaStatsRow"></div>
+                        <div class="eda-two-col" style="margin-bottom:1rem;">
+                            <div>
+                                <div class="eda-section-title">Activity Frequency</div>
+                                <div class="eda-scroll" id="edaActivityBars"></div>
+                            </div>
+                            <div>
+                                <div class="eda-section-title">Case Duration Distribution</div>
+                                <div id="edaDurationHist"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <div class="eda-section-title">Events per Case Distribution</div>
+                            <div id="edaCaseLengthHist"></div>
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <div class="eda-section-title">Events over Time</div>
+                            <div id="edaEventsOverTime"></div>
+                        </div>
+                        <div>
+                            <div class="eda-section-title">Top Trace Variants</div>
+                            <div class="eda-scroll" id="edaTopVariants"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-primary" id="step1Next" onclick="goToStep(2)" disabled>Next &rarr;</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-panel" id="step2">
+            <div class="page-header">
+                <h2>Select Prediction Task</h2>
+                <p>Choose what you want to predict for your process cases</p>
+            </div>
+            <div class="page-body">
+                <div class="task-grid">
+                    <div class="task-card selected" data-task="remaining_time" onclick="selectTask(this)">
+                        <div class="task-card-icon" style="background:#eff6ff;">&#9202;</div>
+                        <div class="tc-title">Remaining Time</div>
+                        <div class="tc-desc">Predict how long until a case completes</div>
+                        <div class="tc-badge">Available</div>
+                    </div>
+                    <div class="task-card" data-task="next_activity" onclick="selectTask(this)">
+                        <div class="task-card-icon" style="background:#f0fdf4;">&#9654;</div>
+                        <div class="tc-title">Next Event Attribute</div>
+                        <div class="tc-desc">Predict the next value of any event attribute</div>
+                        <div class="tc-badge">Available</div>
+                    </div>
+                    <div class="task-card" data-task="outcome" onclick="selectTask(this)">
+                        <div class="task-card-icon" style="background:#fef3c7;">&#127919;</div>
+                        <div class="tc-title">Outcome</div>
+                        <div class="tc-desc">Predict the final outcome of a case</div>
+                        <div class="tc-badge">Available</div>
+                    </div>
+                </div>
+
+                <div id="outcomeConfig" class="config-block" style="display:none;">
+                    <strong>Outcome Column</strong>
+                    <p>Select which attribute from the last event of each case represents the outcome.</p>
+                    <select id="outcomeColSelect" onchange="onOutcomeColChange()">
+                        <option value="">-- Upload a file first --</option>
+                    </select>
+                    <div id="outcomeValuesInfo" style="display:none; margin-top:0.8rem;">
+                        <strong style="font-size:0.82rem;">Detected Values</strong>
+                        <div id="outcomeValuesList" style="margin-top:0.4rem;"></div>
+                    </div>
+                </div>
+
+                <div id="nextAttrConfig" class="config-block" style="display:none;">
+                    <strong>Attribute to Predict</strong>
+                    <p>Choose which event attribute's next value should be predicted. Default is "activity".</p>
+                    <select id="nextAttrColSelect" onchange="onNextAttrColChange()">
+                        <option value="activity">activity</option>
+                    </select>
+                    <div id="nextAttrSample" style="margin-top:0.5rem; font-size:0.78rem; color:var(--text-muted);"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-ghost" onclick="goToStep(1)">&larr; Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Next &rarr;</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Configure & Compare -->
+        <div class="step-panel" id="step3">
+            <div class="page-header">
+                <h2>Configure &amp; Compare</h2>
+                <p>Set preprocessing options, then compare your configuration against a clean baseline</p>
+            </div>
+            <div class="page-body">
+
+                <!-- ── Options card ── -->
+                <div class="card">
+                    <div class="card-title">Preprocessing Options</div>
+
+                    <div class="option-row" id="outlierRow">
+                        <div class="opt-text">
+                            <strong>Outlier Detection (IQR)</strong>
+                            <span>Remove cases with extreme durations (IQR method) — works for all task types.</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="outlierToggle" checked onchange="onConfigChange()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="option-row" id="rareClassRow" style="display:none;">
+                        <div class="opt-text">
+                            <strong>Filter Rare Classes</strong>
+                            <span>Remove activity classes with fewer than N training samples.</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label class="toggle">
+                                <input type="checkbox" id="rareClassToggle" onchange="onConfigChange()">
+                                <span class="slider"></span>
+                            </label>
+                            <input type="number" id="minClassSamples" value="10" min="2" max="500" step="1"
+                                   class="num-input" title="Minimum training samples per class"
+                                   onchange="onConfigChange()">
+                        </div>
+                    </div>
+
+
+                    <!-- Time Window Filter -->
+                    <div class="option-row">
+                        <div class="opt-text">
+                            <strong>Time Window Filter</strong>
+                            <span>Only use cases that started on or after a chosen date. Older cases may reflect outdated process versions — filtering them focuses training on current behaviour.</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label class="toggle">
+                                <input type="checkbox" id="driftWindowToggle" onchange="onDriftWindowToggle()">
+                                <span class="slider"></span>
+                            </label>
+                            <input type="date" id="sinceDate"
+                                   style="padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--input-bg); color:var(--text); font-size:0.85rem;"
+                                   title="Keep only cases starting on or after this date" disabled
+                                   onchange="onConfigChange()">
+                        </div>
+                    </div>
+
+                    <!-- Rare Variant Filter -->
+                    <div class="option-row">
+                        <div class="opt-text">
+                            <strong>Rare Variant Filter</strong>
+                            <span>Remove cases whose activity sequence occurs fewer than N times. Rare variants are noise that hurts generalisation.</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label class="toggle">
+                                <input type="checkbox" id="rareVariantToggle" onchange="onRareVariantToggle()">
+                                <span class="slider"></span>
+                            </label>
+                            <input type="number" id="minVariantCount" value="5" min="2" max="100" step="1"
+                                   class="num-input" title="Minimum occurrences of a variant" disabled
+                                   onchange="onConfigChange()">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">min</span>
+                        </div>
+                    </div>
+
+                    <!-- Filter Consecutive Duplicates (optional) -->
+                    <div class="option-row">
+                        <div class="opt-text">
+                            <strong>Filter Consecutive Duplicates</strong>
+                            <span>Remove repeated consecutive events with the same activity within a case (e.g. A→A→B becomes A→B). Eliminates logging artifacts.</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label class="toggle">
+                                <input type="checkbox" id="consecDupToggle" onchange="onConfigChange()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Impute Missing Attributes (optional) -->
+                    <div class="option-row">
+                        <div class="opt-text">
+                            <strong>Impute Missing Attributes</strong>
+                            <span>Fill missing case attribute values with column median (numeric) or mode (categorical). Ensures complete feature vectors for all encoders.</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label class="toggle">
+                                <input type="checkbox" id="imputeMissingToggle" onchange="onConfigChange()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Train/Val/Test split -->
+                    <div class="option-row" style="margin-top:0.6rem;">
+                        <div class="opt-text">
+                            <strong>Train / Val / Test Split</strong>
+                            <span>Percentage of cases used for each set. Test is computed automatically.</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px; font-size:0.84rem;">
+                            <label style="color:var(--text-secondary);">Train</label>
+                            <input type="number" id="trainPct" value="70" min="10" max="85" step="5"
+                                   class="num-input" title="Train %" onchange="onSplitChange()">
+                            <span style="color:var(--text-muted);">%</span>
+                            <label style="color:var(--text-secondary); margin-left:6px;">Val</label>
+                            <input type="number" id="valPct" value="15" min="5" max="40" step="5"
+                                   class="num-input" title="Val %" onchange="onSplitChange()">
+                            <span style="color:var(--text-muted);">%</span>
+                            <label style="color:var(--text-secondary); margin-left:6px;">Test</label>
+                            <span id="testPct" style="font-weight:700; color:var(--accent); min-width:28px; text-align:right;">15%</span>
+                        </div>
+                    </div>
+                    <div id="splitWarning" style="display:none; font-size:0.78rem; color:var(--danger); margin-top:0.3rem; padding-left:1rem;">
+                        Test set must be &ge; 5%. Adjust train or val.
+                    </div>
+                    <!-- Temporal Ordering — sub-option of split -->
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding: 0.45rem 0 0 0.5rem; border-top: 1px solid var(--border); margin-top:0.5rem;">
+                        <div>
+                            <span style="font-size:0.84rem; font-weight:600; color:var(--text-secondary);">Temporal Ordering</span>
+                            <span style="font-size:0.78rem; color:var(--text-muted); margin-left:6px;">Sort cases by start time before splitting (oldest → train, newest → test) instead of random assignment. Prevents temporal data leakage.</span>
+                        </div>
+                        <label class="toggle" style="flex-shrink:0; margin-left:12px;">
+                            <input type="checkbox" id="temporalSplitToggle" onchange="onConfigChange()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Column drop detection -->
+                    <div id="emptyColumnsScanMsg" style="display:none; margin-top:1.2rem; font-size:0.83rem; color:var(--text-muted);">
+                        <span class="spinner"></span> Scanning columns...
+                    </div>
+
+                    <div id="emptyColumnsSection" style="display:none; margin-top:1.2rem;">
+                        <div style="font-weight:600; margin-bottom:0.3rem; font-size:0.88rem;">Drop Columns</div>
+                        <div style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:0.8rem;">
+                            Columns with &ge;50% empty values are pre-checked. Check any column you want to <strong>drop</strong> before training.
+                        </div>
+                        <div style="border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden;">
+                            <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+                                <thead>
+                                    <tr style="background:var(--bg);">
+                                        <th style="padding:0.45rem 0.75rem; text-align:left; font-weight:600; color:var(--text-muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.4px;">Drop</th>
+                                        <th style="padding:0.45rem 0.75rem; text-align:left; font-weight:600; color:var(--text-muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.4px;">Column</th>
+                                        <th style="padding:0.45rem 0.75rem; text-align:left; font-weight:600; color:var(--text-muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.4px;">Empty %</th>
+                                        <th style="padding:0.45rem 0.75rem; text-align:left; font-weight:600; color:var(--text-muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.4px;">Empty / Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="emptyColumnsBody"></tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top:0.5rem; font-size:0.78rem; color:var(--text-muted);">
+                            <span id="emptyColDropCount">0</span> column(s) selected to drop. &nbsp;
+                            <a href="#" onclick="toggleAllEmptyCols(true); return false;" style="color:var(--accent);">Select all</a> /
+                            <a href="#" onclick="toggleAllEmptyCols(false); return false;" style="color:var(--accent);">Deselect all</a>
+                        </div>
+                    </div>
+
+                    <!-- Lifecycle transition filter (shown only when lifecycle:transition exists) -->
+                    <div id="lifecycleFilterSection" style="display:none; margin-top:1.2rem;">
+                        <div style="font-weight:600; margin-bottom:0.3rem; font-size:0.88rem;">
+                            Lifecycle Transition Filter
+                            <span id="lifecycleColLabel" style="font-weight:400; color:var(--text-muted); font-size:0.8rem; margin-left:0.4rem;"></span>
+                        </div>
+                        <div style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:0.6rem;">
+                            Select which lifecycle values to <strong>drop</strong>. Events with those values will be removed before training. Typically keep only <em>complete</em>.
+                        </div>
+                        <div id="lifecycleCheckboxes" style="padding:0.6rem 0; display:flex; flex-wrap:wrap; gap:0.4rem 0;"></div>
+                    </div>
+                </div><!-- /.card -->
+
+                <!-- ── Advanced Settings card ── -->
+                <div class="card" style="margin-top:1rem;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleAdvanced()">
+                        <div class="card-title" style="margin:0;">Advanced Settings</div>
+                        <span id="advancedArrow" style="font-size:0.8rem; color:var(--text-muted);">&#9660;</span>
+                    </div>
+                    <div id="advancedBody" style="display:none; margin-top:1rem;">
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">Toggle <strong>Auto</strong> off to enter a custom value.</div>
+
+                        <!-- Max Prefix Length -->
+                        <div class="option-row" style="margin-bottom:0.8rem;">
+                            <div class="opt-text">
+                                <strong>Max Prefix Length</strong>
+                                <span>Longest case prefix used for training. Auto = 95th percentile of your case lengths.</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label class="toggle" title="Auto mode">
+                                    <input type="checkbox" id="autoMaxPrefixLen" checked onchange="toggleAdvancedAuto('autoMaxPrefixLen','maxPrefixLen')">
+                                    <span class="slider"></span>
+                                </label>
+                                <span style="font-size:0.75rem; color:var(--text-muted); width:32px;" id="autoMaxPrefixLenLabel">Auto</span>
+                                <input type="number" id="maxPrefixLen" value="30" min="5" max="200" step="1" class="num-input" style="width:70px;" title="Max prefix length" onchange="onConfigChange()" disabled>
+                                <span style="font-size:0.78rem; color:var(--text-muted);">events</span>
+                            </div>
+                        </div>
+
+                        <!-- AutoML Time Budget -->
+                        <div class="option-row" style="margin-bottom:0.8rem;">
+                            <div class="opt-text">
+                                <strong>AutoML Time Budget</strong>
+                                <span>Seconds allowed for AutoML model training. Auto = 300 s.</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label class="toggle" title="Auto mode">
+                                    <input type="checkbox" id="autoTimeBudget" checked onchange="toggleAdvancedAuto('autoTimeBudget','timeBudget')">
+                                    <span class="slider"></span>
+                                </label>
+                                <span style="font-size:0.75rem; color:var(--text-muted); width:32px;" id="autoTimeBudgetLabel">Auto</span>
+                                <input type="number" id="timeBudget" value="300" min="30" max="3600" step="30" class="num-input" style="width:70px;" title="Time budget in seconds" onchange="onConfigChange()" disabled>
+                                <span style="font-size:0.78rem; color:var(--text-muted);">sec</span>
+                            </div>
+                        </div>
+
+                        <!-- Min Bucket Samples -->
+                        <div class="option-row" style="margin-bottom:0.8rem;">
+                            <div class="opt-text">
+                                <strong>Min Bucket Samples</strong>
+                                <span>Minimum training samples per bucket. Buckets below this are skipped. Auto = 100.</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label class="toggle" title="Auto mode">
+                                    <input type="checkbox" id="autoMinBucketSamples" checked onchange="toggleAdvancedAuto('autoMinBucketSamples','minBucketSamples')">
+                                    <span class="slider"></span>
+                                </label>
+                                <span style="font-size:0.75rem; color:var(--text-muted); width:32px;" id="autoMinBucketSamplesLabel">Auto</span>
+                                <input type="number" id="minBucketSamples" value="100" min="10" max="1000" step="10" class="num-input" style="width:70px;" title="Min bucket samples" onchange="onConfigChange()" disabled>
+                                <span style="font-size:0.78rem; color:var(--text-muted);">samples</span>
+                            </div>
+                        </div>
+
+                        <!-- Fixed-Width Bin Size -->
+                        <div class="option-row">
+                            <div class="opt-text">
+                                <strong>Fixed-Width Bin Size</strong>
+                                <span>Events per bucket for Fixed-Width strategy. Auto = 5.</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label class="toggle" title="Auto mode">
+                                    <input type="checkbox" id="autoBinSize" checked onchange="toggleAdvancedAuto('autoBinSize','binSize')">
+                                    <span class="slider"></span>
+                                </label>
+                                <span style="font-size:0.75rem; color:var(--text-muted); width:32px;" id="autoBinSizeLabel">Auto</span>
+                                <input type="number" id="binSize" value="5" min="1" max="50" step="1" class="num-input" style="width:70px;" title="Bin size" onchange="onConfigChange()" disabled>
+                                <span style="font-size:0.78rem; color:var(--text-muted);">events</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Compare trigger row ── -->
+                <div style="display:flex; align-items:center; gap:1rem; margin-top:1rem; flex-wrap:wrap;">
+                    <button class="btn btn-ghost" id="runCompareBtn" onclick="startStepThreeCompare()">
+                        Run Comparison
+                    </button>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">
+                        Compares <strong>Baseline</strong> (no options active) vs <strong>Your Config</strong> using fast strategy search — takes 1–3 min.
+                    </div>
+                    <span id="compareStaleMsg" style="display:none; font-size:0.78rem; color:var(--warning); font-weight:600; margin-left:auto;">
+                        &#9888; Settings changed — re-run to update
+                    </span>
+                </div>
+
+                <!-- ── Status ── -->
+                <div class="status-box" id="s3CompareStatus" style="margin-top:0.8rem;">
+                    <span id="s3CompareStatusText"></span>
+                </div>
+
+                <!-- ── Live pipeline steps (compare) ── -->
+                <div id="comparePipelinePanel" style="display:none; margin-top:1.2rem;">
+                    <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:0.6rem;">Preprocessing Steps</div>
+                    <div id="comparePipelineList"></div>
+                </div>
+
+                <!-- ── Comparison results (shown after first run) ── -->
+                <div id="s3CompareResults" style="display:none; margin-top:1.2rem;">
+
+                    <!-- Metrics table -->
+                    <div class="card">
+                        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.8rem;">
+                            <div class="card-title" style="margin:0;">Comparison Results</div>
+                            <span id="s3MetricNote" style="font-size:0.72rem; color:var(--text-muted);"></span>
+                        </div>
+                        <table class="batch-table" id="s3CompareTable" style="margin-bottom:0.3rem;">
+                            <thead id="s3CompareHead"></thead>
+                            <tbody id="s3CompareBody"></tbody>
+                        </table>
+                        <div style="font-size:0.73rem; color:var(--text-muted); margin-top:0.4rem;">
+                            Scores computed on the validation set using fast linear models only (not AutoML). &#127942; = better.
+                        </div>
+                    </div>
+
+                    <!-- Bar chart -->
+                    <div class="card" style="margin-top:1rem;">
+                        <div class="card-title" id="s3ChartTitle">Score Comparison</div>
+                        <svg id="s3CompareChart" width="100%" viewBox="0 0 560 180"
+                             style="display:block; overflow:visible;" aria-label="Score comparison chart">
+                        </svg>
+                    </div>
+
+                </div><!-- /#s3CompareResults -->
+
+                <div class="btn-row">
+                    <button class="btn btn-ghost" onclick="goToStep(2)">&larr; Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Proceed with this Config &rarr;</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 4: Train Model -->
+        <div class="step-panel" id="step4">
+            <div class="page-header">
+                <h2>Train Model</h2>
+                <p>Review your configuration and start full AutoML training</p>
+            </div>
+            <div class="page-body">
+                <div class="card" style="padding:0; overflow:hidden;">
+                    <table class="summary-table">
+                        <tr><th>File</th><td id="summaryFile">-</td></tr>
+                        <tr><th>Task</th><td id="summaryTask">Remaining Time</td></tr>
+                        <tr><th>Outlier Detection</th><td id="summaryOutlier">-</td></tr>
+                        <tr id="summaryRareClassRow" style="display:none;"><th>Rare Class Filter</th><td id="summaryRareClass">-</td></tr>
+                        <tr><th>Train/Val/Test Split</th><td id="summarySplit">70 / 15 / 15 %</td></tr>
+                        <tr id="summaryTemporalRow" style="display:none;"><th>Temporal Ordering</th><td id="summaryTemporal">-</td></tr>
+                        <tr id="summaryTimeWindowRow" style="display:none;"><th>Time Window Filter</th><td id="summaryTimeWindow">-</td></tr>
+                        <tr id="summaryRareVariantRow" style="display:none;"><th>Rare Variant Filter</th><td id="summaryRareVariant">-</td></tr>
+                        <tr id="summaryConsecDupRow" style="display:none;"><th>Filter Consec. Duplicates</th><td id="summaryConsecDup">-</td></tr>
+                        <tr id="summaryImputeRow" style="display:none;"><th>Impute Missing</th><td id="summaryImpute">-</td></tr>
+                        <tr><th>Columns Dropped</th><td id="summaryColsDropped">None</td></tr>
+                        <tr id="summaryLifecycleRow" style="display:none;"><th>Lifecycle Drop</th><td id="summaryLifecycle">-</td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-top:1.2rem;">
+                    <button class="btn-train" id="trainBtn" onclick="startTraining()">Start Training</button>
+                </div>
+
+                <div class="status-box" id="trainStatus">
+                    <span id="trainStatusText"></span>
+                </div>
+
+                <!-- Live pipeline steps -->
+                <div id="pipelineStepsPanel" style="display:none; margin-top:1.2rem;">
+                    <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:0.6rem;">Preprocessing Steps</div>
+                    <div id="pipelineStepsList"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-ghost" onclick="goToStep(3)">&larr; Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="step-panel" id="step5">
+            <div class="page-header">
+                <h2>Training Results</h2>
+                <p>Model performance on the held-out test set</p>
+            </div>
+            <div class="page-body">
+                <div id="resultsContent" style="display:none;">
+                    <div class="metrics-grid" id="resultsCards"></div>
+
+                    <div class="card" style="margin-top:1rem;">
+                        <div class="card-title">Model Details</div>
+                        <table class="detail-table" id="resultsTable"></table>
+                    </div>
+
+                    <div class="charts-section card" id="chartsSection" style="display:none; margin-top:1rem;">
+                        <div class="card-title">Visualizations</div>
+                        <div class="chart-tabs" id="chartTabs"></div>
+                        <div id="chartContainer">
+                            <img class="chart-img" id="chartImg" src="" alt="Chart">
+                        </div>
+                    </div>
+
+                    <div class="btn-row" style="margin-top:1.5rem;">
+                        <button class="btn btn-primary" onclick="goToStep(6)">Predict on New Cases &rarr;</button>
+                    </div>
+
+                    <!-- Preprocessing pipeline steps on results page -->
+                    <div id="pipelineStepsPanel5" style="display:none; margin-top:1.5rem;">
+                        <div class="card">
+                            <div class="card-title">Preprocessing Pipeline</div>
+                            <div id="pipelineStepsList5"></div>
+                        </div>
+                    </div>
+
+                    <!-- Run comparison history -->
+                    <div class="card" style="margin-top:1.5rem;" id="runHistoryCard">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.8rem;">
+                            <div class="card-title" style="margin:0;">Run Comparison</div>
+                            <button onclick="clearRunHistory()" style="font-size:0.75rem; color:var(--text-muted); background:none; border:none; cursor:pointer; padding:2px 6px; border-radius:4px;" title="Clear history">Clear</button>
+                        </div>
+                        <div style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:0.8rem;">
+                            Each row is one training run. Change settings (e.g. toggle outlier detection, drop a column) and re-train to compare results.
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="batch-table" id="runHistoryTable">
+                                <thead id="runHistoryHead"></thead>
+                                <tbody id="runHistoryBody"></tbody>
+                            </table>
+                        </div>
+                        <div id="runHistoryEmpty" style="text-align:center; padding:1.5rem; color:var(--text-muted); font-size:0.83rem; display:none;">
+                            No runs yet. Complete a training to see it here.
+                        </div>
+                    </div>
+                </div>
+
+                <div id="noResults">
+                    <div class="empty-state">
+                        <div class="empty-icon">&#128202;</div>
+                        <p>No results yet. Train a model first.</p>
+                        <button class="btn btn-primary" onclick="goToStep(1)">Start Training</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="step-panel" id="step6">
+            <div class="page-header">
+                <h2>Predict on Running Cases</h2>
+                <p>Upload a XES or CSV file with running (incomplete) cases</p>
+            </div>
+            <div class="page-body">
+                <div class="card">
+                    <div class="dropzone" id="predDropzone" onclick="document.getElementById('predFileInput').click()">
+                        <div class="dropzone-icon">&#128196;</div>
+                        <p>Drop XES or CSV file with running (incomplete) cases</p>
+                        <div class="filename" id="predSelectedFile"></div>
+                        <input type="file" id="predFileInput" accept=".xes,.csv" style="display:none">
+                    </div>
+                </div>
+                <div class="btn-row" style="justify-content:flex-start;">
+                    <button class="btn btn-success" id="batchPredictBtn" onclick="batchPredict()" disabled>Predict All Cases</button>
+                </div>
+                <div class="status-box" id="batchStatus"><span id="batchStatusText"></span></div>
+                <div id="batchResults" style="display:none; margin-top:1rem;">
+                    <div style="font-size:0.84rem; color:var(--text-muted); margin-bottom:0.5rem;" id="batchSummary"></div>
+                    <div class="card" style="padding:0; overflow:hidden; max-height:400px; overflow-y:auto;">
+                        <table class="batch-table" id="batchTable">
+                            <thead id="batchHead"><tr><th>Case ID</th><th>Events</th><th>Last Activity</th><th>Prediction</th><th>Details</th></tr></thead>
+                            <tbody id="batchBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-ghost" onclick="goToStep(5)">&larr; Back to Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ STATE ============
+        let currentStep = 1;
+        let completedSteps = new Set();
+        let selectedFile = null;
+        let selectedTask = 'remaining_time';
+        let selectedNextAttrCol = 'activity';
+        let pollInterval = null;
+        let scannedColumns = null;
+        let scannedEventAttrCols = null;
+        let lifecycleInfo = null;
+
+        const TASK_LABELS = { remaining_time: 'Remaining Time', next_activity: 'Next Event Attr', outcome: 'Outcome' };
+        const CHART_LABELS = {
+            predicted_vs_actual: 'Predicted vs Actual', error_distribution: 'Error Distribution',
+            error_by_prefix_length: 'Error by Prefix', strategy_comparison: 'Strategy Comparison',
+            worst_predictions: 'Worst Predictions', residuals: 'Residuals',
+            confusion_matrix: 'Confusion Matrix', per_class_f1: 'Per-Class F1',
+            accuracy_by_prefix_length: 'Accuracy by Prefix',
+        };
+
+        // ============ NAVIGATION ============
+        function goToStep(n) {
+            if (n > currentStep + 1 && !completedSteps.has(n - 1)) return;
+            currentStep = n;
+            document.querySelectorAll('.step-panel').forEach((p, i) => p.classList.toggle('active', i + 1 === n));
+            document.querySelectorAll('.nav-item').forEach(el => {
+                const s = parseInt(el.dataset.step);
+                el.classList.toggle('active', s === n);
+                el.classList.toggle('completed', completedSteps.has(s) && s !== n);
+            });
+            if (n === 4) updateSummary();
+            if (n === 5) loadResults();
+        }
+        function markCompleted(n) { completedSteps.add(n); }
+
+        // ============ STEP 1 ============
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); if (e.dataTransfer.files.length) selectFile(e.dataTransfer.files[0]); });
+        fileInput.addEventListener('change', () => { if (fileInput.files.length) selectFile(fileInput.files[0]); });
+
+        function selectFile(file) {
+            selectedFile = file;
+            document.getElementById('selectedFile').textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)';
+            document.getElementById('step1Next').disabled = false;
+            markCompleted(1);
+            scannedColumns = null;
+            lifecycleInfo = null;
+            document.getElementById('lifecycleFilterSection').style.display = 'none';
+            document.getElementById('emptyColumnsScanMsg').style.display = '';
+            document.getElementById('emptyColumnsSection').style.display = 'none';
+            document.getElementById('colMappingSection').style.display = 'none';
+            document.getElementById('logOverview').style.display = 'none';
+            var fd = new FormData(); fd.append('file', file);
+            fetch('/api/scan-columns', { method: 'POST', body: fd })
+                .then(r => r.json()).then(data => {
+                    document.getElementById('emptyColumnsScanMsg').style.display = 'none';
+                    if (data.error) {
+                        var msg = document.getElementById('emptyColumnsScanMsg');
+                        msg.innerHTML = '<span style="color:#c0392b;font-weight:600;">Upload error:</span> ' + data.error;
+                        msg.style.color = '#c0392b';
+                        msg.style.display = 'block';
+                        return;
+                    }
+                    if (data.mapping_needed) {
+                        document.getElementById('emptyColumnsScanMsg').style.display = 'none';
+                        showColumnMappingUI(data.all_columns, data.guessed_case_col, data.guessed_ts_col, data.guessed_act_col);
+                        return;
+                    }
+                    applyScanResult(data);
+                })
+                .catch(err => {
+                    var msg = document.getElementById('emptyColumnsScanMsg');
+                    msg.innerHTML = '<span style="color:#c0392b;font-weight:600;">Network error:</span> ' + err;
+                    msg.style.color = '#c0392b';
+                    msg.style.display = 'block';
+                    console.warn('Column scan failed:', err);
+                });
+        }
+
+        function applyScanResult(data) {
+            document.getElementById('colMappingSection').style.display = 'none';
+            if (data.columns) { scannedColumns = data.columns; }
+            populateOutcomeDropdown(data.outcome_columns || data.columns || []);
+            if (data.empty_columns) { populateEmptyColumns(data.empty_columns, data.num_events || 0); }
+            if (data.event_attr_columns) { scannedEventAttrCols = data.event_attr_columns; populateNextAttrDropdown(data.event_attr_columns); }
+            if (data.lifecycle_info) { lifecycleInfo = data.lifecycle_info; showLifecycleFilter(data.lifecycle_info); }
+            if (data.activity_counts || data.case_duration_stats) { renderLogOverview(data); }
+            if (data.auto_max_prefix_len) {
+                _advAutoDefaults.maxPrefixLen = data.auto_max_prefix_len;
+                if (document.getElementById('autoMaxPrefixLen').checked) {
+                    document.getElementById('maxPrefixLen').value = data.auto_max_prefix_len;
+                }
+            }
+        }
+
+        function showColumnMappingUI(allCols, guessCase, guessTs, guessAct) {
+            var section = document.getElementById('colMappingSection');
+            section.style.display = 'block';
+            document.getElementById('colMappingError').style.display = 'none';
+
+            var noneOpt = '<option value="">(none)</option>';
+            var opts = allCols.map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
+
+            var caseEl = document.getElementById('mapCaseCol');
+            var tsEl = document.getElementById('mapTsCol');
+            var actEl = document.getElementById('mapActCol');
+
+            caseEl.innerHTML = opts;
+            tsEl.innerHTML = opts;
+            actEl.innerHTML = noneOpt + opts;
+
+            if (guessCase) caseEl.value = guessCase;
+            if (guessTs) tsEl.value = guessTs;
+            if (guessAct) actEl.value = guessAct;
+        }
+
+        function applyColumnMapping() {
+            var caseCol = document.getElementById('mapCaseCol').value;
+            var tsCol = document.getElementById('mapTsCol').value;
+            var actCol = document.getElementById('mapActCol').value;
+            var errEl = document.getElementById('colMappingError');
+
+            if (!caseCol || !tsCol) {
+                errEl.textContent = 'Case ID and Timestamp are required.';
+                errEl.style.display = 'inline';
+                return;
+            }
+            errEl.style.display = 'none';
+
+            var fd = new FormData();
+            fd.append('case_col', caseCol);
+            fd.append('ts_col', tsCol);
+            if (actCol) fd.append('act_col', actCol);
+
+            document.getElementById('emptyColumnsScanMsg').innerHTML = '<span class="spinner"></span> Applying mapping...';
+            document.getElementById('emptyColumnsScanMsg').style.color = 'var(--text-muted)';
+            document.getElementById('emptyColumnsScanMsg').style.display = 'block';
+
+            fetch('/api/apply-column-mapping', { method: 'POST', body: fd })
+                .then(r => r.json()).then(data => {
+                    document.getElementById('emptyColumnsScanMsg').style.display = 'none';
+                    if (data.error) {
+                        var errMsg = document.getElementById('colMappingError');
+                        errMsg.textContent = data.error;
+                        errMsg.style.display = 'inline';
+                        return;
+                    }
+                    applyScanResult(data);
+                })
+                .catch(err => {
+                    document.getElementById('emptyColumnsScanMsg').style.display = 'none';
+                    document.getElementById('colMappingError').textContent = 'Network error: ' + err;
+                    document.getElementById('colMappingError').style.display = 'inline';
+                });
+        }
+
+        function _renderBarList(containerId, items, getLabel, getPct, getRight, getTooltip) {
+            var container = document.getElementById(containerId);
+            container.innerHTML = '';
+            if (!items || !items.length) {
+                container.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem">No data</span>';
+                return;
+            }
+            var maxPct = items[0] ? getPct(items[0]) : 1;
+            items.forEach(function(a) {
+                var barW = maxPct > 0 ? (getPct(a) / maxPct * 100).toFixed(1) : 0;
+                var row = document.createElement('div'); row.className = 'eda-bar-row';
+                var tooltip = getTooltip ? getTooltip(a) : getLabel(a);
+                var lbl = document.createElement('div'); lbl.className = 'eda-bar-label'; lbl.title = tooltip; lbl.textContent = getLabel(a);
+                var track = document.createElement('div'); track.className = 'eda-bar-track';
+                var fill = document.createElement('div'); fill.className = 'eda-bar-fill'; fill.style.width = barW + '%';
+                var pct = document.createElement('div'); pct.className = 'eda-bar-pct'; pct.textContent = getRight(a);
+                track.appendChild(fill); row.appendChild(lbl); row.appendChild(track); row.appendChild(pct);
+                container.appendChild(row);
+            });
+        }
+
+        function _renderColumnHist(containerId, hist, footerHtml) {
+            var el = document.getElementById(containerId);
+            if (!hist || !hist.length) { el.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem">No data</span>'; return; }
+            var maxCount = Math.max.apply(null, hist.map(function(h) { return h.count; }));
+            var bars = hist.map(function(h) {
+                var pct = maxCount > 0 ? (h.count / maxCount * 100).toFixed(1) : 0;
+                return '<div class="eda-hist-bar" style="height:' + pct + '%" title="' + h.label + ': ' + h.count + '"></div>';
+            }).join('');
+            var labels = hist.map(function(h) {
+                return '<div class="eda-hist-label">' + h.label + '</div>';
+            }).join('');
+            el.innerHTML = '<div class="eda-hist-row">' + bars + '</div><div class="eda-hist-labels">' + labels + '</div>';
+            if (footerHtml) el.innerHTML += footerHtml;
+        }
+
+        function renderLogOverview(data) {
+            var panel = document.getElementById('logOverview');
+            panel.style.display = 'block';
+
+            // Stats row (6 boxes)
+            var cls = data.case_length_stats;
+            var stats = [
+                { label: 'Cases',      value: (data.num_cases||0).toLocaleString(), sub: '' },
+                { label: 'Events',     value: (data.num_events||0).toLocaleString(), sub: '' },
+                { label: 'Activities', value: data.activity_counts ? data.activity_counts.length + (data.activity_counts.length === 30 ? '+' : '') : '\u2014', sub: 'unique types' },
+                { label: 'Variants',   value: data.unique_variants ? data.unique_variants.toLocaleString() : '\u2014', sub: 'unique traces' },
+                { label: 'Avg Case Len', value: cls ? cls.mean : '\u2014', sub: cls ? 'median ' + cls.median + ' events' : 'events per case' },
+                { label: 'Missing',    value: data.missing_rate != null ? data.missing_rate + '%' : '\u2014', sub: 'attribute values' },
+            ];
+            document.getElementById('edaStatsRow').innerHTML = stats.map(function(s) {
+                return '<div class="eda-stat"><div class="es-label">' + s.label + '</div><div class="es-value">' + s.value + '</div>' + (s.sub ? '<div class="es-sub">' + s.sub + '</div>' : '') + '</div>';
+            }).join('');
+
+            // Activity frequency bars
+            _renderBarList('edaActivityBars', data.activity_counts || [],
+                function(a) { return a.name; },
+                function(a) { return a.pct; },
+                function(a) { return a.pct + '%'; }
+            );
+
+            // Case duration histogram
+            var ds = data.case_duration_stats;
+            var durFooter = ds ? '<div style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted)">min ' + ds.min + 'd &nbsp;\u00b7&nbsp; p25 ' + ds.p25 + 'd &nbsp;\u00b7&nbsp; p75 ' + ds.p75 + 'd &nbsp;\u00b7&nbsp; max ' + ds.max + 'd</div>' : null;
+            _renderColumnHist('edaDurationHist', data.case_duration_hist || [], durFooter);
+
+            // Events per case histogram
+            var clFooter = cls ? '<div style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted)">min ' + cls.min + ' &nbsp;\u00b7&nbsp; median ' + cls.median + ' &nbsp;\u00b7&nbsp; max ' + cls.max + ' events</div>' : null;
+            _renderColumnHist('edaCaseLengthHist', data.case_length_hist || [], clFooter);
+
+            // Events over time
+            var eot = data.events_over_time || [];
+            var eotEl = document.getElementById('edaEventsOverTime');
+            if (!eot.length) { eotEl.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem">No time data</span>'; }
+            else {
+                var step = Math.max(1, Math.ceil(eot.length / 10));
+                var maxEot = Math.max.apply(null, eot.map(function(e) { return e.count; }));
+                var bars2 = eot.map(function(e) {
+                    var pct = maxEot > 0 ? (e.count / maxEot * 100).toFixed(1) : 0;
+                    return '<div class="eda-hist-bar" style="height:' + pct + '%" title="' + e.label + ': ' + e.count + ' events"></div>';
+                }).join('');
+                var lbls2 = eot.map(function(e, i) {
+                    var txt = (i % step === 0) ? e.label : '';
+                    return '<div class="eda-hist-label-rotated"><span>' + txt + '</span></div>';
+                }).join('');
+                eotEl.innerHTML = '<div class="eda-hist-row">' + bars2 + '</div><div class="eda-hist-labels-rotated">' + lbls2 + '</div>';
+            }
+
+            // Top variants
+            _renderBarList('edaTopVariants', data.top_variants || [],
+                function(v) { return v.name; },
+                function(v) { return v.pct; },
+                function(v) { return v.count.toLocaleString() + ' cases (' + v.pct + '%)'; },
+                function(v) { return v.full || v.name; }
+            );
+        }
+
+        function populateOutcomeDropdown(columns) {
+            var sel = document.getElementById('outcomeColSelect');
+            sel.innerHTML = '<option value="">-- Select outcome column --</option>';
+            columns.forEach(c => { var o = document.createElement('option'); o.value = c.column; o.textContent = c.column + ' (' + c.n_unique + ' unique)'; sel.appendChild(o); });
+        }
+
+        function populateNextAttrDropdown(eventAttrCols) {
+            var sel = document.getElementById('nextAttrColSelect');
+            sel.innerHTML = '';
+            if (!eventAttrCols || !eventAttrCols.length) {
+                var o = document.createElement('option'); o.value = 'activity'; o.textContent = 'activity'; sel.appendChild(o);
+                return;
+            }
+            eventAttrCols.forEach(function(c) {
+                var o = document.createElement('option');
+                o.value = c.column;
+                o.textContent = c.column + ' (' + c.n_unique + ' unique)';
+                sel.appendChild(o);
+            });
+            selectedNextAttrCol = 'activity';
+            onNextAttrColChange();
+        }
+
+        function onNextAttrColChange() {
+            var sel = document.getElementById('nextAttrColSelect');
+            selectedNextAttrCol = sel.value || 'activity';
+            var sampleDiv = document.getElementById('nextAttrSample');
+            if (scannedEventAttrCols) {
+                var ci = scannedEventAttrCols.find(function(c) { return c.column === selectedNextAttrCol; });
+                if (ci && ci.sample && ci.sample.length) {
+                    sampleDiv.textContent = 'Sample values: ' + ci.sample.join(', ') + (ci.n_unique > ci.sample.length ? ' ...' : '');
+                } else { sampleDiv.textContent = ''; }
+            }
+            onConfigChange();
+        }
+
+        function showLifecycleFilter(info) {
+            var section = document.getElementById('lifecycleFilterSection');
+            var container = document.getElementById('lifecycleCheckboxes');
+            var colLabel = document.getElementById('lifecycleColLabel');
+            if (!info || !info.values || !info.values.length) { section.style.display = 'none'; return; }
+            colLabel.textContent = info.column;
+            container.innerHTML = '';
+            info.values.forEach(function(v) {
+                var isComplete = v.toLowerCase() === 'complete';
+                var label = document.createElement('label');
+                label.style.cssText = 'display:inline-flex;align-items:center;gap:5px;margin-right:1rem;font-size:0.84rem;cursor:pointer;';
+                var cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.className = 'lc-drop-check';
+                cb.value = v;
+                cb.checked = !isComplete;  // pre-check everything except "complete"
+                cb.onchange = function() { onConfigChange(); };
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(v));
+                container.appendChild(label);
+            });
+            section.style.display = '';
+            onConfigChange();
+        }
+
+        function getLifecycleDropValues() {
+            var vals = [];
+            document.querySelectorAll('.lc-drop-check:checked').forEach(function(cb) { vals.push(cb.value); });
+            return vals;
+        }
+
+        function _getProtectedCols() {
+            var p = new Set(['concept:name', 'activity', 'time:timestamp', 'timestamp',
+                             'case:concept:name', 'case_id', 'case:id', 'id']);
+            // protect the currently selected target column
+            if (selectedTask === 'outcome') {
+                var oc = document.getElementById('outcomeColSelect') && document.getElementById('outcomeColSelect').value;
+                if (oc) p.add(oc);
+            } else if (selectedTask === 'next_activity') {
+                if (selectedNextAttrCol) p.add(selectedNextAttrCol);
+            }
+            return p;
+        }
+
+        function populateEmptyColumns(emptyCols, numEvents) {
+            var section = document.getElementById('emptyColumnsSection');
+            var tbody = document.getElementById('emptyColumnsBody');
+            tbody.innerHTML = '';
+            var cols = emptyCols;
+            if (!cols.length) { section.style.display = 'none'; return; }
+            section.style.display = '';
+            var prot = _getProtectedCols();
+            cols.forEach(function(c) {
+                var isProtected = prot.has(c.column);
+                var suggestDrop = !isProtected && c.null_pct >= 50;
+                var barColor = c.null_pct >= 80 ? 'var(--danger)' : c.null_pct >= 50 ? 'var(--warning)' : 'var(--info)';
+                var tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border)';
+                var checkCell = isProtected
+                    ? '<td style="padding:0.45rem 0.75rem;"><input type="checkbox" class="empty-col-check" data-col="' + c.column + '" disabled title="Protected column — cannot be dropped" style="opacity:0.35; cursor:not-allowed;"></td>'
+                    : '<td style="padding:0.45rem 0.75rem;"><input type="checkbox" class="empty-col-check" data-col="' + c.column + '" ' + (suggestDrop ? 'checked' : '') + ' onchange="updateEmptyDropCount(); onConfigChange()"></td>';
+                var nameCell = isProtected
+                    ? '<td style="padding:0.45rem 0.75rem; font-weight:500; color:var(--text-muted);">' + c.column + ' <span style="font-size:0.7rem; background:var(--border); color:var(--text-muted); padding:1px 5px; border-radius:3px;">protected</span></td>'
+                    : '<td style="padding:0.45rem 0.75rem; font-weight:500;">' + c.column + '</td>';
+                tr.innerHTML = checkCell + nameCell +
+                    '<td style="padding:0.45rem 0.75rem;">' +
+                        '<div style="display:flex; align-items:center; gap:6px;">' +
+                            '<div style="width:80px; height:6px; background:var(--border); border-radius:3px; overflow:hidden;">' +
+                                '<div style="width:' + Math.min(c.null_pct, 100) + '%; height:100%; background:' + barColor + '; border-radius:3px;"></div>' +
+                            '</div>' +
+                            '<span style="font-size:0.8rem; color:' + barColor + '; font-weight:600;">' + c.null_pct + '%</span>' +
+                        '</div>' +
+                    '</td>' +
+                    '<td style="padding:0.45rem 0.75rem; color:var(--text-secondary); font-size:0.8rem;">' + c.null_count.toLocaleString() + ' / ' + numEvents.toLocaleString() + '</td>';
+                tbody.appendChild(tr);
+            });
+            updateEmptyDropCount();
+        }
+
+        function updateEmptyDropCount() {
+            var count = document.querySelectorAll('.empty-col-check:checked:not(:disabled)').length;
+            document.getElementById('emptyColDropCount').textContent = count;
+        }
+
+        function toggleAllEmptyCols(checked) {
+            document.querySelectorAll('.empty-col-check:not(:disabled)').forEach(cb => { cb.checked = checked; });
+            updateEmptyDropCount();
+        }
+
+        function getColumnsToDrop() {
+            var prot = _getProtectedCols();
+            var cols = [];
+            document.querySelectorAll('.empty-col-check:checked').forEach(cb => {
+                if (!prot.has(cb.dataset.col)) cols.push(cb.dataset.col);
+            });
+            return cols;
+        }
+
+        function onDriftWindowToggle() {
+            var on = document.getElementById('driftWindowToggle').checked;
+            document.getElementById('sinceDate').disabled = !on;
+            onConfigChange();
+        }
+
+        function onRareVariantToggle() {
+            var on = document.getElementById('rareVariantToggle').checked;
+            document.getElementById('minVariantCount').disabled = !on;
+            onConfigChange();
+        }
+
+        function onOutcomeColChange() {
+            var col = document.getElementById('outcomeColSelect').value;
+            var info = document.getElementById('outcomeValuesInfo');
+            var list = document.getElementById('outcomeValuesList');
+            if (!col || !scannedColumns) { info.style.display = 'none'; return; }
+            var ci = scannedColumns.find(c => c.column === col);
+            if (!ci) { info.style.display = 'none'; return; }
+            info.style.display = '';
+            var vals = ci.values || [];
+            var html = vals.slice(0, 20).map(v => '<span class="outcome-tag">' + v + '</span>').join('');
+            if (vals.length > 20) html += '<span style="color:var(--text-muted); font-size:0.75rem;"> +' + (vals.length - 20) + ' more</span>';
+            list.innerHTML = html;
+        }
+
+        // ============ STEP 2 ============
+        function selectTask(el) {
+            if (el.classList.contains('disabled')) return;
+            document.querySelectorAll('.task-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedTask = el.dataset.task;
+            markCompleted(2);
+            var toggle = document.getElementById('outlierToggle');
+            var outlierRow = document.getElementById('outlierRow');
+            toggle.disabled = false; outlierRow.style.opacity = '1';
+            if (selectedTask === 'next_activity' || selectedTask === 'outcome') {
+                document.getElementById('rareClassRow').style.display = '';
+            } else {
+                toggle.checked = true; outlierRow.style.opacity = '1';
+                document.getElementById('rareClassRow').style.display = 'none';
+                document.getElementById('rareClassToggle').checked = false;
+            }
+            document.getElementById('outcomeConfig').style.display = selectedTask === 'outcome' ? '' : 'none';
+            document.getElementById('nextAttrConfig').style.display = selectedTask === 'next_activity' ? '' : 'none';
+            onConfigChange();
+        }
+        markCompleted(2); markCompleted(3);
+
+        // ============ STEP 3: CONFIGURE & COMPARE ============
+        var s3CompareInterval = null;
+        var s3CompareHasRun = false;
+
+        function toggleAdvanced() {
+            var body = document.getElementById('advancedBody');
+            var arrow = document.getElementById('advancedArrow');
+            var open = body.style.display !== 'none';
+            body.style.display = open ? 'none' : 'block';
+            arrow.textContent = open ? '\u25bc' : '\u25b2';
+        }
+
+        // Auto/manual toggle defaults (maxPrefixLen updated after scan)
+        var _advAutoDefaults = { maxPrefixLen: 30, timeBudget: 300, minBucketSamples: 100, binSize: 5 };
+
+        function toggleAdvancedAuto(checkboxId, inputId) {
+            var isAuto = document.getElementById(checkboxId).checked;
+            var input = document.getElementById(inputId);
+            var label = document.getElementById(checkboxId + 'Label');
+            if (isAuto) {
+                input.value = _advAutoDefaults[inputId];
+                input.disabled = true;
+                if (label) label.textContent = 'Auto';
+            } else {
+                input.disabled = false;
+                if (label) label.textContent = 'Manual';
+                input.focus();
+            }
+            onConfigChange();
+        }
+
+        function onConfigChange() {
+            if (s3CompareHasRun) {
+                document.getElementById('compareStaleMsg').style.display = '';
+            }
+        }
+
+        function onSplitChange() {
+            var train = parseInt(document.getElementById('trainPct').value) || 70;
+            var val   = parseInt(document.getElementById('valPct').value)   || 15;
+            var test  = 100 - train - val;
+            var warn  = document.getElementById('splitWarning');
+            if (test < 5) {
+                warn.style.display = '';
+                document.getElementById('testPct').textContent = test + '%';
+                document.getElementById('testPct').style.color = 'var(--danger)';
+            } else {
+                warn.style.display = 'none';
+                document.getElementById('testPct').textContent = test + '%';
+                document.getElementById('testPct').style.color = 'var(--accent)';
+            }
+            onConfigChange();
+        }
+
+        function getSplitRatios() {
+            var train = Math.max(10, Math.min(85, parseInt(document.getElementById('trainPct').value) || 70));
+            var val   = Math.max(5,  Math.min(40, parseInt(document.getElementById('valPct').value)   || 15));
+            if (train + val > 95) { val = 95 - train; }
+            return { train_ratio: train / 100, val_ratio: val / 100 };
+        }
+
+        var _compareRenderedSteps = 0;
+        var _compareLastVariant = null;
+
+        function resetComparePipelineSteps() {
+            _compareRenderedSteps = 0;
+            _compareLastVariant = null;
+            document.getElementById('comparePipelineList').innerHTML = '';
+            document.getElementById('comparePipelinePanel').style.display = 'none';
+        }
+
+        function startStepThreeCompare() {
+            if (!selectedFile) { alert('Please upload a file first (Step 1).'); return; }
+            s3CompareHasRun = false;
+            document.getElementById('compareStaleMsg').style.display = 'none';
+            document.getElementById('s3CompareResults').style.display = 'none';
+            document.getElementById('runCompareBtn').disabled = true;
+            resetComparePipelineSteps();
+            document.getElementById('comparePipelinePanel').style.display = 'block';
+            document.getElementById('comparePipelineList').innerHTML = '<div id="comparePipelinePlaceholder" style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0.2rem;">⏳ Preprocessing pipeline is running…</div>';
+            showS3CompareStatus('running', '<span class="spinner"></span> Starting comparison (Baseline vs Your Config)...');
+
+            var fd = new FormData();
+            fd.append('task_name', selectedTask);
+            fd.append('outlier_enabled', document.getElementById('outlierToggle').checked ? 'true' : 'false');
+            fd.append('rare_class_enabled', document.getElementById('rareClassToggle').checked ? 'true' : 'false');
+            fd.append('min_class_samples', document.getElementById('minClassSamples').value || '0');
+            if (selectedTask === 'outcome') {
+                fd.append('outcome_col', document.getElementById('outcomeColSelect').value || '');
+                fd.append('outcome_values', '');
+            }
+            if (selectedTask === 'next_activity') { fd.append('next_event_attr_col', selectedNextAttrCol || 'activity'); }
+            fd.append('columns_to_drop', JSON.stringify(getColumnsToDrop()));
+            fd.append('lifecycle_drop_values', JSON.stringify(getLifecycleDropValues()));
+            var sp = getSplitRatios(); fd.append('train_ratio', sp.train_ratio); fd.append('val_ratio', sp.val_ratio);
+            fd.append('max_prefix_len', document.getElementById('maxPrefixLen').value);
+            fd.append('min_bucket_samples', document.getElementById('minBucketSamples').value);
+            fd.append('bin_size', document.getElementById('binSize').value);
+            fd.append('temporal_split', document.getElementById('temporalSplitToggle').checked ? 'true' : 'false');
+            fd.append('concept_drift_window', document.getElementById('driftWindowToggle').checked ? 'true' : 'false');
+            fd.append('since_date', document.getElementById('sinceDate').value || '');
+            fd.append('rare_variant_filter', document.getElementById('rareVariantToggle').checked ? 'true' : 'false');
+            fd.append('min_variant_count', document.getElementById('minVariantCount').value);
+            fd.append('filter_consecutive_duplicates', document.getElementById('consecDupToggle').checked ? 'true' : 'false');
+            fd.append('impute_missing', document.getElementById('imputeMissingToggle').checked ? 'true' : 'false');
+
+            fetch('/api/quick-compare', { method: 'POST', body: fd })
+                .then(r => r.json()).then(data => {
+                    if (data.error) {
+                        showS3CompareStatus('error', data.error);
+                        document.getElementById('runCompareBtn').disabled = false;
+                        return;
+                    }
+                    s3CompareInterval = setInterval(pollS3CompareStatus, 3000);
+                }).catch(err => {
+                    showS3CompareStatus('error', 'Request failed: ' + err.message);
+                    document.getElementById('runCompareBtn').disabled = false;
+                });
+        }
+
+        function pollS3CompareStatus() {
+            fetch('/api/quick-compare/status').then(r => r.json()).then(data => {
+                var steps = data.steps || [];
+                renderCompareSteps(steps);
+                if (data.status === 'running') {
+                    showS3CompareStatus('running', '<span class="spinner"></span> ' + (data.progress || 'Running...'));
+                } else if (data.status === 'done') {
+                    clearInterval(s3CompareInterval);
+                    document.getElementById('runCompareBtn').disabled = false;
+                    showS3CompareStatus('done', data.progress || 'Comparison complete!');
+                    s3CompareHasRun = true;
+                    renderS3CompareResults(data.results || []);
+                } else if (data.status === 'error') {
+                    clearInterval(s3CompareInterval);
+                    document.getElementById('runCompareBtn').disabled = false;
+                    showS3CompareStatus('error', data.progress || 'Unknown error');
+                }
+            }).catch(() => {});
+        }
+
+        function renderCompareSteps(steps) {
+            if (!steps || !steps.length) return;
+            if (steps.length <= _compareRenderedSteps) return;
+            var list = document.getElementById('comparePipelineList');
+            if (_compareRenderedSteps === 0) {
+                var ph = document.getElementById('comparePipelinePlaceholder');
+                if (ph) ph.remove();
+            }
+            for (var i = _compareRenderedSteps; i < steps.length; i++) {
+                var s = steps[i];
+                // Insert variant section header when variant changes
+                if (s.variant && s.variant !== _compareLastVariant) {
+                    _compareLastVariant = s.variant;
+                    var hdr = document.createElement('div');
+                    hdr.style.cssText = 'font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin:0.8rem 0 0.3rem;padding-top:0.5rem;border-top:1px solid var(--border);';
+                    hdr.textContent = (s.variant_index === 0 ? '1/2 ' : '2/2 ') + s.variant;
+                    list.appendChild(hdr);
+                }
+                renderPipelineSteps([s], 'comparePipelinePanel', 'comparePipelineList', 0);
+            }
+            _compareRenderedSteps = steps.length;
+        }
+
+        function showS3CompareStatus(type, html) {
+            var el = document.getElementById('s3CompareStatus');
+            el.className = 'status-box ' + type;
+            document.getElementById('s3CompareStatusText').innerHTML = html;
+        }
+
+        function prettyName(s) {
+            var MAP = {
+                'prefix_len_fixed':    'Fixed-Width',
+                'prefix_len_adaptive': 'Adaptive',
+                'state_based':         'State-Based',
+                'zero':                'All Prefixes',
+                'last_state':          'Last State',
+                'agg_features':        'Aggregated',
+                'boolean':             'Boolean Bag',
+                'freq_encoded':        'Frequency',
+            };
+            return MAP[s] || s.replace(/_/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+        }
+
+        function renderS3CompareResults(results) {
+            if (!results || !results.length) return;
+            var isClf = results[0].is_classification;
+            var higherIsBetter = isClf;
+            var metricLabel = isClf ? 'F1 (val)' : 'MAE (val)';
+
+            document.getElementById('s3MetricNote').textContent =
+                isClf ? '(higher F1 is better)' : '(lower MAE is better)';
+
+            // Find best score
+            var bestScore = null;
+            results.forEach(function(r) {
+                if (r.primary_score == null || r.status !== 'success') return;
+                if (bestScore === null) { bestScore = r.primary_score; return; }
+                if (higherIsBetter && r.primary_score > bestScore) bestScore = r.primary_score;
+                if (!higherIsBetter && r.primary_score < bestScore) bestScore = r.primary_score;
+            });
+
+            // Table header
+            document.getElementById('s3CompareHead').innerHTML =
+                '<tr><th>Configuration</th><th>Best Strategy</th><th>' + metricLabel + '</th></tr>';
+
+            // Table rows
+            var tbody = document.getElementById('s3CompareBody');
+            tbody.innerHTML = '';
+            results.forEach(function(r) {
+                var isBest = r.primary_score != null && r.primary_score === bestScore && r.status === 'success';
+                var tr = document.createElement('tr');
+                if (isBest) tr.style.background = 'var(--success-light)';
+                var best = r.best_strategy || {};
+                var scoreStr;
+                if (r.status !== 'success') {
+                    scoreStr = '<span style="color:var(--danger);font-size:0.8rem;">' + (r.error || 'Error') + '</span>';
+                } else if (r.primary_score != null) {
+                    var fmtScore = isClf
+                        ? (r.primary_score * 100).toFixed(1) + '%'
+                        : r.primary_score.toFixed(4);
+                    var arrow = isBest ? (higherIsBetter ? ' &#8679;' : ' &#8681;') : '';
+                    scoreStr = '<strong>' + fmtScore + arrow + '</strong>';
+                } else {
+                    scoreStr = '-';
+                }
+                var stratStr = (best.bucketing && best.encoding)
+                    ? prettyName(best.bucketing) + ' + ' + prettyName(best.encoding)
+                    : (best.bucketing ? prettyName(best.bucketing) : '-');
+                tr.innerHTML =
+                    '<td style="font-weight:600">' + r.label + '</td>' +
+                    '<td style="font-size:0.85rem; color:var(--text-secondary)">' + stratStr + '</td>' +
+                    '<td>' + scoreStr + '</td>';
+                tbody.appendChild(tr);
+            });
+
+            // Chart
+            drawS3BarChart(results, isClf, higherIsBetter, bestScore);
+
+            document.getElementById('s3CompareResults').style.display = 'block';
+        }
+
+        function drawS3BarChart(results, isClf, higherIsBetter, bestScore) {
+            var svg = document.getElementById('s3CompareChart');
+            svg.innerHTML = '';
+
+            var rows = results.filter(function(r) {
+                return r.primary_score != null && r.status === 'success';
+            });
+            if (!rows.length) return;
+
+            var VW = 560;
+            var ML = 155, MR = 80, MT = 28, MB = 52;
+            var plotW = VW - ML - MR;
+            var BAR_H = 44, BAR_GAP = 12;
+            var totalBarsH = rows.length * BAR_H + (rows.length - 1) * BAR_GAP;
+            var VH = MT + totalBarsH + MB + 20;
+            svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
+            svg.setAttribute('height', VH);
+
+            var maxVal = Math.max.apply(null, rows.map(function(r) { return r.primary_score; }));
+            var axisMax = isClf ? Math.min(Math.max(maxVal * 1.2, 0.6), 1.0) : maxVal * 1.25;
+
+            function xScale(v) { return (v / axisMax) * plotW; }
+
+            var ns = 'http://www.w3.org/2000/svg';
+            function mkEl(tag, attrs) {
+                var e = document.createElementNS(ns, tag);
+                Object.keys(attrs).forEach(function(k) { e.setAttribute(k, attrs[k]); });
+                return e;
+            }
+            function mkText(content, attrs) {
+                var t = mkEl('text', attrs);
+                t.textContent = content;
+                return t;
+            }
+
+            var g = mkEl('g', { transform: 'translate(' + ML + ',' + MT + ')' });
+
+            rows.forEach(function(r, i) {
+                var isBest = r.primary_score === bestScore;
+                var y = i * (BAR_H + BAR_GAP);
+                var bw = xScale(r.primary_score);
+                var fillColor = isBest ? '#10b981' : '#d1d5db';
+                var textColor = isBest ? '#065f46' : '#374151';
+
+                // Background track
+                g.appendChild(mkEl('rect', {
+                    x: 0, y: y, width: plotW, height: BAR_H,
+                    rx: 4, fill: '#f3f4f6',
+                }));
+                // Value bar
+                g.appendChild(mkEl('rect', {
+                    x: 0, y: y, width: Math.max(bw, 3), height: BAR_H,
+                    rx: 4, fill: fillColor,
+                }));
+
+                // Value label (right of bar)
+                var fmtVal = isClf
+                    ? (r.primary_score * 100).toFixed(1) + '%'
+                    : r.primary_score.toFixed(4);
+                var badge = isBest ? (higherIsBetter ? ' ↑ best' : ' ↓ best') : '';
+                g.appendChild(mkText(fmtVal + badge, {
+                    x: bw + 8, y: y + BAR_H / 2 + 5,
+                    'font-size': '13', 'font-weight': isBest ? '700' : '500',
+                    fill: textColor, 'font-family': 'Inter,sans-serif',
+                }));
+
+                // Row label (left) — config name + strategy subtitle
+                var best = r.best_strategy || {};
+                var stratLabel = (best.bucketing && best.encoding)
+                    ? prettyName(best.bucketing) + ' + ' + prettyName(best.encoding) : '';
+                g.appendChild(mkText(r.label, {
+                    x: -10, y: stratLabel ? y + BAR_H / 2 - 4 : y + BAR_H / 2 + 5,
+                    'font-size': '13', 'font-weight': isBest ? '600' : '400',
+                    fill: '#1a1d2e', 'text-anchor': 'end',
+                    'font-family': 'Inter,sans-serif',
+                }));
+                if (stratLabel) {
+                    g.appendChild(mkText(stratLabel, {
+                        x: -10, y: y + BAR_H / 2 + 12,
+                        'font-size': '10', 'font-weight': '400',
+                        fill: '#8b90a5', 'text-anchor': 'end',
+                        'font-family': 'Inter,sans-serif',
+                    }));
+                }
+            });
+
+            // X-axis base line
+            var axisY = totalBarsH + 8;
+            g.appendChild(mkEl('line', {
+                x1: 0, y1: axisY, x2: plotW, y2: axisY,
+                stroke: '#d1d5db', 'stroke-width': '1',
+            }));
+
+            // X-axis ticks: 0, mid, max
+            [0, axisMax / 2, axisMax].forEach(function(v) {
+                var x = xScale(v);
+                g.appendChild(mkEl('line', {
+                    x1: x, y1: axisY, x2: x, y2: axisY + 4,
+                    stroke: '#9ca3af', 'stroke-width': '1',
+                }));
+                var lbl = isClf ? (v * 100).toFixed(0) + '%' : v.toFixed(3);
+                g.appendChild(mkText(lbl, {
+                    x: x, y: axisY + 16,
+                    'font-size': '11', fill: '#9ca3af', 'text-anchor': 'middle',
+                    'font-family': 'Inter,sans-serif',
+                }));
+            });
+
+            // Axis title
+            var axisTitle = isClf ? 'F1 Score (higher is better)' : 'MAE — lower is better';
+            g.appendChild(mkText(axisTitle, {
+                x: plotW / 2, y: axisY + 32,
+                'font-size': '11', fill: '#8b90a5', 'text-anchor': 'middle',
+                'font-family': 'Inter,sans-serif',
+            }));
+
+            svg.appendChild(g);
+
+            // Update card title
+            document.getElementById('s3ChartTitle').textContent =
+                isClf ? 'F1 Score Comparison' : 'MAE Comparison';
+        }
+
+        // ============ STEP 4 ============
+        function updateSummary() {
+            document.getElementById('summaryFile').textContent = selectedFile ? selectedFile.name : '-';
+            var taskLabel = TASK_LABELS[selectedTask] || selectedTask;
+            if (selectedTask === 'next_activity') {
+                taskLabel += ' (' + (selectedNextAttrCol || 'activity') + ')';
+            }
+            document.getElementById('summaryTask').textContent = taskLabel;
+            var outlierOn = document.getElementById('outlierToggle').checked;
+            document.getElementById('summaryOutlier').textContent = outlierOn ? 'Enabled' : 'Disabled';
+            // Rare class filter
+            var rareOn = document.getElementById('rareClassToggle').checked;
+            var rareRow = document.getElementById('summaryRareClassRow');
+            if (rareOn && (selectedTask === 'next_activity' || selectedTask === 'outcome')) {
+                rareRow.style.display = '';
+                document.getElementById('summaryRareClass').textContent =
+                    'Min ' + document.getElementById('minClassSamples').value + ' samples/class';
+            } else {
+                rareRow.style.display = 'none';
+            }
+            // Split
+            var sp2 = getSplitRatios();
+            var test2 = Math.round((1 - sp2.train_ratio - sp2.val_ratio) * 100);
+            document.getElementById('summarySplit').textContent =
+                Math.round(sp2.train_ratio * 100) + ' / ' + Math.round(sp2.val_ratio * 100) + ' / ' + test2 + ' %';
+            // Columns dropped
+            var dropped = getColumnsToDrop();
+            document.getElementById('summaryColsDropped').textContent =
+                dropped.length ? dropped.length + ' column(s): ' + dropped.join(', ') : 'None';
+            // Temporal ordering
+            var temporalOn = document.getElementById('temporalSplitToggle').checked;
+            var temporalRow = document.getElementById('summaryTemporalRow');
+            temporalRow.style.display = temporalOn ? '' : 'none';
+            if (temporalOn) document.getElementById('summaryTemporal').textContent = 'Enabled';
+            // Time window filter
+            var driftOn = document.getElementById('driftWindowToggle').checked;
+            var sinceVal = document.getElementById('sinceDate').value;
+            var twRow = document.getElementById('summaryTimeWindowRow');
+            twRow.style.display = driftOn ? '' : 'none';
+            if (driftOn) document.getElementById('summaryTimeWindow').textContent = sinceVal ? 'Since ' + sinceVal : 'Enabled';
+            // Rare variant filter
+            var rvOn = document.getElementById('rareVariantToggle').checked;
+            var rvRow = document.getElementById('summaryRareVariantRow');
+            rvRow.style.display = rvOn ? '' : 'none';
+            if (rvOn) document.getElementById('summaryRareVariant').textContent =
+                'Min ' + document.getElementById('minVariantCount').value + ' cases/variant';
+            // Consecutive duplicates
+            var cdOn = document.getElementById('consecDupToggle').checked;
+            var cdRow = document.getElementById('summaryConsecDupRow');
+            cdRow.style.display = cdOn ? '' : 'none';
+            if (cdOn) document.getElementById('summaryConsecDup').textContent = 'Enabled';
+            // Impute missing
+            var imOn = document.getElementById('imputeMissingToggle').checked;
+            var imRow = document.getElementById('summaryImputeRow');
+            imRow.style.display = imOn ? '' : 'none';
+            if (imOn) document.getElementById('summaryImpute').textContent = 'Enabled';
+            // Lifecycle filter
+            var lcDrop = getLifecycleDropValues();
+            var lcRow = document.getElementById('summaryLifecycleRow');
+            if (lcDrop.length && lifecycleInfo) {
+                lcRow.style.display = '';
+                document.getElementById('summaryLifecycle').textContent = 'Drop: ' + lcDrop.join(', ');
+            } else {
+                lcRow.style.display = 'none';
+            }
+        }
+
+        function startTraining() {
+            if (!selectedFile) return;
+            var fd = new FormData();
+            fd.append('file', selectedFile);
+            fd.append('task_name', selectedTask);
+            fd.append('outlier_enabled', document.getElementById('outlierToggle').checked ? 'true' : 'false');
+            fd.append('min_class_samples', document.getElementById('rareClassToggle').checked ? document.getElementById('minClassSamples').value : '0');
+            if (selectedTask === 'outcome') { fd.append('outcome_col', document.getElementById('outcomeColSelect').value || ''); fd.append('outcome_values', ''); }
+            if (selectedTask === 'next_activity') { fd.append('next_event_attr_col', selectedNextAttrCol || 'activity'); }
+            fd.append('columns_to_drop', JSON.stringify(getColumnsToDrop()));
+            fd.append('lifecycle_drop_values', JSON.stringify(getLifecycleDropValues()));
+            var sp = getSplitRatios(); fd.append('train_ratio', sp.train_ratio); fd.append('val_ratio', sp.val_ratio);
+            fd.append('max_prefix_len', document.getElementById('maxPrefixLen').value);
+            fd.append('time_budget_s', document.getElementById('timeBudget').value);
+            fd.append('min_bucket_samples', document.getElementById('minBucketSamples').value);
+            fd.append('bin_size', document.getElementById('binSize').value);
+            fd.append('temporal_split', document.getElementById('temporalSplitToggle').checked ? 'true' : 'false');
+            fd.append('concept_drift_window', document.getElementById('driftWindowToggle').checked ? 'true' : 'false');
+            fd.append('since_date', document.getElementById('sinceDate').value || '');
+            fd.append('rare_variant_filter', document.getElementById('rareVariantToggle').checked ? 'true' : 'false');
+            fd.append('min_variant_count', document.getElementById('minVariantCount').value);
+            fd.append('filter_consecutive_duplicates', document.getElementById('consecDupToggle').checked ? 'true' : 'false');
+            fd.append('impute_missing', document.getElementById('imputeMissingToggle').checked ? 'true' : 'false');
+
+            document.getElementById('trainBtn').disabled = true;
+            resetPipelineSteps();
+            // Show panel immediately with a loading placeholder
+            document.getElementById('pipelineStepsPanel').style.display = 'block';
+            document.getElementById('pipelineStepsList').innerHTML = '<div id="pipelinePlaceholder" style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0.2rem;">⏳ Preprocessing pipeline is running…</div>';
+            showTrainStatus('running', '<span class="spinner"></span> Uploading and starting training...');
+            fetch('/api/train', { method: 'POST', body: fd })
+                .then(r => r.json()).then(data => {
+                    if (data.error) { showTrainStatus('error', data.error); document.getElementById('trainBtn').disabled = false; return; }
+                    pollInterval = setInterval(pollTrainStatus, 2000);
+                }).catch(err => { showTrainStatus('error', 'Upload failed: ' + err.message); document.getElementById('trainBtn').disabled = false; });
+        }
+
+        var _renderedSteps = 0;
+
+        function pollTrainStatus() {
+            fetch('/api/train/status').then(r => r.json()).then(data => {
+                console.log('[poll] status=' + data.status + ' steps=' + (data.steps ? data.steps.length : 'null') + ' progress=' + data.progress);
+                if (data.status === 'running') showTrainStatus('running', '<span class="spinner"></span> ' + (data.progress || 'Training...'));
+                else if (data.status === 'done') { clearInterval(pollInterval); showTrainStatus('done', 'Training complete!'); document.getElementById('trainBtn').disabled = false; markCompleted(4); setTimeout(() => goToStep(5), 3000); }
+                else if (data.status === 'error') { clearInterval(pollInterval); showTrainStatusText('error', 'Error: ' + (data.progress || 'Unknown')); document.getElementById('trainBtn').disabled = false; }
+                renderPipelineSteps(data.steps || []);
+            });
+        }
+
+        var _STEP_LABELS = {
+            'normalize_schema': 'Normalize Schema',
+            'repair_timestamps': 'Repair Timestamps',
+            'lifecycle_collapse': 'Lifecycle Collapse',
+            'filter_short_cases': 'Filter Short Cases',
+            'normalize_activities': 'Normalize Activities',
+            'filter_infrequent_activities': 'Filter Infrequent Activities',
+            'filter_zero_duration_cases': 'Filter Zero-Duration Cases',
+            'filter_case_length': 'Filter Case Length Outliers',
+            'filter_consecutive_duplicates': 'Filter Consecutive Duplicates',
+            'impute_missing_attributes': 'Impute Missing Attributes',
+            'concept_drift_window': 'Time Window Filter',
+            'filter_rare_variants': 'Filter Rare Variants',
+            'prefix_features': 'Prefix & Feature Extraction',
+            'case_split': 'Case Split',
+        };
+        var _INFO_STEPS = new Set(['normalize_schema','normalize_activities','repair_timestamps','prefix_features','case_split','impute_missing_attributes']);
+        var _HIDDEN_STEPS = new Set(['qc_report']);
+
+        function _fmt(n) { return n != null ? Number(n).toLocaleString() : '—'; }
+        function _esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        function _renderStepExtra(s) {
+            var qc = s.qc || {}, html = '';
+
+            if (s.step === 'normalize_schema') {
+                if (qc.col_mapping) {
+                    html += '<div class="pipe-detail" style="margin-top:0.4rem;"><b>Column mapping:</b> ';
+                    html += Object.entries(qc.col_mapping).map(function(e) {
+                        return '<span style="color:var(--text-secondary)">' + _esc(e[0]) + '</span> → <span style="color:var(--accent);font-weight:600">' + _esc(e[1]) + '</span>';
+                    }).join(' &nbsp;·&nbsp; ');
+                    html += '</div>';
+                }
+                if (qc.sample_before && qc.sample_after) {
+                    var mapKeys = qc.col_mapping || {}, revMap = {};
+                    Object.keys(mapKeys).forEach(function(k) { revMap[mapKeys[k]] = k; });
+                    html += '<div style="margin-top:0.5rem;display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">';
+                    html += '<div><div style="font-size:0.65rem;font-weight:700;color:var(--text-muted);margin-bottom:0.2rem;">BEFORE</div>';
+                    ['case_id','activity','timestamp'].forEach(function(k) {
+                        var origKey = revMap[k] || k;
+                        var v = qc.sample_before[origKey];
+                        if (v != null) html += '<div style="font-size:0.68rem;color:var(--text-secondary)"><span style="color:var(--text-muted)">' + _esc(origKey) + ':</span> ' + _esc(String(v).slice(0,40)) + '</div>';
+                    });
+                    html += '</div><div><div style="font-size:0.65rem;font-weight:700;color:var(--text-muted);margin-bottom:0.2rem;">AFTER</div>';
+                    ['case_id','activity','timestamp'].forEach(function(k) {
+                        var v = qc.sample_after[k];
+                        if (v != null) html += '<div style="font-size:0.68rem;color:var(--text-secondary)"><span style="color:var(--accent);font-weight:600">' + _esc(k) + ':</span> ' + _esc(String(v).slice(0,40)) + '</div>';
+                    });
+                    html += '</div></div>';
+                }
+                return html;
+            }
+
+            if (s.step === 'repair_timestamps') {
+                var cnt = qc.backwards_timestamps_repaired || 0;
+                if (qc.example_repairs && qc.example_repairs.length) {
+                    html += '<div class="pipe-detail" style="margin-top:0.3rem;"><b>Example repairs:</b></div>';
+                    qc.example_repairs.forEach(function(r) {
+                        html += '<div style="font-size:0.68rem;color:var(--text-secondary);margin:0.1rem 0;">';
+                        html += 'Case <b>' + _esc(r.case_id) + '</b>' + (r.activity ? ' · ' + _esc(r.activity) : '') + ': ';
+                        html += '<span style="color:#e53e3e;text-decoration:line-through">' + _esc(r.before.slice(0,19)) + '</span>';
+                        html += ' → <span style="color:#38a169;font-weight:600">' + _esc(r.after.slice(0,19)) + '</span>';
+                        html += '</div>';
+                    });
+                } else if (!cnt) {
+                    html += '<div class="pipe-ok">✓ All timestamps already in order</div>';
+                }
+                html += '<div class="pipe-detail">Total repaired: <b>' + _fmt(cnt) + '</b></div>';
+                return html;
+            }
+
+            if (s.step === 'normalize_activities') {
+                if (qc.activity_examples_changed && qc.activity_examples_changed.length) {
+                    html += '<div class="pipe-detail" style="margin-top:0.3rem;"><b>Examples changed:</b></div>';
+                    qc.activity_examples_changed.forEach(function(ex) {
+                        html += '<div style="font-size:0.68rem;color:var(--text-secondary);margin:0.1rem 0;">';
+                        html += '"<span style="color:#e53e3e">' + _esc(ex.before) + '</span>" → "<span style="color:#38a169;font-weight:600">' + _esc(ex.after) + '</span>"';
+                        html += '</div>';
+                    });
+                } else {
+                    html += '<div class="pipe-ok">✓ All activity names already clean</div>';
+                }
+                var d2 = [];
+                if (qc.whitespace_events_fixed) d2.push('Whitespace fixed: ' + _fmt(qc.whitespace_events_fixed));
+                if (qc.null_events_filled) d2.push('Null filled: ' + _fmt(qc.null_events_filled));
+                if (d2.length) html += '<div class="pipe-detail">' + d2.join(' · ') + '</div>';
+                return html;
+            }
+
+            if (s.step === 'case_split') {
+                var qcm = qc.split_method ? qc.split_method.charAt(0).toUpperCase() + qc.split_method.slice(1) : '';
+                html += '<div class="pipe-detail" style="margin-top:0.3rem;">Method: <b>' + _esc(qcm) + '</b></div>';
+                var total = (qc.train_cases||0) + (qc.val_cases||0) + (qc.test_cases||0);
+                var maxN = Math.max(qc.train_cases||0, qc.val_cases||0, qc.test_cases||0, 1);
+                [
+                    {label:'Train', n: qc.train_cases, pct: qc.train_pct},
+                    {label:'Val',   n: qc.val_cases,   pct: qc.val_pct},
+                    {label:'Test',  n: qc.test_cases,  pct: qc.test_pct},
+                ].forEach(function(r) {
+                    var w = ((r.n||0) / maxN * 100).toFixed(1);
+                    html += '<div class="pipe-bar-row"><div class="pipe-bar-label">' + r.label + ' (' + (r.pct||0) + '%)</div>';
+                    html += '<div class="pipe-bar-track"><div class="pipe-bar-fill after" style="width:' + w + '%"></div></div>';
+                    html += '<div class="pipe-bar-val">' + _fmt(r.n) + ' cases</div></div>';
+                });
+                return html;
+            }
+
+            if (s.step === 'prefix_features') {
+                if (qc.label_column) html += '<div class="pipe-detail"><b>Label column:</b> <span style="color:var(--accent);font-weight:600">' + _esc(qc.label_column) + '</span></div>';
+                if (qc.total_prefix_rows) html += '<div class="pipe-detail"><b>Prefix rows generated:</b> ' + _fmt(qc.total_prefix_rows) + ' &nbsp;·&nbsp; Max prefix length: ' + (qc.max_prefix_len||'—') + '</div>';
+                if (qc.time_features_added && qc.time_features_added.length) {
+                    html += '<div class="pipe-detail" style="margin-top:0.3rem;"><b>Time features added:</b></div>';
+                    html += '<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-top:0.2rem;">';
+                    qc.time_features_added.forEach(function(f) {
+                        html += '<span style="font-size:0.65rem;background:var(--accent-light,#ededfd);color:var(--accent);padding:1px 6px;border-radius:3px;">' + _esc(f) + '</span>';
+                    });
+                    html += '</div>';
+                }
+                return html;
+            }
+
+            if (s.step === 'filter_consecutive_duplicates') {
+                var nDup = qc.consecutive_duplicate_events_removed || 0;
+                if (nDup > 0) {
+                    var dropPct = qc.drop_rate != null ? (qc.drop_rate * 100).toFixed(1) + '%' : '';
+                    html += '<div class="pipe-detail"><b>' + _fmt(nDup) + '</b> consecutive duplicate events removed' + (dropPct ? ' (' + dropPct + ')' : '') + '</div>';
+                } else {
+                    html += '<div class="pipe-ok">✓ No consecutive duplicate events found</div>';
+                }
+                return html;
+            }
+
+            if (s.step === 'impute_missing_attributes') {
+                var nImp = qc.columns_imputed || 0;
+                if (nImp > 0) {
+                    html += '<div class="pipe-detail"><b>' + _fmt(nImp) + '</b> column(s) imputed with missing values</div>';
+                    if (qc.details && typeof qc.details === 'object') {
+                        var cols = Object.keys(qc.details).slice(0, 4);
+                        if (cols.length) {
+                            html += '<div style="font-size:0.68rem;color:var(--text-secondary);margin-top:0.2rem;">';
+                            cols.forEach(function(c) {
+                                var d = qc.details[c];
+                                html += '<span style="margin-right:0.6rem;">' + _esc(c) + ' → ' + _esc(d.strategy || '') + ' (' + _esc(d.fill_value || '') + ')</span>';
+                            });
+                            html += '</div>';
+                        }
+                    }
+                    if (qc.columns_skipped_sparse && qc.columns_skipped_sparse.length) {
+                        html += '<div class="pipe-detail" style="color:var(--text-muted);">Skipped (>50% missing): ' + _fmt(qc.columns_skipped_sparse.length) + ' col(s)</div>';
+                    }
+                } else {
+                    html += '<div class="pipe-ok">✓ No missing values to impute</div>';
+                }
+                return html;
+            }
+
+            // Generic
+            var details = [];
+            if (qc.consecutive_duplicate_events_removed) details.push('Duplicates removed: ' + _fmt(qc.consecutive_duplicate_events_removed));
+            if (qc.rare_activities_removed) details.push('Rare activities removed: ' + _fmt(qc.rare_activities_removed));
+            if (qc.columns_imputed) details.push('Columns imputed: ' + _fmt(qc.columns_imputed));
+            if (details.length) html += '<div class="pipe-detail">' + details.join(' · ') + '</div>';
+            return html;
+        }
+
+        function renderPipelineSteps(steps, panelId, listId, startIdx) {
+            if (!steps || !steps.length) return;
+            panelId = panelId || 'pipelineStepsPanel';
+            listId = listId || 'pipelineStepsList';
+            startIdx = (startIdx !== undefined) ? startIdx : _renderedSteps;
+            document.getElementById(panelId).style.display = 'block';
+            var list = document.getElementById(listId);
+            // Remove the loading placeholder on first real step
+            if (startIdx === 0) { var ph = document.getElementById('pipelinePlaceholder'); if (ph) ph.remove(); }
+
+            for (var i = startIdx; i < steps.length; i++) {
+                var s = steps[i];
+                if (_HIDDEN_STEPS.has(s.step)) continue;
+                var droppedRows = (s.before_rows != null && s.after_rows != null) ? s.before_rows - s.after_rows : null;
+                var droppedCases = (s.before_cases != null && s.after_cases != null) ? s.before_cases - s.after_cases : null;
+                var isInfo = _INFO_STEPS.has(s.step);
+                var hasChange = droppedRows !== null && droppedRows > 0;
+                var iconCls = hasChange ? 'drop' : 'ok';
+                var name = _STEP_LABELS[s.step] || s.step;
+
+                var html = '<div class="pipe-step"><div class="pipe-step-header">';
+                html += '<div class="pipe-step-icon ' + iconCls + '">' + (hasChange ? '▼' : '✓') + '</div>';
+                html += '<div class="pipe-step-name">' + name + '</div>';
+                if (s.before_rows != null && s.after_rows != null)
+                    html += '<div class="pipe-step-label">' + _fmt(s.before_rows) + ' → ' + _fmt(s.after_rows) + ' rows</div>';
+                html += '</div>';
+
+                if (!isInfo && s.before_rows != null && s.after_rows != null) {
+                    var aPct = (s.after_rows / Math.max(s.before_rows, 1) * 100).toFixed(1);
+                    html += '<div class="pipe-bar-row"><div class="pipe-bar-label">Before</div><div class="pipe-bar-track"><div class="pipe-bar-fill before" style="width:100%"></div></div><div class="pipe-bar-val">' + _fmt(s.before_rows) + '</div></div>';
+                    html += '<div class="pipe-bar-row"><div class="pipe-bar-label">After</div><div class="pipe-bar-track"><div class="pipe-bar-fill after" style="width:' + aPct + '%"></div></div><div class="pipe-bar-val">' + _fmt(s.after_rows) + '</div></div>';
+                    html += hasChange
+                        ? '<div class="pipe-dropped">▼ ' + _fmt(droppedRows) + ' rows removed' + (droppedCases ? ' (' + _fmt(droppedCases) + ' cases)' : '') + '</div>'
+                        : '<div class="pipe-ok">✓ No rows removed</div>';
+                }
+
+                html += _renderStepExtra(s) + '</div>';
+                var div = document.createElement('div');
+                div.innerHTML = html;
+                list.appendChild(div.firstChild);
+            }
+            if (!panelId || panelId === 'pipelineStepsPanel') _renderedSteps = steps.length;
+        }
+
+        function resetPipelineSteps() {
+            _renderedSteps = 0;
+            document.getElementById('pipelineStepsList').innerHTML = '';
+            document.getElementById('pipelineStepsPanel').style.display = 'none';
+        }
+        function showTrainStatus(t, h) { var e = document.getElementById('trainStatus'); e.className = 'status-box ' + t; document.getElementById('trainStatusText').innerHTML = h; }
+        function showTrainStatusText(t, x) { var e = document.getElementById('trainStatus'); e.className = 'status-box ' + t; document.getElementById('trainStatusText').textContent = x; }
+
+        // ============ STEP 5 ============
+        function loadResults() {
+            loadRunHistory();
+            // Load pipeline steps into results page
+            fetch('/api/train/status').then(r => r.json()).then(data => {
+                var steps = data.steps || [];
+                if (steps.length) {
+                    document.getElementById('pipelineStepsList5').innerHTML = '';
+                    renderPipelineSteps(steps, 'pipelineStepsPanel5', 'pipelineStepsList5', 0);
+                } else {
+                    document.getElementById('pipelineStepsPanel5').style.display = 'none';
+                }
+            }).catch(() => {});
+            fetch('/api/model/info').then(r => r.json()).then(data => {
+                if (!data.has_model) { document.getElementById('resultsContent').style.display = 'none'; document.getElementById('noResults').style.display = 'block'; return; }
+                document.getElementById('resultsContent').style.display = 'block'; document.getElementById('noResults').style.display = 'none'; markCompleted(5);
+                var ev = data.evaluation || {}, m = ev.test_metrics || {}, b = data.best_strategy || ev;
+                var isClf = (ev.task_type || '').indexOf('classification') !== -1;
+                var cards = '';
+                if (isClf) {
+                    if (m.f1_macro !== undefined) cards += '<div class="metric-card"><div class="mc-label">F1 Macro</div><div class="mc-value">' + (m.f1_macro*100).toFixed(1) + ' <span class="mc-unit">%</span></div></div>';
+                    if (m.f1_micro !== undefined) cards += '<div class="metric-card"><div class="mc-label">F1 Micro</div><div class="mc-value">' + (m.f1_micro*100).toFixed(1) + ' <span class="mc-unit">%</span></div></div>';
+                } else {
+                    if (m.mae_days !== undefined) cards += '<div class="metric-card"><div class="mc-label">Mean Absolute Error</div><div class="mc-value">' + m.mae_days.toFixed(2) + ' <span class="mc-unit">days</span></div><div class="mc-sub">' + (m.mae_sec||0).toLocaleString() + ' seconds</div></div>';
+                    if (m.median_ae_days !== undefined) cards += '<div class="metric-card"><div class="mc-label">Median Absolute Error</div><div class="mc-value">' + m.median_ae_days.toFixed(2) + ' <span class="mc-unit">days</span></div><div class="mc-sub">' + (m.median_ae_sec||0).toLocaleString() + ' seconds</div></div>';
+                }
+                document.getElementById('resultsCards').innerHTML = cards;
+                var tbl = '';
+                tbl += '<tr><th>Task</th><td>' + (TASK_LABELS[b.task||ev.task]||b.task||'-') + '</td></tr>';
+                tbl += '<tr><th>Best Bucketing</th><td>' + (b.bucketing||ev.best_bucketing||'-') + '</td></tr>';
+                tbl += '<tr><th>Best Encoding</th><td>' + (b.encoding||ev.best_encoding||'-') + '</td></tr>';
+                tbl += '<tr><th>Mode</th><td>' + (b.mode||ev.mode||'-') + '</td></tr>';
+                tbl += '<tr><th>Test Samples</th><td>' + (ev.test_samples||0).toLocaleString() + '</td></tr>';
+                if (!isClf && ev.avg_case_duration_days != null) tbl += '<tr><th>Avg Case Duration</th><td>' + ev.avg_case_duration_days + ' days</td></tr>';
+                document.getElementById('resultsTable').innerHTML = tbl;
+                var ch = data.charts || [];
+                if (ch.length) {
+                    document.getElementById('chartsSection').style.display = 'block';
+                    var tabs = document.getElementById('chartTabs'); tabs.innerHTML = '';
+                    ch.forEach((n, i) => { var btn = document.createElement('button'); btn.className = 'chart-tab' + (i===0?' active':''); btn.textContent = CHART_LABELS[n]||n.replace(/_/g,' '); btn.onclick = () => showChart(n,btn); tabs.appendChild(btn); });
+                    showChart(ch[0], tabs.firstChild);
+                } else document.getElementById('chartsSection').style.display = 'none';
+            }).catch(() => {});
+        }
+        function showChart(n, btn) { document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active')); if (btn) btn.classList.add('active'); document.getElementById('chartImg').src = '/api/reports/' + n + '?t=' + Date.now(); }
+
+        function loadRunHistory() {
+            fetch('/api/run-history').then(r => r.json()).then(data => renderRunHistory(data)).catch(() => {});
+        }
+
+        function renderRunHistory(runs) {
+            var head = document.getElementById('runHistoryHead');
+            var body = document.getElementById('runHistoryBody');
+            var empty = document.getElementById('runHistoryEmpty');
+            if (!runs || !runs.length) {
+                head.innerHTML = ''; body.innerHTML = '';
+                empty.style.display = ''; return;
+            }
+            empty.style.display = 'none';
+            var isClf = runs.some(r => r.f1_macro !== null && r.f1_macro !== undefined);
+            // Header
+            var th = '<tr>';
+            th += '<th>#</th><th>Time</th><th>Task</th><th>Outlier Det.</th><th>Cols Dropped</th>';
+            th += '<th>Bucketing</th><th>Encoding</th>';
+            if (isClf) th += '<th>F1 Macro</th><th>F1 Micro</th>';
+            else        th += '<th>MAE (days)</th><th>Median AE (days)</th>';
+            th += '<th>Test Samples</th></tr>';
+            head.innerHTML = th;
+            // Find best metric for highlighting
+            var metricKey = isClf ? 'f1_macro' : 'mae_days';
+            var bestVal = null;
+            runs.forEach(r => {
+                var v = r[metricKey];
+                if (v !== null && v !== undefined) {
+                    if (bestVal === null) bestVal = v;
+                    else if (isClf && v > bestVal) bestVal = v;
+                    else if (!isClf && v < bestVal) bestVal = v;
+                }
+            });
+            body.innerHTML = '';
+            runs.forEach(function(r) {
+                var isBest = r[metricKey] !== null && r[metricKey] !== undefined && r[metricKey] === bestVal;
+                var tr = document.createElement('tr');
+                if (isBest) tr.style.background = 'var(--success-light)';
+                var colsDropped = (r.columns_dropped || []).length
+                    ? '<span style="color:var(--danger);font-weight:500;">' + r.columns_dropped.length + ' dropped</span>'
+                    : '<span style="color:var(--text-muted)">none</span>';
+                var outlierBadge = r.outlier_detection
+                    ? '<span style="color:var(--success);font-weight:500;">ON</span>'
+                    : '<span style="color:var(--text-muted)">OFF</span>';
+                var metric1 = '', metric2 = '';
+                if (isClf) {
+                    metric1 = r.f1_macro !== null && r.f1_macro !== undefined ? '<strong>' + (r.f1_macro*100).toFixed(1) + '%</strong>' : '-';
+                    metric2 = r.f1_micro !== null && r.f1_micro !== undefined ? (r.f1_micro*100).toFixed(1) + '%' : '-';
+                } else {
+                    metric1 = r.mae_days !== null && r.mae_days !== undefined ? '<strong>' + r.mae_days.toFixed(3) + '</strong>' : '-';
+                    metric2 = r.median_ae_days !== null && r.median_ae_days !== undefined ? r.median_ae_days.toFixed(3) : '-';
+                }
+                tr.innerHTML =
+                    '<td>' + r.run_id + (isBest ? ' &#127942;' : '') + '</td>' +
+                    '<td style="font-size:0.78rem;color:var(--text-muted)">' + r.timestamp + '</td>' +
+                    '<td>' + (TASK_LABELS[r.task] || r.task) + '</td>' +
+                    '<td>' + outlierBadge + '</td>' +
+                    '<td title="' + (r.columns_dropped||[]).join(', ') + '">' + colsDropped + '</td>' +
+                    '<td style="font-size:0.8rem">' + (r.bucketing||'-') + '</td>' +
+                    '<td style="font-size:0.8rem">' + (r.encoding||'-') + '</td>' +
+                    '<td>' + metric1 + '</td>' +
+                    '<td>' + metric2 + '</td>' +
+                    '<td style="color:var(--text-muted)">' + (r.test_samples||0).toLocaleString() + '</td>';
+                body.appendChild(tr);
+            });
+        }
+
+        function clearRunHistory() {
+            if (!confirm('Clear all run history?')) return;
+            fetch('/api/run-history/clear', { method: 'POST' }).then(() => renderRunHistory([]));
+        }
+
+        // ============ STEP 6 ============
+
+        var predDZ = document.getElementById('predDropzone'), predFI = document.getElementById('predFileInput'), predFile = null;
+        predDZ.addEventListener('dragover', e => { e.preventDefault(); predDZ.classList.add('dragover'); });
+        predDZ.addEventListener('dragleave', () => predDZ.classList.remove('dragover'));
+        predDZ.addEventListener('drop', e => { e.preventDefault(); predDZ.classList.remove('dragover'); if (e.dataTransfer.files.length) selectPredFile(e.dataTransfer.files[0]); });
+        predFI.addEventListener('change', () => { if (predFI.files.length) selectPredFile(predFI.files[0]); });
+
+        function selectPredFile(f) { predFile = f; document.getElementById('predSelectedFile').textContent = f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)'; document.getElementById('batchPredictBtn').disabled = false; }
+
+        function batchPredict() {
+            if (!predFile) return;
+            var fd = new FormData(); fd.append('file', predFile);
+            document.getElementById('batchPredictBtn').disabled = true;
+            var bs = document.getElementById('batchStatus'); bs.className = 'status-box running';
+            document.getElementById('batchStatusText').innerHTML = '<span class="spinner"></span> Parsing and predicting...';
+            document.getElementById('batchResults').style.display = 'none';
+            fetch('/api/predict/batch', { method: 'POST', body: fd }).then(r => r.json()).then(data => {
+                document.getElementById('batchPredictBtn').disabled = false;
+                if (data.error) { bs.className = 'status-box error'; document.getElementById('batchStatusText').textContent = data.error; return; }
+                bs.className = 'status-box done'; document.getElementById('batchStatusText').textContent = data.successful + ' / ' + data.total_cases + ' cases predicted.';
+                showBatchResults(data);
+            }).catch(err => { document.getElementById('batchPredictBtn').disabled = false; bs.className = 'status-box error'; document.getElementById('batchStatusText').textContent = err.message; });
+        }
+
+        function showBatchResults(data) {
+            var tb = document.getElementById('batchBody'); tb.innerHTML = '';
+            var ps = data.predictions || [];
+            var isOut = ps.length && ps[0].predicted_outcome !== undefined;
+            var isNA = ps.length && ps[0].predicted_next_activity !== undefined;
+            var th = document.getElementById('batchHead');
+            if (isOut) th.innerHTML = '<tr><th>Case ID</th><th>Events</th><th>Last Activity</th><th>Predicted Outcome</th><th>Bucket</th></tr>';
+            else if (isNA) th.innerHTML = '<tr><th>Case ID</th><th>Events</th><th>Last Activity</th><th>Predicted Next Activity</th><th>Bucket</th></tr>';
+            else { th.innerHTML = '<tr><th>Case ID</th><th>Events</th><th>Last Activity</th><th>Days</th><th>Hours</th></tr>'; ps.sort((a,b) => (b.predicted_remaining_time_days||0)-(a.predicted_remaining_time_days||0)); }
+            ps.forEach(p => {
+                var tr = document.createElement('tr');
+                if (isOut) tr.innerHTML = '<td style="font-weight:600">' + p.case_id + '</td><td>' + p.num_events + '</td><td style="font-size:0.78rem;color:var(--text-muted)">' + p.last_activity + '</td><td style="font-weight:600;color:var(--success)">' + p.predicted_outcome + '</td><td>' + p.bucket_id + '</td>';
+                else if (isNA) tr.innerHTML = '<td style="font-weight:600">' + p.case_id + '</td><td>' + p.num_events + '</td><td style="font-size:0.78rem;color:var(--text-muted)">' + p.last_activity + '</td><td style="font-weight:600;color:var(--success)">' + p.predicted_next_activity + '</td><td>' + p.bucket_id + '</td>';
+                else tr.innerHTML = '<td style="font-weight:600">' + p.case_id + '</td><td>' + p.num_events + '</td><td style="font-size:0.78rem;color:var(--text-muted)">' + p.last_activity + '</td><td style="font-weight:600;color:var(--accent)">' + (p.predicted_remaining_time_days||0).toFixed(1) + '</td><td>' + (p.predicted_remaining_time_hours||0).toFixed(1) + '</td>';
+                tb.appendChild(tr);
+            });
+            if (data.errors) data.errors.forEach(e => { var tr = document.createElement('tr'); tr.style.color = 'var(--danger)'; tr.innerHTML = '<td>' + e.case_id + '</td><td colspan="4">Error: ' + e.error + '</td>'; tb.appendChild(tr); });
+            document.getElementById('batchResults').style.display = 'block';
+        }
+
+
+        // ============ INIT ============
+        fetch('/api/model/info').then(r => r.json()).then(data => { if (data.has_model) { [1,2,3,4,5].forEach(n => markCompleted(n)); goToStep(1); } }).catch(() => {});
+
+        // ============ CHAT ASSISTANT ============
+        var _chatHistory = [];
+        var _chatStreaming = false;
+
+        function toggleChat() {
+            var panel = document.getElementById('chatPanel');
+            panel.classList.toggle('open');
+            if (panel.classList.contains('open') && _chatHistory.length === 0) {
+                _appendChatMsg('assistant', 'Hi! I can answer questions about settings, results, or how the pipeline works. What would you like to know?');
+            }
+            if (panel.classList.contains('open')) {
+                document.getElementById('chatInput').focus();
+            }
+        }
+
+        function _appendChatMsg(role, text) {
+            var el = document.createElement('div');
+            el.className = 'chat-msg ' + role;
+            el.textContent = text;
+            document.getElementById('chatMessages').appendChild(el);
+            document.getElementById('chatMessages').scrollTop = 999999;
+            return el;
+        }
+
+        function _appendErrorMsg(text) {
+            var el = document.createElement('div');
+            el.className = 'chat-msg error-msg';
+            el.textContent = text;
+            document.getElementById('chatMessages').appendChild(el);
+            document.getElementById('chatMessages').scrollTop = 999999;
+        }
+
+        function sendChat() {
+            if (_chatStreaming) return;
+            var input = document.getElementById('chatInput');
+            var text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+            input.style.height = '';
+            _appendChatMsg('user', text);
+            _chatHistory.push({ role: 'user', content: text });
+
+            var btn = document.getElementById('chatSendBtn');
+            btn.disabled = true;
+            _chatStreaming = true;
+
+            var assistantEl = _appendChatMsg('assistant', '');
+            assistantEl.classList.add('streaming');
+
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: _chatHistory })
+            }).then(function(resp) {
+                return resp.json();
+            }).then(function(d) {
+                assistantEl.classList.remove('streaming');
+                if (d.error) {
+                    assistantEl.textContent = '';
+                    _appendErrorMsg(d.error);
+                } else {
+                    assistantEl.textContent = d.text;
+                    _chatHistory.push({ role: 'assistant', content: d.text });
+                    document.getElementById('chatMessages').scrollTop = 999999;
+                }
+                btn.disabled = false;
+                _chatStreaming = false;
+            }).catch(function(err) {
+                assistantEl.classList.remove('streaming');
+                assistantEl.textContent = '';
+                _appendErrorMsg('Connection error: ' + err.message);
+                btn.disabled = false;
+                _chatStreaming = false;
+            });
+        }
+
+        document.getElementById('chatInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+        });
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = ''; this.style.height = Math.min(this.scrollHeight, 96) + 'px';
+        });
+    </script>
+
+    <!-- Chat assistant -->
+    <button id="chatBtn" onclick="toggleChat()" title="Ask a question">💬</button>
+    <div id="chatPanel">
+        <div class="chat-header">
+            <div>PPM Assistant <span>powered by Claude</span></div>
+            <button onclick="toggleChat()" title="Close">✕</button>
+        </div>
+        <div id="chatMessages"></div>
+        <div id="chatInputRow">
+            <textarea id="chatInput" rows="1" placeholder="Ask about settings, results…"></textarea>
+            <button id="chatSendBtn" onclick="sendChat()">Send</button>
+        </div>
+    </div>
+</body>
+</html>

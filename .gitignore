@@ -26,7 +26,6 @@ data/processed/
 
 # Reports & notebooks outputs
 reports/
-*.html
 
 # IDE
 .vscode/
