@@ -333,7 +333,7 @@ def _run_scan(df, case_col, ts_col, act_col_raw, ss_state, file_path):
     try:
         case_lengths = df.groupby(case_col).size()
         p95_len = int(case_lengths.quantile(0.95))
-        auto_max_prefix_len = max(5, min(100, p95_len))
+        auto_max_prefix_len = max(2, min(30, p95_len))
         case_length_stats = {
             "min": int(case_lengths.min()),
             "max": int(case_lengths.max()),
@@ -597,7 +597,7 @@ def api_train():
     except Exception:
         train_ratio, val_ratio = 0.7, 0.15
 
-    max_prefix_len = max(5, min(200, int(request.form.get("max_prefix_len", "30"))))
+    max_prefix_len = max(2, min(30, int(request.form.get("max_prefix_len", "30"))))
     time_budget_s = max(30, min(3600, int(request.form.get("time_budget_s", "300"))))
     min_bucket_samples = max(10, min(1000, int(request.form.get("min_bucket_samples", "100"))))
     bin_size = max(1, min(50, int(request.form.get("bin_size", "5"))))
@@ -929,7 +929,7 @@ def api_quick_compare():
     except Exception:
         train_ratio, val_ratio = 0.7, 0.15
 
-    max_prefix_len = max(5, min(200, int(request.form.get("max_prefix_len", "30"))))
+    max_prefix_len = max(2, min(30, int(request.form.get("max_prefix_len", "30"))))
     min_bucket_samples = max(10, min(1000, int(request.form.get("min_bucket_samples", "100"))))
     bin_size = max(1, min(50, int(request.form.get("bin_size", "5"))))
     effective_min_class = min_class_samples_user if rare_class_enabled else 0
