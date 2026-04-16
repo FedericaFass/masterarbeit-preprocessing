@@ -30,7 +30,7 @@ from ppm_preprocessing.webapp.pipeline_runner import run_pipeline, run_strategy_
 ROOT = Path(__file__).resolve().parents[3]  # project root
 
 app = Flask(__name__, template_folder=str(Path(__file__).parent / "templates"))
-app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500 MB upload limit
+app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024 * 1024  # 2 GB upload limit
 # Use a stable secret key from env so sessions survive restarts.
 # Falls back to a random key (sessions lost on restart — fine for dev).
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", secrets.token_hex(32))
