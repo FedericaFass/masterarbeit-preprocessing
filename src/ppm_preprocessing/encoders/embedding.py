@@ -247,30 +247,36 @@ class EmbeddingEncoder(Encoder):
         emb_lookup = self.activity_embeddings_
         emb_dim = self.emb_dim_
 
-        # Activity embeddings (mean + last)
+        # Activity embeddings (mean + last) — pre-build matrix, then slice-assign rows
         seqs = df[c.prefix_col].to_numpy()
+        mean_embs = np.empty((n, emb_dim), dtype=np.float32)
+        last_embs = np.empty((n, emb_dim), dtype=np.float32)
         for i in range(n):
             seq = seqs[i]
             if not isinstance(seq, list) or len(seq) == 0:
-                X[i, :emb_dim] = unk
-                X[i, emb_dim: 2 * emb_dim] = unk
+                mean_embs[i] = unk
+                last_embs[i] = unk
             else:
                 vecs = np.array(
                     [emb_lookup.get(str(a), unk) for a in seq],
                     dtype=np.float32,
                 )
-                X[i, :emb_dim] = vecs.mean(axis=0)
-                X[i, emb_dim: 2 * emb_dim] = vecs[-1]
+                mean_embs[i] = vecs.mean(axis=0)
+                last_embs[i] = vecs[-1]
+        X[:, :emb_dim] = mean_embs
+        X[:, emb_dim: 2 * emb_dim] = last_embs
 
-        # Categorical embeddings
+        # Categorical embeddings — vectorized: one list-comp + single matrix assign per col
         offset = 2 * emb_dim
         for col in self.categorical_cols_:
             col_lookup = self.categorical_embeddings_.get(col, {})
             col_unk = self.categorical_unk_embeddings_.get(col, unk)
             if col in df.columns:
                 vals = df[col].astype(str).fillna(UNK_TOKEN).to_numpy()
-                for i in range(n):
-                    X[i, offset: offset + emb_dim] = col_lookup.get(vals[i], col_unk)
+                col_matrix = np.array(
+                    [col_lookup.get(v, col_unk) for v in vals], dtype=np.float32
+                )
+                X[:, offset: offset + emb_dim] = col_matrix
             else:
                 X[:, offset: offset + emb_dim] = col_unk
             offset += emb_dim
