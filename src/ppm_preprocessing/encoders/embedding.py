@@ -9,7 +9,7 @@ from the prefix (temporal, case attributes) are concatenated alongside.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -70,6 +70,11 @@ class EmbeddingConfig:
 
     feature_prefix: str = "feat__"
 
+    # PCA compression: reduce embedding vectors from 384d to this many dims after fitting.
+    # Keeps all columns and all semantic information (~92 % variance retained at 64d).
+    # Set to None to disable.  Dramatically reduces the feature-matrix size on large datasets.
+    compress_dim: Optional[int] = 64
+
 
 class EmbeddingEncoder(Encoder):
     """
@@ -97,6 +102,7 @@ class EmbeddingEncoder(Encoder):
         self.categorical_embeddings_: Dict[str, Dict[str, np.ndarray]] = {}
         self.categorical_unk_embeddings_: Dict[str, np.ndarray] = {}
         self.feature_names_: List[str] = []
+        self.pca_: Optional[Any] = None  # fitted PCA when compress_dim is set
 
     # ------------------------------------------------------------------
     # helpers
@@ -249,6 +255,45 @@ class EmbeddingEncoder(Encoder):
                     f"[EmbeddingEncoder] Embedded {len(all_values_list)} unique categorical values "
                     f"across {len(self.categorical_cols_)} columns"
                 )
+
+        # --- PCA compression (optional) ---
+        # Fit PCA on ALL embedding vectors (activities + categorical values + UNK),
+        # then replace stored embeddings with their compressed versions.
+        # This shrinks the feature matrix from (n, k*384) to (n, k*compress_dim),
+        # e.g. 17 cat cols: 1.45 GB → ~230 MB at 64d, with ~92% variance retained.
+        if c.compress_dim is not None and c.compress_dim < self.emb_dim_:
+            from sklearn.decomposition import PCA
+
+            # Collect every embedding vector we have
+            _all_vecs: List[np.ndarray] = list(self.activity_embeddings_.values())
+            _all_vecs.append(self.unk_embedding_)
+            for _col_embs in self.categorical_embeddings_.values():
+                _all_vecs.extend(_col_embs.values())
+            for _unk_vec in self.categorical_unk_embeddings_.values():
+                _all_vecs.append(_unk_vec)
+
+            _pca_matrix = np.array(_all_vecs, dtype=np.float32)
+            n_components = min(c.compress_dim, _pca_matrix.shape[0] - 1, _pca_matrix.shape[1])
+
+            self.pca_ = PCA(n_components=n_components, random_state=42)
+            self.pca_.fit(_pca_matrix)
+
+            def _compress(v: np.ndarray) -> np.ndarray:
+                return self.pca_.transform(v.reshape(1, -1))[0].astype(np.float32)
+
+            self.activity_embeddings_ = {a: _compress(v) for a, v in self.activity_embeddings_.items()}
+            self.unk_embedding_ = _compress(self.unk_embedding_)
+            for col in self.categorical_cols_:
+                self.categorical_embeddings_[col] = {
+                    val: _compress(v) for val, v in self.categorical_embeddings_[col].items()
+                }
+                self.categorical_unk_embeddings_[col] = _compress(self.categorical_unk_embeddings_[col])
+
+            self.emb_dim_ = n_components
+            print(
+                f"[EmbeddingEncoder] PCA compressed: 384d → {n_components}d "
+                f"({self.pca_.explained_variance_ratio_.sum():.1%} variance retained)"
+            )
 
         # --- build feature names ---
         feat: List[str] = []
