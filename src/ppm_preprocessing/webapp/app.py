@@ -560,13 +560,26 @@ def api_train():
         ss_state["bundle_path"] = None
         ss_state["train_steps"] = []
 
+    _NON_PREPROCESSING_STEPS = {
+        "single_task_report_examples",
+        "single_task_persist_model",
+        "single_task_test_evaluation",
+        "test_evaluation",
+        "single_task_feature_importance",
+        "feature_importance",
+        "visualize_results",
+        "single_task_automl_train",
+    }
+
     def _on_progress(msg: str):
         import json as _json
         import logging as _logging
         with ss_state["train_lock"]:
             if msg.startswith("__STEP__:"):
                 try:
-                    ss_state["train_steps"].append(_json.loads(msg[9:]))
+                    _step = _json.loads(msg[9:])
+                    if _step.get("step") not in _NON_PREPROCESSING_STEPS:
+                        ss_state["train_steps"].append(_step)
                 except Exception as _e:
                     _logging.warning(f"[train_steps] JSON parse failed: {_e!r} | msg[:200]={msg[:200]!r}")
             else:
@@ -971,6 +984,8 @@ def api_quick_compare():
                 if msg.startswith("__STEP__:"):
                     try:
                         step_data = _json.loads(msg[9:])
+                        if step_data.get("step") in _NON_PREPROCESSING_STEPS:
+                            return
                         step_data["variant"] = _label
                         step_data["variant_index"] = _i
                         with ss_state["compare_lock"]:
