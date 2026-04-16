@@ -128,10 +128,15 @@ class EmbeddingEncoder(Encoder):
         if len(sample) == 0:
             return False
         try:
-            parsed = pd.to_datetime(sample, errors="coerce", utc=False)
+            # format='mixed' (pandas >= 2.0) suppresses the dateutil-fallback UserWarning.
+            parsed = pd.to_datetime(sample, errors="coerce", format="mixed")
             return parsed.notna().mean() >= 0.8
-        except Exception:
-            return False
+        except (TypeError, ValueError):
+            try:
+                parsed = pd.to_datetime(sample, errors="coerce")
+                return parsed.notna().mean() >= 0.8
+            except Exception:
+                return False
 
     def _discover_columns(self, df: pd.DataFrame) -> Tuple[List[str], List[str]]:
         ignore = set(self._default_ignore())
@@ -270,22 +275,62 @@ class EmbeddingEncoder(Encoder):
         emb_lookup = self.activity_embeddings_
         emb_dim = self.emb_dim_
 
-        # Activity embeddings (mean + last) — pre-build matrix, then slice-assign rows
+        # Activity embeddings (mean + last) — vectorised via numpy gather + chunking.
+        # Build a matrix [vocab+1, emb_dim] where index len(vocab) is the UNK row.
         seqs = df[c.prefix_col].to_numpy()
         mean_embs = np.empty((n, emb_dim), dtype=np.float32)
         last_embs = np.empty((n, emb_dim), dtype=np.float32)
-        for i in range(n):
-            seq = seqs[i]
-            if not isinstance(seq, list) or len(seq) == 0:
-                mean_embs[i] = unk
-                last_embs[i] = unk
-            else:
-                vecs = np.array(
-                    [emb_lookup.get(str(a), unk) for a in seq],
-                    dtype=np.float32,
-                )
-                mean_embs[i] = vecs.mean(axis=0)
-                last_embs[i] = vecs[-1]
+
+        _acts = list(emb_lookup.keys())
+        _act_to_idx = {a: i for i, a in enumerate(_acts)}
+        _unk_idx = len(_acts)
+        _emb_matrix = np.empty((_unk_idx + 1, emb_dim), dtype=np.float32)
+        for _i, _a in enumerate(_acts):
+            _emb_matrix[_i] = emb_lookup[_a]
+        _emb_matrix[_unk_idx] = unk  # UNK / padding row
+
+        # Pre-compute sequence lengths
+        _seq_lens = np.array(
+            [len(s) if isinstance(s, list) and len(s) > 0 else 0 for s in seqs],
+            dtype=np.int32,
+        )
+        _max_seq = int(_seq_lens.max()) if _seq_lens.max() > 0 else 1
+
+        # Process in chunks to avoid allocating a full (n × max_seq × emb_dim) 3-D tensor.
+        # Target ≤ 50 M float32 elements per chunk.
+        _CHUNK = max(1, 50_000_000 // (_max_seq * emb_dim))
+        for _start in range(0, n, _CHUNK):
+            _end = min(_start + _CHUNK, n)
+            _cn = _end - _start
+            _chunk_seqs = seqs[_start:_end]
+            _chunk_lens = _seq_lens[_start:_end]
+
+            # Build integer index matrix — UNK fills padding positions.
+            _idx = np.full((_cn, _max_seq), _unk_idx, dtype=np.int32)
+            for _ci, _seq in enumerate(_chunk_seqs):
+                if isinstance(_seq, list):
+                    for _j, _a in enumerate(_seq[:_max_seq]):
+                        _idx[_ci, _j] = _act_to_idx.get(str(_a), _unk_idx)
+
+            # Gather: (_cn, _max_seq, emb_dim)
+            _vecs = _emb_matrix[_idx]
+
+            # Mean over valid (non-padded) positions
+            _mask = (np.arange(_max_seq) < _chunk_lens[:, None]).astype(np.float32)
+            _sum = (_vecs * _mask[:, :, None]).sum(axis=1)          # (_cn, emb_dim)
+            _count = _chunk_lens[:, None].astype(np.float32).clip(min=1.0)
+            mean_embs[_start:_end] = _sum / _count
+
+            # Last valid event
+            _last_idx = np.maximum(_chunk_lens - 1, 0)
+            last_embs[_start:_end] = _vecs[np.arange(_cn), _last_idx]
+
+            # Empty sequences → UNK for both mean and last
+            _empty = _chunk_lens == 0
+            if _empty.any():
+                mean_embs[_start:_end][_empty] = unk
+                last_embs[_start:_end][_empty] = unk
+
         X[:, :emb_dim] = mean_embs
         X[:, emb_dim: 2 * emb_dim] = last_embs
 
