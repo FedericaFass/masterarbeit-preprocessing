@@ -121,6 +121,18 @@ class EmbeddingEncoder(Encoder):
             base += list(c.ignore_cols)
         return list(dict.fromkeys(base))
 
+    @staticmethod
+    def _looks_like_dates(series: "pd.Series") -> bool:
+        """Return True if the column values look like date/timestamp strings."""
+        sample = series.dropna().astype(str).head(20)
+        if len(sample) == 0:
+            return False
+        try:
+            parsed = pd.to_datetime(sample, errors="coerce", utc=False)
+            return parsed.notna().mean() >= 0.8
+        except Exception:
+            return False
+
     def _discover_columns(self, df: pd.DataFrame) -> Tuple[List[str], List[str]]:
         ignore = set(self._default_ignore())
         num_cols: List[str] = []
@@ -133,6 +145,17 @@ class EmbeddingEncoder(Encoder):
             elif pd.api.types.is_numeric_dtype(df[col]):
                 num_cols.append(col)
             else:
+                # Skip columns that would produce giant feature matrices with no
+                # semantic embedding signal. Other encoders (LastState, Aggregation,
+                # IndexPayload) are NOT affected — they keep every column.
+                n_unique = df[col].nunique()
+                if self._looks_like_dates(df[col]):
+                    # Date strings: "2015-03-15", "T08:00:00+01:00", etc.
+                    continue
+                if n_unique > 500:
+                    # High-cardinality IDs / free text: no embedding signal,
+                    # would create a matrix too large for available RAM.
+                    continue
                 cat_cols.append(col)
         return num_cols, cat_cols
 
