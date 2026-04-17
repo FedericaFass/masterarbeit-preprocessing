@@ -1215,7 +1215,7 @@
 
                 <!-- ── Compare trigger row ── -->
                 <div style="display:flex; align-items:center; gap:1rem; margin-top:1rem; flex-wrap:wrap;">
-                    <button class="btn btn-ghost" id="runCompareBtn" onclick="startStepThreeCompare()">
+                    <button id="runCompareBtn" onclick="startStepThreeCompare()" style="background:#22c55e;color:#fff;border:none;border-radius:8px;padding:0.6rem 1.4rem;font-size:1rem;font-weight:600;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'">
                         Run Comparison
                     </button>
                     <div style="font-size:0.78rem; color:var(--text-muted);">
@@ -1428,6 +1428,8 @@
         let pollInterval = null;
         let scannedColumns = null;
         let scannedEventAttrCols = null;
+        let scannedEmptyCols = null;
+        let scannedNumEvents = 0;
         let lifecycleInfo = null;
 
         const TASK_LABELS = { remaining_time: 'Remaining Time', next_activity: 'Next Event Attr', outcome: 'Outcome' };
@@ -1505,7 +1507,7 @@
             document.getElementById('colMappingSection').style.display = 'none';
             if (data.columns) { scannedColumns = data.columns; }
             populateOutcomeDropdown(data.outcome_columns || data.columns || []);
-            if (data.empty_columns) { populateEmptyColumns(data.empty_columns, data.num_events || 0); }
+            if (data.empty_columns) { scannedEmptyCols = data.empty_columns; scannedNumEvents = data.num_events || 0; populateEmptyColumns(scannedEmptyCols, scannedNumEvents); }
             if (data.event_attr_columns) { scannedEventAttrCols = data.event_attr_columns; populateNextAttrDropdown(data.event_attr_columns); }
             if (data.lifecycle_info) { lifecycleInfo = data.lifecycle_info; showLifecycleFilter(data.lifecycle_info); }
             if (data.activity_counts || data.case_duration_stats) { renderLogOverview(data); }
@@ -1708,6 +1710,7 @@
                     sampleDiv.textContent = 'Sample values: ' + ci.sample.join(', ') + (ci.n_unique > ci.sample.length ? ' ...' : '');
                 } else { sampleDiv.textContent = ''; }
             }
+            if (scannedEmptyCols) { populateEmptyColumns(scannedEmptyCols, scannedNumEvents); }
             onConfigChange();
         }
 
@@ -1759,22 +1762,18 @@
             var section = document.getElementById('emptyColumnsSection');
             var tbody = document.getElementById('emptyColumnsBody');
             tbody.innerHTML = '';
-            var cols = emptyCols;
+            var prot = _getProtectedCols();
+            // exclude protected columns (core event cols + selected prediction target)
+            var cols = emptyCols.filter(function(c) { return !prot.has(c.column); });
             if (!cols.length) { section.style.display = 'none'; return; }
             section.style.display = '';
-            var prot = _getProtectedCols();
             cols.forEach(function(c) {
-                var isProtected = prot.has(c.column);
-                var suggestDrop = !isProtected && c.null_pct >= 50;
+                var suggestDrop = c.null_pct >= 50;
                 var barColor = c.null_pct >= 80 ? 'var(--danger)' : c.null_pct >= 50 ? 'var(--warning)' : 'var(--info)';
                 var tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid var(--border)';
-                var checkCell = isProtected
-                    ? '<td style="padding:0.45rem 0.75rem;"><input type="checkbox" class="empty-col-check" data-col="' + c.column + '" disabled title="Protected column — cannot be dropped" style="opacity:0.35; cursor:not-allowed;"></td>'
-                    : '<td style="padding:0.45rem 0.75rem;"><input type="checkbox" class="empty-col-check" data-col="' + c.column + '" ' + (suggestDrop ? 'checked' : '') + ' onchange="updateEmptyDropCount(); onConfigChange()"></td>';
-                var nameCell = isProtected
-                    ? '<td style="padding:0.45rem 0.75rem; font-weight:500; color:var(--text-muted);">' + c.column + ' <span style="font-size:0.7rem; background:var(--border); color:var(--text-muted); padding:1px 5px; border-radius:3px;">protected</span></td>'
-                    : '<td style="padding:0.45rem 0.75rem; font-weight:500;">' + c.column + '</td>';
+                var checkCell = '<td style="padding:0.45rem 0.75rem;"><input type="checkbox" class="empty-col-check" data-col="' + c.column + '" ' + (suggestDrop ? 'checked' : '') + ' onchange="updateEmptyDropCount(); onConfigChange()"></td>';
+                var nameCell = '<td style="padding:0.45rem 0.75rem; font-weight:500;">' + c.column + '</td>';
                 tr.innerHTML = checkCell + nameCell +
                     '<td style="padding:0.45rem 0.75rem;">' +
                         '<div style="display:flex; align-items:center; gap:6px;">' +
@@ -1833,6 +1832,7 @@
             var html = vals.slice(0, 20).map(v => '<span class="outcome-tag">' + v + '</span>').join('');
             if (vals.length > 20) html += '<span style="color:var(--text-muted); font-size:0.75rem;"> +' + (vals.length - 20) + ' more</span>';
             list.innerHTML = html;
+            if (scannedEmptyCols) { populateEmptyColumns(scannedEmptyCols, scannedNumEvents); }
         }
 
         // ============ STEP 2 ============
@@ -1854,6 +1854,7 @@
             }
             document.getElementById('outcomeConfig').style.display = selectedTask === 'outcome' ? '' : 'none';
             document.getElementById('nextAttrConfig').style.display = selectedTask === 'next_activity' ? '' : 'none';
+            if (scannedEmptyCols) { populateEmptyColumns(scannedEmptyCols, scannedNumEvents); }
             onConfigChange();
         }
         markCompleted(2); markCompleted(3);
@@ -2351,6 +2352,7 @@
             'impute_missing_attributes': 'Impute Missing Attributes',
             'concept_drift_window': 'Time Window Filter',
             'filter_rare_variants': 'Filter Rare Variants',
+            'prefix_extraction': 'Prefix Extraction',
             'prefix_features': 'Prefix & Feature Extraction',
             'case_split': 'Case Split',
         };

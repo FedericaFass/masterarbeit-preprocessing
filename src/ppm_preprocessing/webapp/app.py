@@ -35,6 +35,19 @@ app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024 * 1024  # 2 GB upload limit
 # Falls back to a random key (sessions lost on restart — fine for dev).
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", secrets.token_hex(32))
 
+# Steps that belong to post-preprocessing phases (AutoML, evaluation, etc.)
+# and should be hidden from the live preprocessing pipeline visualisation.
+_NON_PREPROCESSING_STEPS = {
+    "single_task_report_examples",
+    "single_task_persist_model",
+    "single_task_test_evaluation",
+    "test_evaluation",
+    "single_task_feature_importance",
+    "feature_importance",
+    "visualize_results",
+    "single_task_automl_train",
+}
+
 # ---------------------------------------------------------------------------
 # Per-session state
 # ---------------------------------------------------------------------------
@@ -559,17 +572,6 @@ def api_train():
         ss_state["train_result"] = None
         ss_state["bundle_path"] = None
         ss_state["train_steps"] = []
-
-    _NON_PREPROCESSING_STEPS = {
-        "single_task_report_examples",
-        "single_task_persist_model",
-        "single_task_test_evaluation",
-        "test_evaluation",
-        "single_task_feature_importance",
-        "feature_importance",
-        "visualize_results",
-        "single_task_automl_train",
-    }
 
     def _on_progress(msg: str):
         import json as _json

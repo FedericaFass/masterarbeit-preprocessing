@@ -942,6 +942,31 @@ def run_strategy_search_only(
             ctx,
             "Extracting prefixes...",
         )
+        # Emit prefix_features info card (same as full pipeline)
+        _ps = ctx.artifacts.get("prefix_samples")
+        _step_data({
+            "step": "prefix_features",
+            "label": "Prefix & Feature Extraction",
+            "before_rows": None,
+            "after_rows": int(len(_ps)) if _ps is not None else None,
+            "before_cases": None,
+            "after_cases": None,
+            "qc": {
+                "label_column": task.label_col,
+                "time_features_added": [
+                    "feat_elapsed_time_sec",
+                    "feat_time_since_last_event_sec",
+                    "feat_elapsed_time_log1p",
+                    "feat_time_since_last_log1p",
+                    "feat_prefix_end_hour",
+                    "feat_prefix_end_weekday",
+                    "feat_prefix_end_is_weekend",
+                    "feat_prefix_end_month",
+                ],
+                "max_prefix_len": max_prefix_len,
+                "total_prefix_rows": int(len(_ps)) if _ps is not None else None,
+            },
+        })
 
         # 6. Case split
         split_method2 = "temporal" if temporal_split else "random"
