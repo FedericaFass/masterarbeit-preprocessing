@@ -273,7 +273,13 @@ def _run_scan(df, case_col, ts_col, act_col_raw, ss_state, file_path):
         n_uniq_oc = int(vals_oc.nunique())
         if n_uniq_oc < 2 or n_uniq_oc > 100:
             continue
-        outcome_columns.append({"column": col, "n_unique": n_uniq_oc})
+        # Use the normalized name "activity" for the activity column (same as event_attr_columns)
+        display_col = "activity" if col == act_col_raw else col
+        outcome_columns.append({
+            "column": display_col,
+            "n_unique": n_uniq_oc,
+            "values": sorted(vals_oc.unique().tolist())[:30],
+        })
     outcome_columns.sort(key=lambda x: x["n_unique"])
 
     activity_counts = []

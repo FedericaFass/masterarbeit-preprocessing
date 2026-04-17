@@ -1240,6 +1240,11 @@
                 <!-- ── Comparison results (shown after first run) ── -->
                 <div id="s3CompareResults" style="display:none; margin-top:1.2rem;">
 
+                    <!-- Improvement banner (shown when Your Config beats Baseline) -->
+                    <div id="s3ImprovementBanner" style="display:none; margin-bottom:1rem; padding:1rem 1.2rem; border-radius:8px; background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1.5px solid #86efac;">
+                        <div id="s3ImprovementContent"></div>
+                    </div>
+
                     <!-- Metrics table -->
                     <div class="card">
                         <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.8rem;">
@@ -1357,6 +1362,11 @@
                             <div class="card-title" style="margin:0;">Run Comparison</div>
                             <button onclick="clearRunHistory()" style="font-size:0.75rem; color:var(--text-muted); background:none; border:none; cursor:pointer; padding:2px 6px; border-radius:4px;" title="Clear history">Clear</button>
                         </div>
+                        <!-- Best result highlight box -->
+                        <div id="bestRunBox" style="display:none; margin-bottom:1rem; padding:0.85rem 1.1rem; border-radius:8px; background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1.5px solid #86efac;">
+                            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#15803d;margin-bottom:0.4rem;">Best Result</div>
+                            <div id="bestRunContent" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;"></div>
+                        </div>
                         <div style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:0.8rem;">
                             Each row is one training run. Change settings (e.g. toggle outlier detection, drop a column) and re-train to compare results.
                         </div>
@@ -1428,6 +1438,7 @@
         let pollInterval = null;
         let scannedColumns = null;
         let scannedEventAttrCols = null;
+        let scannedOutcomeCols = null;
         let scannedEmptyCols = null;
         let scannedNumEvents = 0;
         let lifecycleInfo = null;
@@ -1506,6 +1517,7 @@
         function applyScanResult(data) {
             document.getElementById('colMappingSection').style.display = 'none';
             if (data.columns) { scannedColumns = data.columns; }
+            if (data.outcome_columns) { scannedOutcomeCols = data.outcome_columns; }
             populateOutcomeDropdown(data.outcome_columns || data.columns || []);
             if (data.empty_columns) { scannedEmptyCols = data.empty_columns; scannedNumEvents = data.num_events || 0; populateEmptyColumns(scannedEmptyCols, scannedNumEvents); }
             if (data.event_attr_columns) { scannedEventAttrCols = data.event_attr_columns; populateNextAttrDropdown(data.event_attr_columns); }
@@ -1824,12 +1836,15 @@
             var col = document.getElementById('outcomeColSelect').value;
             var info = document.getElementById('outcomeValuesInfo');
             var list = document.getElementById('outcomeValuesList');
-            if (!col || !scannedColumns) { info.style.display = 'none'; return; }
-            var ci = scannedColumns.find(c => c.column === col);
-            if (!ci) { info.style.display = 'none'; return; }
+            if (!col) { info.style.display = 'none'; return; }
+            // Look up in scannedOutcomeCols first (has values for all outcome cols including activity),
+            // then fall back to scannedColumns for other columns.
+            var ci = (scannedOutcomeCols && scannedOutcomeCols.find(function(c) { return c.column === col; }))
+                  || (scannedColumns && scannedColumns.find(function(c) { return c.column === col; }));
+            if (!ci || !ci.values || !ci.values.length) { info.style.display = 'none'; return; }
             info.style.display = '';
             var vals = ci.values || [];
-            var html = vals.slice(0, 20).map(v => '<span class="outcome-tag">' + v + '</span>').join('');
+            var html = vals.slice(0, 20).map(function(v) { return '<span class="outcome-tag">' + v + '</span>'; }).join('');
             if (vals.length > 20) html += '<span style="color:var(--text-muted); font-size:0.75rem;"> +' + (vals.length - 20) + ' more</span>';
             list.innerHTML = html;
             if (scannedEmptyCols) { populateEmptyColumns(scannedEmptyCols, scannedNumEvents); }
@@ -2060,6 +2075,48 @@
                 if (!higherIsBetter && r.primary_score < bestScore) bestScore = r.primary_score;
             });
 
+            // Improvement banner: compare Baseline vs Your Config
+            var banner = document.getElementById('s3ImprovementBanner');
+            var bannerContent = document.getElementById('s3ImprovementContent');
+            var baselineR = results.find(function(r) { return r.label === 'Baseline' && r.status === 'success' && r.primary_score != null; });
+            var yourR = results.find(function(r) { return r.label === 'Your Config' && r.status === 'success' && r.primary_score != null; });
+            if (baselineR && yourR && baselineR.primary_score != null && baselineR.primary_score !== 0) {
+                var baseV = baselineR.primary_score, yourV = yourR.primary_score;
+                var improved = higherIsBetter ? (yourV > baseV) : (yourV < baseV);
+                var pct = Math.abs((yourV - baseV) / baseV * 100);
+                banner.style.display = '';
+                if (improved) {
+                    banner.style.background = 'linear-gradient(135deg,#f0fdf4,#dcfce7)';
+                    banner.style.borderColor = '#86efac';
+                    var fmtYour = isClf ? (yourV*100).toFixed(1)+'%' : yourV.toFixed(2);
+                    var fmtBase = isClf ? (baseV*100).toFixed(1)+'%' : baseV.toFixed(2);
+                    var scoreCol = _scoreColor(yourV, isClf);
+                    var stars = _starsHtml(yourV, isClf);
+                    bannerContent.innerHTML =
+                        '<div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;">'
+                        + '<div>'
+                            + '<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#15803d;margin-bottom:2px;">Your Config wins</div>'
+                            + '<div style="font-size:1.6rem;font-weight:800;color:#15803d;line-height:1;">+' + pct.toFixed(1) + '% ' + (isClf ? 'better F1' : 'lower MAE') + '</div>'
+                            + '<div style="color:#166534;font-size:0.78rem;margin-top:2px;">' + fmtBase + ' (Baseline) → <strong style="color:' + scoreCol + '">' + fmtYour + '</strong> (Your Config)</div>'
+                        + '</div>'
+                        + '<div style="border-left:1px solid #86efac;padding-left:1.2rem;">'
+                            + '<div style="font-size:1.3rem;color:' + scoreCol + ';">' + stars + '</div>'
+                            + '<div style="font-size:0.75rem;color:#15803d;margin-top:2px;">' + (isClf ? 'F1 Score quality' : 'MAE quality') + '</div>'
+                        + '</div>'
+                        + '</div>';
+                } else {
+                    banner.style.background = 'linear-gradient(135deg,#fefce8,#fef9c3)';
+                    banner.style.borderColor = '#fde047';
+                    bannerContent.innerHTML =
+                        '<div style="font-size:0.82rem;color:#854d0e;">'
+                        + '<strong>No improvement</strong> — Your Config scores ' + pct.toFixed(1) + '% '
+                        + (isClf ? 'lower F1' : 'higher MAE') + ' than Baseline. Try different settings.'
+                        + '</div>';
+                }
+            } else {
+                banner.style.display = 'none';
+            }
+
             // Table header
             document.getElementById('s3CompareHead').innerHTML =
                 '<tr><th>Configuration</th><th>Best Strategy</th><th>' + metricLabel + '</th></tr>';
@@ -2076,11 +2133,14 @@
                 if (r.status !== 'success') {
                     scoreStr = '<span style="color:var(--danger);font-size:0.8rem;">' + (r.error || 'Error') + '</span>';
                 } else if (r.primary_score != null) {
+                    var sColor = _scoreColor(r.primary_score, isClf);
                     var fmtScore = isClf
                         ? (r.primary_score * 100).toFixed(1) + '%'
-                        : r.primary_score.toFixed(4);
+                        : r.primary_score.toFixed(2);
                     var arrow = isBest ? (higherIsBetter ? ' &#8679;' : ' &#8681;') : '';
-                    scoreStr = '<strong>' + fmtScore + arrow + '</strong>';
+                    scoreStr = '<span style="color:' + sColor + ';font-weight:700;">' + fmtScore + '</span>'
+                        + arrow
+                        + ' <span style="color:' + sColor + ';">' + _starsHtml(r.primary_score, isClf) + '</span>';
                 } else {
                     scoreStr = '-';
                 }
@@ -2360,6 +2420,46 @@
         var _HIDDEN_STEPS = new Set(['qc_report']);
 
         function _fmt(n) { return n != null ? Number(n).toLocaleString() : '—'; }
+
+        // Score color: green ≥0.8, blue-accent ≥0.65, orange ≥0.5, red <0.5 (classification).
+        // For regression (MAE) invert: green ≤1 day, accent ≤3, orange ≤7, red >7.
+        function _scoreColor(v, isClf) {
+            if (v == null) return 'var(--text-muted)';
+            if (isClf) {
+                if (v >= 0.80) return '#16a34a';       // green
+                if (v >= 0.65) return 'var(--accent)'; // blue
+                if (v >= 0.50) return '#d97706';        // orange
+                return '#dc2626';                       // red
+            } else {
+                if (v <= 1)  return '#16a34a';
+                if (v <= 3)  return 'var(--accent)';
+                if (v <= 7)  return '#d97706';
+                return '#dc2626';
+            }
+        }
+
+        // Star rating: 1–5 ★ for classification F1 (0=1★, 1=5★) or MAE invert.
+        function _starsHtml(v, isClf) {
+            if (v == null) return '';
+            var n;
+            if (isClf) {
+                if (v >= 0.85) n = 5;
+                else if (v >= 0.75) n = 4;
+                else if (v >= 0.60) n = 3;
+                else if (v >= 0.45) n = 2;
+                else n = 1;
+            } else {
+                if (v <= 0.5) n = 5;
+                else if (v <= 1.5) n = 4;
+                else if (v <= 3) n = 3;
+                else if (v <= 7) n = 2;
+                else n = 1;
+            }
+            var html = '<span style="font-size:0.75rem;letter-spacing:1px;">';
+            for (var i = 0; i < 5; i++) html += (i < n ? '★' : '☆');
+            html += '</span>';
+            return html;
+        }
         function _esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
         function _renderStepExtra(s) {
@@ -2611,12 +2711,14 @@
             var head = document.getElementById('runHistoryHead');
             var body = document.getElementById('runHistoryBody');
             var empty = document.getElementById('runHistoryEmpty');
+            var bestBox = document.getElementById('bestRunBox');
+            var bestContent = document.getElementById('bestRunContent');
             if (!runs || !runs.length) {
                 head.innerHTML = ''; body.innerHTML = '';
-                empty.style.display = ''; return;
+                empty.style.display = ''; bestBox.style.display = 'none'; return;
             }
             empty.style.display = 'none';
-            var isClf = runs.some(r => r.f1_macro !== null && r.f1_macro !== undefined);
+            var isClf = runs.some(function(r) { return r.f1_macro !== null && r.f1_macro !== undefined; });
             // Header
             var th = '<tr>';
             th += '<th>#</th><th>Time</th><th>Task</th><th>Outlier Det.</th><th>Cols Dropped</th>';
@@ -2627,15 +2729,46 @@
             head.innerHTML = th;
             // Find best metric for highlighting
             var metricKey = isClf ? 'f1_macro' : 'mae_days';
-            var bestVal = null;
-            runs.forEach(r => {
+            var bestVal = null, bestRun = null;
+            runs.forEach(function(r) {
                 var v = r[metricKey];
                 if (v !== null && v !== undefined) {
-                    if (bestVal === null) bestVal = v;
-                    else if (isClf && v > bestVal) bestVal = v;
-                    else if (!isClf && v < bestVal) bestVal = v;
+                    if (bestVal === null || (isClf && v > bestVal) || (!isClf && v < bestVal)) {
+                        bestVal = v; bestRun = r;
+                    }
                 }
             });
+            // Best result box
+            if (bestRun) {
+                bestBox.style.display = '';
+                var scoreColor = _scoreColor(isClf ? bestRun.f1_macro : bestRun.mae_days, isClf);
+                var stars1 = _starsHtml(isClf ? bestRun.f1_macro : bestRun.mae_days, isClf);
+                var bhtml = '';
+                if (isClf) {
+                    bhtml += '<div><div style="font-size:0.68rem;color:#15803d;margin-bottom:1px;">F1 Macro</div>'
+                        + '<div style="font-size:1.5rem;font-weight:700;color:' + scoreColor + ';line-height:1;">' + (bestRun.f1_macro*100).toFixed(1) + '%</div>'
+                        + '<div style="color:' + scoreColor + ';">' + stars1 + '</div></div>';
+                    if (bestRun.f1_micro != null) {
+                        var stars2 = _starsHtml(bestRun.f1_micro, true);
+                        var col2 = _scoreColor(bestRun.f1_micro, true);
+                        bhtml += '<div style="border-left:1px solid #86efac;padding-left:1.5rem;">'
+                            + '<div style="font-size:0.68rem;color:#15803d;margin-bottom:1px;">F1 Micro</div>'
+                            + '<div style="font-size:1.5rem;font-weight:700;color:' + col2 + ';line-height:1;">' + (bestRun.f1_micro*100).toFixed(1) + '%</div>'
+                            + '<div style="color:' + col2 + ';">' + stars2 + '</div></div>';
+                    }
+                } else {
+                    bhtml += '<div><div style="font-size:0.68rem;color:#15803d;margin-bottom:1px;">MAE</div>'
+                        + '<div style="font-size:1.5rem;font-weight:700;color:' + scoreColor + ';line-height:1;">' + bestRun.mae_days.toFixed(2) + ' days</div>'
+                        + '<div style="color:' + scoreColor + ';">' + stars1 + '</div></div>';
+                }
+                bhtml += '<div style="border-left:1px solid #86efac;padding-left:1.5rem;font-size:0.82rem;color:#166534;">'
+                    + '<div><strong>' + (bestRun.bucketing||'-') + '</strong> + <strong>' + (bestRun.encoding||'-') + '</strong></div>'
+                    + '<div style="margin-top:0.2rem;color:#15803d;">Run #' + bestRun.run_id + ' &nbsp;·&nbsp; ' + (TASK_LABELS[bestRun.task]||bestRun.task) + '</div>'
+                    + '</div>';
+                bestContent.innerHTML = bhtml;
+            } else {
+                bestBox.style.display = 'none';
+            }
             body.innerHTML = '';
             runs.forEach(function(r) {
                 var isBest = r[metricKey] !== null && r[metricKey] !== undefined && r[metricKey] === bestVal;
@@ -2649,11 +2782,27 @@
                     : '<span style="color:var(--text-muted)">OFF</span>';
                 var metric1 = '', metric2 = '';
                 if (isClf) {
-                    metric1 = r.f1_macro !== null && r.f1_macro !== undefined ? '<strong>' + (r.f1_macro*100).toFixed(1) + '%</strong>' : '-';
-                    metric2 = r.f1_micro !== null && r.f1_micro !== undefined ? (r.f1_micro*100).toFixed(1) + '%' : '-';
+                    var c1 = _scoreColor(r.f1_macro, true);
+                    var c2 = _scoreColor(r.f1_micro, true);
+                    metric1 = r.f1_macro != null
+                        ? '<span style="color:' + c1 + ';font-weight:700;">' + (r.f1_macro*100).toFixed(1) + '%</span>'
+                          + ' <span style="color:' + c1 + ';">' + _starsHtml(r.f1_macro, true) + '</span>'
+                        : '-';
+                    metric2 = r.f1_micro != null
+                        ? '<span style="color:' + c2 + ';font-weight:600;">' + (r.f1_micro*100).toFixed(1) + '%</span>'
+                          + ' <span style="color:' + c2 + ';">' + _starsHtml(r.f1_micro, true) + '</span>'
+                        : '-';
                 } else {
-                    metric1 = r.mae_days !== null && r.mae_days !== undefined ? '<strong>' + r.mae_days.toFixed(3) + '</strong>' : '-';
-                    metric2 = r.median_ae_days !== null && r.median_ae_days !== undefined ? r.median_ae_days.toFixed(3) : '-';
+                    var cm1 = _scoreColor(r.mae_days, false);
+                    var cm2 = _scoreColor(r.median_ae_days, false);
+                    metric1 = r.mae_days != null
+                        ? '<span style="color:' + cm1 + ';font-weight:700;">' + r.mae_days.toFixed(3) + '</span>'
+                          + ' <span style="color:' + cm1 + ';">' + _starsHtml(r.mae_days, false) + '</span>'
+                        : '-';
+                    metric2 = r.median_ae_days != null
+                        ? '<span style="color:' + cm2 + ';font-weight:600;">' + r.median_ae_days.toFixed(3) + '</span>'
+                          + ' <span style="color:' + cm2 + ';">' + _starsHtml(r.median_ae_days, false) + '</span>'
+                        : '-';
                 }
                 tr.innerHTML =
                     '<td>' + r.run_id + (isBest ? ' &#127942;' : '') + '</td>' +
