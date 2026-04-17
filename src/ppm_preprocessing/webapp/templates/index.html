@@ -2090,20 +2090,21 @@
                     banner.style.borderColor = '#86efac';
                     var fmtYour = isClf ? (yourV*100).toFixed(1)+'%' : yourV.toFixed(2);
                     var fmtBase = isClf ? (baseV*100).toFixed(1)+'%' : baseV.toFixed(2);
-                    var scoreCol = _scoreColor(yourV, isClf);
-                    var stars = _starsHtml(yourV, isClf);
-                    bannerContent.innerHTML =
-                        '<div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;">'
+                    var bhtml = '<div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;">'
                         + '<div>'
                             + '<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#15803d;margin-bottom:2px;">Your Config wins</div>'
                             + '<div style="font-size:1.6rem;font-weight:800;color:#15803d;line-height:1;">+' + pct.toFixed(1) + '% ' + (isClf ? 'better F1' : 'lower MAE') + '</div>'
-                            + '<div style="color:#166534;font-size:0.78rem;margin-top:2px;">' + fmtBase + ' (Baseline) → <strong style="color:' + scoreCol + '">' + fmtYour + '</strong> (Your Config)</div>'
-                        + '</div>'
-                        + '<div style="border-left:1px solid #86efac;padding-left:1.2rem;">'
-                            + '<div style="font-size:1.3rem;color:' + scoreCol + ';">' + stars + '</div>'
-                            + '<div style="font-size:0.75rem;color:#15803d;margin-top:2px;">' + (isClf ? 'F1 Score quality' : 'MAE quality') + '</div>'
-                        + '</div>'
+                            + '<div style="color:#166534;font-size:0.78rem;margin-top:2px;">' + fmtBase + ' (Baseline) → <strong>' + fmtYour + '</strong> (Your Config)</div>'
                         + '</div>';
+                    if (isClf) {
+                        var scoreCol = _scoreColor(yourV, true);
+                        bhtml += '<div style="border-left:1px solid #86efac;padding-left:1.2rem;">'
+                            + '<div style="font-size:1.3rem;color:' + scoreCol + ';">' + _starsHtml(yourV, true) + '</div>'
+                            + '<div style="font-size:0.75rem;color:#15803d;margin-top:2px;">F1 Score quality</div>'
+                            + '</div>';
+                    }
+                    bhtml += '</div>';
+                    bannerContent.innerHTML = bhtml;
                 } else {
                     banner.style.background = 'linear-gradient(135deg,#fefce8,#fef9c3)';
                     banner.style.borderColor = '#fde047';
@@ -2133,14 +2134,14 @@
                 if (r.status !== 'success') {
                     scoreStr = '<span style="color:var(--danger);font-size:0.8rem;">' + (r.error || 'Error') + '</span>';
                 } else if (r.primary_score != null) {
-                    var sColor = _scoreColor(r.primary_score, isClf);
-                    var fmtScore = isClf
-                        ? (r.primary_score * 100).toFixed(1) + '%'
-                        : r.primary_score.toFixed(2);
                     var arrow = isBest ? (higherIsBetter ? ' &#8679;' : ' &#8681;') : '';
-                    scoreStr = '<span style="color:' + sColor + ';font-weight:700;">' + fmtScore + '</span>'
-                        + arrow
-                        + ' <span style="color:' + sColor + ';">' + _starsHtml(r.primary_score, isClf) + '</span>';
+                    if (isClf) {
+                        var sColor = _scoreColor(r.primary_score, true);
+                        scoreStr = '<span style="color:' + sColor + ';font-weight:700;">' + (r.primary_score*100).toFixed(1) + '%</span>'
+                            + arrow + ' <span style="color:' + sColor + ';">' + _starsHtml(r.primary_score, true) + '</span>';
+                    } else {
+                        scoreStr = '<strong>' + r.primary_score.toFixed(2) + '</strong>' + arrow;
+                    }
                 } else {
                     scoreStr = '-';
                 }
@@ -2741,25 +2742,24 @@
             // Best result box
             if (bestRun) {
                 bestBox.style.display = '';
-                var scoreColor = _scoreColor(isClf ? bestRun.f1_macro : bestRun.mae_days, isClf);
-                var stars1 = _starsHtml(isClf ? bestRun.f1_macro : bestRun.mae_days, isClf);
                 var bhtml = '';
                 if (isClf) {
+                    var scoreColor = _scoreColor(bestRun.f1_macro, true);
                     bhtml += '<div><div style="font-size:0.68rem;color:#15803d;margin-bottom:1px;">F1 Macro</div>'
                         + '<div style="font-size:1.5rem;font-weight:700;color:' + scoreColor + ';line-height:1;">' + (bestRun.f1_macro*100).toFixed(1) + '%</div>'
-                        + '<div style="color:' + scoreColor + ';">' + stars1 + '</div></div>';
+                        + '<div style="color:' + scoreColor + ';">' + _starsHtml(bestRun.f1_macro, true) + '</div></div>';
                     if (bestRun.f1_micro != null) {
-                        var stars2 = _starsHtml(bestRun.f1_micro, true);
                         var col2 = _scoreColor(bestRun.f1_micro, true);
                         bhtml += '<div style="border-left:1px solid #86efac;padding-left:1.5rem;">'
                             + '<div style="font-size:0.68rem;color:#15803d;margin-bottom:1px;">F1 Micro</div>'
                             + '<div style="font-size:1.5rem;font-weight:700;color:' + col2 + ';line-height:1;">' + (bestRun.f1_micro*100).toFixed(1) + '%</div>'
-                            + '<div style="color:' + col2 + ';">' + stars2 + '</div></div>';
+                            + '<div style="color:' + col2 + ';">' + _starsHtml(bestRun.f1_micro, true) + '</div></div>';
                     }
                 } else {
+                    // MAE: no stars — domain-specific values can't be rated generically
                     bhtml += '<div><div style="font-size:0.68rem;color:#15803d;margin-bottom:1px;">MAE</div>'
-                        + '<div style="font-size:1.5rem;font-weight:700;color:' + scoreColor + ';line-height:1;">' + bestRun.mae_days.toFixed(2) + ' days</div>'
-                        + '<div style="color:' + scoreColor + ';">' + stars1 + '</div></div>';
+                        + '<div style="font-size:1.5rem;font-weight:700;color:#15803d;line-height:1;">' + bestRun.mae_days.toFixed(2) + ' days</div>'
+                        + '</div>';
                 }
                 bhtml += '<div style="border-left:1px solid #86efac;padding-left:1.5rem;font-size:0.82rem;color:#166534;">'
                     + '<div><strong>' + (bestRun.bucketing||'-') + '</strong> + <strong>' + (bestRun.encoding||'-') + '</strong></div>'
@@ -2793,16 +2793,9 @@
                           + ' <span style="color:' + c2 + ';">' + _starsHtml(r.f1_micro, true) + '</span>'
                         : '-';
                 } else {
-                    var cm1 = _scoreColor(r.mae_days, false);
-                    var cm2 = _scoreColor(r.median_ae_days, false);
-                    metric1 = r.mae_days != null
-                        ? '<span style="color:' + cm1 + ';font-weight:700;">' + r.mae_days.toFixed(3) + '</span>'
-                          + ' <span style="color:' + cm1 + ';">' + _starsHtml(r.mae_days, false) + '</span>'
-                        : '-';
-                    metric2 = r.median_ae_days != null
-                        ? '<span style="color:' + cm2 + ';font-weight:600;">' + r.median_ae_days.toFixed(3) + '</span>'
-                          + ' <span style="color:' + cm2 + ';">' + _starsHtml(r.median_ae_days, false) + '</span>'
-                        : '-';
+                    // MAE: no stars, no color — values are domain-specific and can't be rated generically
+                    metric1 = r.mae_days != null ? '<strong>' + r.mae_days.toFixed(3) + '</strong>' : '-';
+                    metric2 = r.median_ae_days != null ? r.median_ae_days.toFixed(3) : '-';
                 }
                 tr.innerHTML =
                     '<td>' + r.run_id + (isBest ? ' &#127942;' : '') + '</td>' +
