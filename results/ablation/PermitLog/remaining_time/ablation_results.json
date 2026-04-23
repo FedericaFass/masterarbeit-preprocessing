@@ -1,0 +1,552 @@
+{
+  "log": "PermitLog",
+  "task": "remaining_time",
+  "bucketer": "no_bucket",
+  "encoding": "last_state",
+  "stages": [
+    {
+      "stage": " 1  Baseline (load + NormalizeSchema only)",
+      "status": "success",
+      "primary_score": 2581269.100008184,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86581,
+      "n_cases_load": 7065,
+      "n_events_filtered": 86581,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78807,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.65,
+        "feature_dim": 177,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2581269.100008184,
+            "mae_days": 29.87579976861324,
+            "median_ae_sec": 1792618.0,
+            "median_ae_days": 20.74789351851852,
+            "primary": 2581269.100008184
+          }
+        },
+        "details": {
+          "train": 54911,
+          "val": 12219,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 2  + Deduplicate Events",
+      "status": "success",
+      "primary_score": 2576160.011688205,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 86040,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78416,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.15,
+        "feature_dim": 176,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2576160.011688205,
+            "mae_days": 29.816666801946816,
+            "median_ae_sec": 1790351.0,
+            "median_ae_days": 20.72165509259259,
+            "primary": 2576160.011688205
+          }
+        },
+        "details": {
+          "train": 54647,
+          "val": 12149,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 3  + Clean & Sort (types, nulls, timestamp order)",
+      "status": "success",
+      "primary_score": 2480941.126177344,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 86040,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78416,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.16,
+        "feature_dim": 178,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2480941.126177344,
+            "mae_days": 28.714596367793334,
+            "median_ae_sec": 1684977.0,
+            "median_ae_days": 19.50204861111111,
+            "primary": 2480941.126177344
+          }
+        },
+        "details": {
+          "train": 54836,
+          "val": 11785,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 4  + Stable Sort (tie-breaking by record index)",
+      "status": "success",
+      "primary_score": 2480941.126177344,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 86040,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78416,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.16,
+        "feature_dim": 178,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2480941.126177344,
+            "mae_days": 28.714596367793334,
+            "median_ae_sec": 1684977.0,
+            "median_ae_days": 19.50204861111111,
+            "primary": 2480941.126177344
+          }
+        },
+        "details": {
+          "train": 54836,
+          "val": 11785,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 5  + Time Features in Prefix Extraction",
+      "status": "success",
+      "primary_score": 2424231.663300806,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 86040,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78416,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.16,
+        "feature_dim": 186,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2424231.663300806,
+            "mae_days": 28.05823684375933,
+            "median_ae_sec": 1623047.0,
+            "median_ae_days": 18.785266203703703,
+            "primary": 2424231.663300806
+          }
+        },
+        "details": {
+          "train": 54836,
+          "val": 11785,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 6  + Repair Timestamps",
+      "status": "success",
+      "primary_score": 2424231.663300806,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 86040,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78416,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.15,
+        "feature_dim": 186,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2424231.663300806,
+            "mae_days": 28.05823684375933,
+            "median_ae_sec": 1623047.0,
+            "median_ae_days": 18.785266203703703,
+            "primary": 2424231.663300806
+          }
+        },
+        "details": {
+          "train": 54836,
+          "val": 11785,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 7  + Filter Short Cases (< 2 events)",
+      "status": "success",
+      "primary_score": 2424231.663300806,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 86040,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78416,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.15,
+        "feature_dim": 186,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2424231.663300806,
+            "mae_days": 28.05823684375933,
+            "median_ae_sec": 1623047.0,
+            "median_ae_days": 18.785266203703703,
+            "primary": 2424231.663300806
+          }
+        },
+        "details": {
+          "train": 54836,
+          "val": 11785,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 8  + Normalize Activities",
+      "status": "success",
+      "primary_score": 2424231.663300806,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 86040,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78416,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.17,
+        "feature_dim": 186,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2424231.663300806,
+            "mae_days": 28.05823684375933,
+            "median_ae_sec": 1623047.0,
+            "median_ae_days": 18.785266203703703,
+            "primary": 2424231.663300806
+          }
+        },
+        "details": {
+          "train": 54836,
+          "val": 11785,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 9  + Filter Infrequent Activities (< 0.5%)",
+      "status": "success",
+      "primary_score": 2487641.5317305243,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 85917,
+      "n_cases_filtered": 7065,
+      "n_prefix_rows": 78304,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.15,
+        "feature_dim": 186,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2487641.5317305243,
+            "mae_days": 28.792147357992178,
+            "median_ae_sec": 1614771.5,
+            "median_ae_days": 18.689484953703705,
+            "primary": 2487641.5317305243
+          }
+        },
+        "details": {
+          "train": 54755,
+          "val": 11771,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "10  + Filter Zero-Duration Cases",
+      "status": "success",
+      "primary_score": 2321728.4111657897,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 85915,
+      "n_cases_filtered": 7064,
+      "n_prefix_rows": 78303,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.75,
+        "feature_dim": 187,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2321728.4111657897,
+            "mae_days": 26.87185661071516,
+            "median_ae_sec": 1633521.0,
+            "median_ae_days": 18.906493055555554,
+            "primary": 2321728.4111657897
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "11  + Filter Long Cases (p99 threshold)",
+      "status": "success",
+      "primary_score": 2713887.8216911764,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 83290,
+      "n_cases_filtered": 6997,
+      "n_prefix_rows": 76293,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.16,
+        "feature_dim": 171,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2713887.8216911764,
+            "mae_days": 31.410738676981207,
+            "median_ae_sec": 1604758.0,
+            "median_ae_days": 18.573587962962964,
+            "primary": 2713887.8216911764
+          }
+        },
+        "details": {
+          "train": 53313,
+          "val": 11424,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "12  + Filter Consecutive Duplicate Events",
+      "status": "success",
+      "primary_score": 2658273.7423703177,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 82103,
+      "n_cases_filtered": 6997,
+      "n_prefix_rows": 75106,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.14,
+        "feature_dim": 171,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2658273.7423703177,
+            "mae_days": 30.76705720336016,
+            "median_ae_sec": 1559317.0,
+            "median_ae_days": 18.047650462962963,
+            "primary": 2658273.7423703177
+          }
+        },
+        "details": {
+          "train": 52480,
+          "val": 11239,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "13  + Impute Missing Attributes",
+      "status": "success",
+      "primary_score": 2645869.6390693123,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 82103,
+      "n_cases_filtered": 6997,
+      "n_prefix_rows": 75106,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.14,
+        "feature_dim": 170,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2645869.6390693123,
+            "mae_days": 30.623491192931855,
+            "median_ae_sec": 1566237.0,
+            "median_ae_days": 18.127743055555555,
+            "primary": 2645869.6390693123
+          }
+        },
+        "details": {
+          "train": 52480,
+          "val": 11239,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "14  + Filter Rare Variants",
+      "status": "success",
+      "primary_score": 2160602.795467033,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 64903,
+      "n_cases_filtered": 6000,
+      "n_prefix_rows": 58903,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.12,
+        "feature_dim": 164,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2160602.795467033,
+            "mae_days": 25.00697679938696,
+            "median_ae_sec": 1491056.25,
+            "median_ae_days": 17.25759548611111,
+            "primary": 2160602.795467033
+          }
+        },
+        "details": {
+          "train": 41075,
+          "val": 9100,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "15  + Outlier Removal (IQR on case duration)",
+      "status": "success",
+      "primary_score": 1976682.3029945055,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 64903,
+      "n_cases_filtered": 6000,
+      "n_prefix_rows": 58903,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.1,
+        "feature_dim": 162,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 1976682.3029945055,
+            "mae_days": 22.87826739576974,
+            "median_ae_sec": 1187362.375,
+            "median_ae_days": 13.742620081018519,
+            "primary": 1976682.3029945055
+          }
+        },
+        "details": {
+          "train": 39001,
+          "val": 9100,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "16  + Filter Rare Classes",
+      "status": "success",
+      "primary_score": 1976682.3029945055,
+      "primary_metric": "mae_sec",
+      "n_events_load": 86040,
+      "n_cases_load": 7065,
+      "n_events_filtered": 64903,
+      "n_cases_filtered": 6000,
+      "n_prefix_rows": 58903,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.11,
+        "feature_dim": 162,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 1976682.3029945055,
+            "mae_days": 22.87826739576974,
+            "median_ae_sec": 1187362.375,
+            "median_ae_days": 13.742620081018519,
+            "primary": 1976682.3029945055
+          }
+        },
+        "details": {
+          "train": 39001,
+          "val": 9100,
+          "model_type": null
+        }
+      },
+      "error": null
+    }
+  ]
+}

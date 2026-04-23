@@ -1,0 +1,344 @@
+{
+  "log": "BPI_Challenge_2013_closed_problems",
+  "task": "outcome",
+  "bucketer": "no_bucket",
+  "encoding": "last_state",
+  "stages": [
+    {
+      "stage": " 1  Baseline (load + NormalizeSchema only)",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 84,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 2  + Deduplicate Events",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 84,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 3  + Clean & Sort (types, nulls, timestamp order)",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 84,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 4  + Stable Sort (tie-breaking by record index)",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 84,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 5  + Time Features in Prefix Extraction",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 92,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 6  + Repair Timestamps",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 92,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 7  + Filter Short Cases (< 2 events)",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6659,
+      "n_cases_filtered": 1486,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 8  + Normalize Activities",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6659,
+      "n_cases_filtered": 1486,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 9  + Filter Infrequent Activities (< 0.5%)",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6659,
+      "n_cases_filtered": 1486,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "10  + Filter Zero-Duration Cases",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6659,
+      "n_cases_filtered": 1486,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "11  + Filter Long Cases (p99 threshold)",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6364,
+      "n_cases_filtered": 1472,
+      "n_prefix_rows": 4892,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 88,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "12  + Filter Consecutive Duplicate Events",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4524,
+      "n_cases_filtered": 1472,
+      "n_prefix_rows": 3052,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 65,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "13  + Impute Missing Attributes",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4524,
+      "n_cases_filtered": 1472,
+      "n_prefix_rows": 3052,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 64,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "14  + Filter Rare Variants",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4461,
+      "n_cases_filtered": 1465,
+      "n_prefix_rows": 2996,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 65,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "15  + Outlier Removal (IQR on case duration)",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4461,
+      "n_cases_filtered": 1465,
+      "n_prefix_rows": 2996,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 65,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "16  + Filter Rare Classes",
+      "status": "success",
+      "primary_score": null,
+      "primary_metric": "",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4461,
+      "n_cases_filtered": 1465,
+      "n_prefix_rows": 2996,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.0,
+        "feature_dim": 65,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      "error": null
+    }
+  ]
+}

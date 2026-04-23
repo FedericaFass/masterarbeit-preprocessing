@@ -264,19 +264,27 @@ def _run_scan(df, case_col, ts_col, act_col_raw, ss_state, file_path):
     columns_info.sort(key=lambda x: x["n_unique"])
     empty_columns_info.sort(key=lambda x: x["null_pct"], reverse=True)
 
+    # Build outcome_columns with the same logic as event_attr_columns:
+    # always include the activity column first (explicitly), then all other columns.
     outcome_skip = {case_col, ts_col, "time:timestamp", "timestamp", "@@index"}
     outcome_columns = []
+    # Explicitly add activity column first — no n_unique filter (mirrors event_attr_columns behaviour)
+    if act_col_raw and act_col_raw in df.columns:
+        vals_act_oc = last_events[act_col_raw].dropna().astype(str) if act_col_raw in last_events.columns else df[act_col_raw].dropna().astype(str)
+        outcome_columns.append({
+            "column": "activity",
+            "n_unique": int(vals_act_oc.nunique()),
+            "values": sorted(vals_act_oc.unique().tolist())[:30],
+        })
     for col in df.columns:
-        if col in outcome_skip or col.startswith("@@"):
+        if col in outcome_skip or col.startswith("@@") or col == act_col_raw:
             continue
-        vals_oc = last_events[col].dropna().astype(str)
+        vals_oc = last_events[col].dropna().astype(str) if col in last_events.columns else df[col].dropna().astype(str)
         n_uniq_oc = int(vals_oc.nunique())
         if n_uniq_oc < 2 or n_uniq_oc > 100:
             continue
-        # Use the normalized name "activity" for the activity column (same as event_attr_columns)
-        display_col = "activity" if col == act_col_raw else col
         outcome_columns.append({
-            "column": display_col,
+            "column": col,
             "n_unique": n_uniq_oc,
             "values": sorted(vals_oc.unique().tolist())[:30],
         })
@@ -423,7 +431,7 @@ def _run_scan(df, case_col, ts_col, act_col_raw, ss_state, file_path):
     ss_state["scanned_file"] = file_path
     ss_state["col_mapping"] = {"case_col": case_col, "ts_col": ts_col, "act_col": act_col_raw}
 
-    return {
+    scan_result = {
         "columns": columns_info,
         "empty_columns": empty_columns_info,
         "outcome_columns": outcome_columns,
@@ -446,6 +454,9 @@ def _run_scan(df, case_col, ts_col, act_col_raw, ss_state, file_path):
         "detected_ts_col": ts_col,
         "detected_act_col": act_col_raw,
     }
+
+    ss_state["upload_scan"] = scan_result
+    return scan_result
 
 
 @app.route("/api/scan-columns", methods=["POST"])
@@ -627,6 +638,7 @@ def api_train():
     min_variant_count = max(2, min(100, int(request.form.get("min_variant_count", "5"))))
     concept_drift_window = request.form.get("concept_drift_window", "false").lower() == "true"
     since_date = request.form.get("since_date", "").strip()
+    filter_long_cases = request.form.get("filter_long_cases", "true").lower() == "true"
     filter_consecutive_duplicates = request.form.get("filter_consecutive_duplicates", "false").lower() == "true"
     impute_missing = request.form.get("impute_missing", "false").lower() == "true"
     col_mapping = ss_state.get("col_mapping")  # set by scan or apply-column-mapping
@@ -677,6 +689,7 @@ def api_train():
                 min_variant_count=min_variant_count,
                 concept_drift_window=concept_drift_window,
                 since_date=since_date,
+                filter_long_cases=filter_long_cases,
                 filter_consecutive_duplicates=filter_consecutive_duplicates,
                 impute_missing=impute_missing,
                 col_mapping=col_mapping,
@@ -688,6 +701,7 @@ def api_train():
                     ss_state["train_status"] = "done"
                     ss_state["train_progress"] = "Training complete!"
                     ss_state["bundle_path"] = result.get("model_bundle_path")
+                    ss_state["log_qc"] = result.get("log_qc", {})
                     ss_state["bundle_cache"] = {"path": None, "bundle": None}
                     try:
                         _save_run_entry(sid, run_config, result)
@@ -959,6 +973,7 @@ def api_quick_compare():
     cmp_min_variant = max(2, min(100, int(request.form.get("min_variant_count", "5"))))
     cmp_drift_window = request.form.get("concept_drift_window", "false").lower() == "true"
     cmp_since_date = request.form.get("since_date", "").strip()
+    cmp_filter_long = request.form.get("filter_long_cases", "true").lower() == "true"
     cmp_consec_dup = request.form.get("filter_consecutive_duplicates", "false").lower() == "true"
     cmp_impute = request.form.get("impute_missing", "false").lower() == "true"
     col_mapping = ss_state.get("col_mapping")
@@ -978,12 +993,12 @@ def api_quick_compare():
         is_classification = task_name in ("next_activity", "outcome")
         # Baseline: no optional steps, no time filter
         variants = [
-            ("Baseline",    False,           [],             0,                  False, False, 5,               False, "",              False,        False),
-            ("Your Config", outlier_enabled, columns_to_drop, effective_min_class, cmp_temporal_split, cmp_rare_variant, cmp_min_variant, cmp_drift_window, cmp_since_date, cmp_consec_dup, cmp_impute),
+            ("Baseline",    False,           [],             0,                  False, False, 5,               False, "",              True,             False,        False),
+            ("Your Config", outlier_enabled, columns_to_drop, effective_min_class, cmp_temporal_split, cmp_rare_variant, cmp_min_variant, cmp_drift_window, cmp_since_date, cmp_filter_long, cmp_consec_dup, cmp_impute),
         ]
 
         results = []
-        for i, (label, oe, cols, mcs, ts, rvf, mvc, cdw, sd, fcd, imp) in enumerate(variants):
+        for i, (label, oe, cols, mcs, ts, rvf, mvc, cdw, sd, flc, fcd, imp) in enumerate(variants):
             _on_progress(f"[{i + 1}/2] {label} — loading & preprocessing...")
 
             def _variant_progress(msg, _label=label, _i=i):
@@ -1023,6 +1038,7 @@ def api_quick_compare():
                 min_variant_count=mvc,
                 concept_drift_window=cdw,
                 since_date=sd,
+                filter_long_cases=flc,
                 filter_consecutive_duplicates=fcd,
                 impute_missing=imp,
                 col_mapping=col_mapping,
@@ -1160,7 +1176,18 @@ KEY CONCEPTS:
 - Concept drift: the process behaviour changes over time. Older cases may follow different rules; the Time Window Filter and Temporal Ordering address this.
 - IQR (Interquartile Range): a robust measure of spread. Outliers are defined as values below Q1 − 1.5×IQR or above Q3 + 1.5×IQR.
 
-Keep answers short and practical. When the user asks about their specific results, refer to the CURRENT TRAINING RESULT and BASELINE COMPARISON RESULTS blocks provided below."""
+Keep answers short and practical. When the user asks about their specific results, refer to the CURRENT TRAINING RESULT and BASELINE COMPARISON RESULTS blocks provided below.
+
+When the user asks which preprocessing options to enable, use the UPLOADED EVENT LOG SCAN and EVENT LOG ANALYSIS blocks to give concrete recommendations. Only recommend the optional preprocessing steps listed above — do NOT suggest bucketing strategies or encoders, as those are selected automatically by the strategy search.
+
+Recommendations based on log characteristics:
+- High consecutive_duplicate_events → suggest Filter Consecutive Duplicates
+- columns_with_missing > 0 → suggest Impute Missing Attributes
+- Many singleton_variants → suggest Rare Variant Filter
+- Large gap between trace_len_p95 and trace_len_max → suggest Filter Case Length Outliers
+- Large case_duration_days spread or zero_duration_cases > 0 → note outlier removal is already automatic via IQR
+- Long time_range (years) → consider Time Window Filter for concept drift
+- Empty columns → suggest Drop Columns for those specific columns"""
 
 
 @app.route("/api/chat-ping")
@@ -1179,6 +1206,23 @@ def api_chat_ping():
 def _build_context_block(ss_state: dict, sid: str) -> str:
     """Return a compact JSON summary of this session's results for the Claude system prompt."""
     parts = []
+
+    # Upload-time scan — available as soon as the user uploads a log
+    upload_scan = ss_state.get("upload_scan")
+    if upload_scan:
+        scan_summary = {
+            "num_cases": upload_scan.get("num_cases"),
+            "num_events": upload_scan.get("num_events"),
+            "case_length": upload_scan.get("case_length_stats"),
+            "case_duration": upload_scan.get("case_duration_stats"),
+            "unique_variants": upload_scan.get("unique_variants"),
+            "top_variants": upload_scan.get("top_variants"),
+            "missing_rate_pct": upload_scan.get("missing_rate"),
+            "activity_counts": upload_scan.get("activity_counts"),
+            "auto_max_prefix_len": upload_scan.get("auto_max_prefix_len"),
+            "empty_columns": [c.get("col") for c in (upload_scan.get("empty_columns") or [])],
+        }
+        parts.append("UPLOADED EVENT LOG SCAN (computed at upload time):\n" + json.dumps(scan_summary, indent=2, default=str))
 
     with ss_state["train_lock"]:
         tr = ss_state.get("train_result")
@@ -1246,6 +1290,37 @@ def _build_context_block(ss_state: dict, sid: str) -> str:
                 "rows_removed": removed,
             })
         parts.append("COMPARISON PIPELINE STEPS (row counts):\n" + json.dumps(step_summary, indent=2, default=str))
+
+    # Log QC report — helps LLM recommend preprocessing options
+    log_qc = ss_state.get("log_qc")
+    if log_qc:
+        # Build a compact, readable summary for the LLM
+        qc_summary = {
+            "num_cases": log_qc.get("num_cases"),
+            "num_events": log_qc.get("num_events"),
+            "num_unique_activities": log_qc.get("num_unique_activities"),
+            "trace_length": {
+                "min":    log_qc.get("trace_len_min"),
+                "median": log_qc.get("trace_len_median"),
+                "mean":   log_qc.get("trace_len_mean"),
+                "p95":    log_qc.get("trace_len_p95"),
+                "max":    log_qc.get("trace_len_max"),
+            },
+            "case_duration_days": log_qc.get("case_duration_days"),
+            "consecutive_duplicate_events": log_qc.get("consecutive_duplicate_events"),
+            "columns_with_missing": log_qc.get("columns_with_missing"),
+            "missing_values": log_qc.get("missing_values"),
+            "num_unique_variants": log_qc.get("num_unique_variants"),
+            "singleton_variants": log_qc.get("singleton_variants"),
+            "variants_top5": log_qc.get("variants_top5"),
+            "activities_top10": log_qc.get("activities_top10"),
+            "activities_bottom5": log_qc.get("activities_bottom5"),
+            "time_range": {
+                "min": log_qc.get("time_min"),
+                "max": log_qc.get("time_max"),
+            },
+        }
+        parts.append("EVENT LOG ANALYSIS (after mandatory preprocessing):\n" + json.dumps(qc_summary, indent=2, default=str))
 
     history = _load_run_history(sid)
     if history:

@@ -1,0 +1,552 @@
+{
+  "log": "BPI_Challenge_2013_closed_problems",
+  "task": "remaining_time",
+  "bucketer": "no_bucket",
+  "encoding": "last_state",
+  "stages": [
+    {
+      "stage": " 1  Baseline (load + NormalizeSchema only)",
+      "status": "success",
+      "primary_score": 8999042.077716643,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 84,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8999042.077716643,
+            "mae_days": 104.15557960320189,
+            "median_ae_sec": 5964852.0,
+            "median_ae_days": 69.03763888888889,
+            "primary": 8999042.077716643
+          }
+        },
+        "details": {
+          "train": 3684,
+          "val": 727,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 2  + Deduplicate Events",
+      "status": "success",
+      "primary_score": 8999042.077716643,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 84,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8999042.077716643,
+            "mae_days": 104.15557960320189,
+            "median_ae_sec": 5964852.0,
+            "median_ae_days": 69.03763888888889,
+            "primary": 8999042.077716643
+          }
+        },
+        "details": {
+          "train": 3684,
+          "val": 727,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 3  + Clean & Sort (types, nulls, timestamp order)",
+      "status": "success",
+      "primary_score": 8999042.077716643,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 84,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8999042.077716643,
+            "mae_days": 104.15557960320189,
+            "median_ae_sec": 5964852.0,
+            "median_ae_days": 69.03763888888889,
+            "primary": 8999042.077716643
+          }
+        },
+        "details": {
+          "train": 3684,
+          "val": 727,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 4  + Stable Sort (tie-breaking by record index)",
+      "status": "success",
+      "primary_score": 8999042.077716643,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 84,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8999042.077716643,
+            "mae_days": 104.15557960320189,
+            "median_ae_sec": 5964852.0,
+            "median_ae_days": 69.03763888888889,
+            "primary": 8999042.077716643
+          }
+        },
+        "details": {
+          "train": 3684,
+          "val": 727,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 5  + Time Features in Prefix Extraction",
+      "status": "success",
+      "primary_score": 8813293.471114168,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 92,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8813293.471114168,
+            "mae_days": 102.00571147122879,
+            "median_ae_sec": 5645670.0,
+            "median_ae_days": 65.34340277777778,
+            "primary": 8813293.471114168
+          }
+        },
+        "details": {
+          "train": 3684,
+          "val": 727,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 6  + Repair Timestamps",
+      "status": "success",
+      "primary_score": 8813293.471114168,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6660,
+      "n_cases_filtered": 1487,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 92,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8813293.471114168,
+            "mae_days": 102.00571147122879,
+            "median_ae_sec": 5645670.0,
+            "median_ae_days": 65.34340277777778,
+            "primary": 8813293.471114168
+          }
+        },
+        "details": {
+          "train": 3684,
+          "val": 727,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 7  + Filter Short Cases (< 2 events)",
+      "status": "success",
+      "primary_score": 8769158.48938992,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6659,
+      "n_cases_filtered": 1486,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 91,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8769158.48938992,
+            "mae_days": 101.49488992349445,
+            "median_ae_sec": 5888126.75,
+            "median_ae_days": 68.14961516203704,
+            "primary": 8769158.48938992
+          }
+        },
+        "details": {
+          "train": 3646,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 8  + Normalize Activities",
+      "status": "success",
+      "primary_score": 8769158.48938992,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6659,
+      "n_cases_filtered": 1486,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 91,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8769158.48938992,
+            "mae_days": 101.49488992349445,
+            "median_ae_sec": 5888126.75,
+            "median_ae_days": 68.14961516203704,
+            "primary": 8769158.48938992
+          }
+        },
+        "details": {
+          "train": 3646,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 9  + Filter Infrequent Activities (< 0.5%)",
+      "status": "success",
+      "primary_score": 8769158.48938992,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6659,
+      "n_cases_filtered": 1486,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 91,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8769158.48938992,
+            "mae_days": 101.49488992349445,
+            "median_ae_sec": 5888126.75,
+            "median_ae_days": 68.14961516203704,
+            "primary": 8769158.48938992
+          }
+        },
+        "details": {
+          "train": 3646,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "10  + Filter Zero-Duration Cases",
+      "status": "success",
+      "primary_score": 8769158.48938992,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6659,
+      "n_cases_filtered": 1486,
+      "n_prefix_rows": 5169,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 91,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8769158.48938992,
+            "mae_days": 101.49488992349445,
+            "median_ae_sec": 5888126.75,
+            "median_ae_days": 68.14961516203704,
+            "primary": 8769158.48938992
+          }
+        },
+        "details": {
+          "train": 3646,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "11  + Filter Long Cases (p99 threshold)",
+      "status": "success",
+      "primary_score": 10312198.028718704,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 6364,
+      "n_cases_filtered": 1472,
+      "n_prefix_rows": 4892,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 88,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 10312198.028718704,
+            "mae_days": 119.35414385091093,
+            "median_ae_sec": 7780712.0,
+            "median_ae_days": 90.05453703703704,
+            "primary": 10312198.028718704
+          }
+        },
+        "details": {
+          "train": 3477,
+          "val": 679,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "12  + Filter Consecutive Duplicate Events",
+      "status": "success",
+      "primary_score": 11366585.955580866,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4524,
+      "n_cases_filtered": 1472,
+      "n_prefix_rows": 3052,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.01,
+        "feature_dim": 65,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 11366585.955580866,
+            "mae_days": 131.557707819223,
+            "median_ae_sec": 8890099.0,
+            "median_ae_days": 102.89466435185186,
+            "primary": 11366585.955580866
+          }
+        },
+        "details": {
+          "train": 2178,
+          "val": 439,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "13  + Impute Missing Attributes",
+      "status": "success",
+      "primary_score": 11264169.965831434,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4524,
+      "n_cases_filtered": 1472,
+      "n_prefix_rows": 3052,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.0,
+        "feature_dim": 64,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 11264169.965831434,
+            "mae_days": 130.37233756749345,
+            "median_ae_sec": 8587796.0,
+            "median_ae_days": 99.39578703703704,
+            "primary": 11264169.965831434
+          }
+        },
+        "details": {
+          "train": 2178,
+          "val": 439,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "14  + Filter Rare Variants",
+      "status": "success",
+      "primary_score": 9969641.565882353,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4461,
+      "n_cases_filtered": 1465,
+      "n_prefix_rows": 2996,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.0,
+        "feature_dim": 65,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 9969641.565882353,
+            "mae_days": 115.3893699754902,
+            "median_ae_sec": 7205044.0,
+            "median_ae_days": 83.39171296296297,
+            "primary": 9969641.565882353
+          }
+        },
+        "details": {
+          "train": 2103,
+          "val": 425,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "15  + Outlier Removal (IQR on case duration)",
+      "status": "success",
+      "primary_score": 8828560.167058824,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4461,
+      "n_cases_filtered": 1465,
+      "n_prefix_rows": 2996,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.0,
+        "feature_dim": 65,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8828560.167058824,
+            "mae_days": 102.1824093409586,
+            "median_ae_sec": 5881497.0,
+            "median_ae_days": 68.07288194444445,
+            "primary": 8828560.167058824
+          }
+        },
+        "details": {
+          "train": 1994,
+          "val": 425,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "16  + Filter Rare Classes",
+      "status": "success",
+      "primary_score": 8828560.167058824,
+      "primary_metric": "mae_sec",
+      "n_events_load": 6660,
+      "n_cases_load": 1487,
+      "n_events_filtered": 4461,
+      "n_cases_filtered": 1465,
+      "n_prefix_rows": 2996,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.0,
+        "feature_dim": 65,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 8828560.167058824,
+            "mae_days": 102.1824093409586,
+            "median_ae_sec": 5881497.0,
+            "median_ae_days": 68.07288194444445,
+            "primary": 8828560.167058824
+          }
+        },
+        "details": {
+          "train": 1994,
+          "val": 425,
+          "model_type": null
+        }
+      },
+      "error": null
+    }
+  ]
+}

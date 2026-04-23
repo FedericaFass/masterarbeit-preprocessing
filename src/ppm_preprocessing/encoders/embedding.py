@@ -207,7 +207,7 @@ class EmbeddingEncoder(Encoder):
 
         print(
             f"[EmbeddingEncoder] Encoded {len(activities)} unique activities "
-            f"\u2192 {self.emb_dim_}d embeddings ({c.model_name})"
+            f"-> {self.emb_dim_}d embeddings ({c.model_name})"
         )
 
         # --- discover numeric + categorical columns ---
@@ -291,7 +291,7 @@ class EmbeddingEncoder(Encoder):
 
             self.emb_dim_ = n_components
             print(
-                f"[EmbeddingEncoder] PCA compressed: 384d → {n_components}d "
+                f"[EmbeddingEncoder] PCA compressed: 384d -> {n_components}d "
                 f"({self.pca_.explained_variance_ratio_.sum():.1%} variance retained)"
             )
 

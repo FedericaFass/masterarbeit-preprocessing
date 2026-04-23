@@ -1,0 +1,5979 @@
+{
+  "DomesticDeclarations|next_activity": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 10366,
+    "comparison": [
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4393682094441203,
+        "time_s": 2.56,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4393682094441203,
+            "f1_micro": 0.7404899135446686,
+            "primary": 0.4393682094441203
+          }
+        },
+        "details": {
+          "train": 32129,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5233197009466045,
+        "time_s": 1.33,
+        "feature_dim": 40,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.5233197009466045,
+            "f1_micro": 0.7887608069164265,
+            "primary": 0.5233197009466045
+          }
+        },
+        "details": {
+          "train": 32129,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5848160028046571,
+        "time_s": 1.58,
+        "feature_dim": 326,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.5848160028046571,
+            "f1_micro": 0.8461095100864553,
+            "primary": 0.5848160028046571
+          }
+        },
+        "details": {
+          "train": 32129,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5763823537988606,
+        "time_s": 3.41,
+        "feature_dim": 141,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.5763823537988606,
+            "f1_micro": 0.8491354466858789,
+            "primary": 0.5763823537988606
+          }
+        },
+        "details": {
+          "train": 32129,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4926848601416203,
+        "time_s": 0.94,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 0.4926848601416203
+        },
+        "details": {
+          "buckets": 7,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6683
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4882292095913242,
+        "time_s": 0.93,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 0.4882292095913242
+        },
+        "details": {
+          "buckets": 7,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6683
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5317690154101326,
+        "time_s": 1.12,
+        "feature_dim": 326,
+        "metrics": {
+          "weighted_score": 0.5317690154101326
+        },
+        "details": {
+          "buckets": 7,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6683
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5592980348588289,
+        "time_s": 1.18,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 0.5592980348588289
+        },
+        "details": {
+          "buckets": 7,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6683
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4431260373718105,
+        "time_s": 2.08,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 0.4431260373718105
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6922
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5344760140130751,
+        "time_s": 1.67,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 0.5344760140130751
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6922
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5791322597175299,
+        "time_s": 1.5,
+        "feature_dim": 326,
+        "metrics": {
+          "weighted_score": 0.5791322597175299
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6922
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5920317770008466,
+        "time_s": 2.81,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 0.5920317770008466
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6922
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.38075881968914776,
+        "time_s": 2.24,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 0.38075881968914776
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5079821517601238,
+        "time_s": 2.2,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 0.5079821517601238
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5382143518345501,
+        "time_s": 2.41,
+        "feature_dim": 326,
+        "metrics": {
+          "weighted_score": 0.5382143518345501
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5555426884650804,
+        "time_s": 3.25,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 0.5555426884650804
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4513441870847377,
+        "time_s": 1.98,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 0.4513441870847377
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5530991348158523,
+        "time_s": 1.84,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 0.5530991348158523
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5862408615419148,
+        "time_s": 1.87,
+        "feature_dim": 326,
+        "metrics": {
+          "weighted_score": 0.5862408615419148
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6040907607381418,
+        "time_s": 3.64,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 0.6040907607381418
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.4393682094441203,
+    "best_bucketer": "cluster",
+    "best_encoder": "embedding",
+    "best_score": 0.6040907607381418,
+    "elapsed_s": 96.5
+  },
+  "DomesticDeclarations|remaining_time": {
+    "status": "success",
+    "is_classification": false,
+    "primary_metric": "mae_sec",
+    "n_cases": 10366,
+    "comparison": [
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 337131.4145271617,
+        "time_s": 0.1,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 337131.4145271617,
+            "mae_days": 3.901983964434742,
+            "median_ae_sec": 165742.97530948906,
+            "median_ae_days": 1.9183214734894567,
+            "primary": 337131.4145271617
+          }
+        },
+        "details": {
+          "train": 30040,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 334133.16281195777,
+        "time_s": 0.11,
+        "feature_dim": 40,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 334133.16281195777,
+            "mae_days": 3.867281976990252,
+            "median_ae_sec": 164289.73736327677,
+            "median_ae_days": 1.9015015898527403,
+            "primary": 334133.16281195777
+          }
+        },
+        "details": {
+          "train": 30040,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 405128.80545993923,
+        "time_s": 0.13,
+        "feature_dim": 40,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 405128.80545993923,
+            "mae_days": 4.688990803934482,
+            "median_ae_sec": 284134.41191923455,
+            "median_ae_days": 3.2885927305466964,
+            "primary": 405128.80545993923
+          }
+        },
+        "details": {
+          "train": 30040,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 324786.4021871589,
+        "time_s": 0.33,
+        "feature_dim": 141,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 324786.4021871589,
+            "mae_days": 3.7591018771661906,
+            "median_ae_sec": 154579.7711972425,
+            "median_ae_days": 1.7891177221903065,
+            "primary": 324786.4021871589
+          }
+        },
+        "details": {
+          "train": 30040,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 325170.3405787517,
+        "time_s": 0.31,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 325170.3405787517
+        },
+        "details": {
+          "buckets": 8,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6856
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 323894.6240685147,
+        "time_s": 0.32,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 323894.6240685147
+        },
+        "details": {
+          "buckets": 8,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6856
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 401453.46416625555,
+        "time_s": 0.39,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 401453.46416625555
+        },
+        "details": {
+          "buckets": 8,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6856
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 311712.30238685606,
+        "time_s": 0.45,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 311712.30238685606
+        },
+        "details": {
+          "buckets": 8,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6856
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 336970.0021961959,
+        "time_s": 0.14,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 336970.0021961959
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6922
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 334828.03484109964,
+        "time_s": 0.15,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 334828.03484109964
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6922
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 404135.4110835341,
+        "time_s": 0.18,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 404135.4110835341
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6922
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 326246.5749107073,
+        "time_s": 0.38,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 326246.5749107073
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6922
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 335557.59931154567,
+        "time_s": 0.27,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 335557.59931154567
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 333180.6543433236,
+        "time_s": 0.29,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 333180.6543433236
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 402178.56178139005,
+        "time_s": 0.33,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 402178.56178139005
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 322046.95211859763,
+        "time_s": 0.6,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 322046.95211859763
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 336260.8948623855,
+        "time_s": 0.19,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 336260.8948623855
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 332746.50067980005,
+        "time_s": 0.2,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 332746.50067980005
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 401385.0034558799,
+        "time_s": 0.29,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 401385.0034558799
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 321831.9318138787,
+        "time_s": 0.41,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 321831.9318138787
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6940
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 337131.4145271617,
+    "best_bucketer": "last_activity",
+    "best_encoder": "embedding",
+    "best_score": 311712.30238685606,
+    "elapsed_s": 45.5
+  },
+  "DomesticDeclarations|outcome": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 10366,
+    "comparison": [
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.8852258852258852,
+        "time_s": 0.36,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.8852258852258852,
+            "f1_micro": 0.9997117324877486,
+            "primary": 0.8852258852258852
+          }
+        },
+        "details": {
+          "train": 32127,
+          "val": 6938,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6847039567148064,
+        "time_s": 0.39,
+        "feature_dim": 40,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.6847039567148064,
+            "f1_micro": 0.9995675987316229,
+            "primary": 0.6847039567148064
+          }
+        },
+        "details": {
+          "train": 32127,
+          "val": 6938,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9295880149812734,
+        "time_s": 0.58,
+        "feature_dim": 326,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.9295880149812734,
+            "f1_micro": 0.9997117324877486,
+            "primary": 0.9295880149812734
+          }
+        },
+        "details": {
+          "train": 32127,
+          "val": 6938,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6220996836988761,
+        "time_s": 1.17,
+        "feature_dim": 141,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.6220996836988761,
+            "f1_micro": 0.9989910637071202,
+            "primary": 0.6220996836988761
+          }
+        },
+        "details": {
+          "train": 32127,
+          "val": 6938,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9556996030588094,
+        "time_s": 0.74,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 0.9556996030588094
+        },
+        "details": {
+          "buckets": 8,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6854
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.8453625615211225,
+        "time_s": 0.78,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 0.8453625615211225
+        },
+        "details": {
+          "buckets": 8,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6854
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9697460703816259,
+        "time_s": 0.95,
+        "feature_dim": 326,
+        "metrics": {
+          "weighted_score": 0.9697460703816259
+        },
+        "details": {
+          "buckets": 8,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6854
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.7940728084235039,
+        "time_s": 0.96,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 0.7940728084235039
+        },
+        "details": {
+          "buckets": 8,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6854
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9537382530818408,
+        "time_s": 0.36,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 0.9537382530818408
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6920
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9185819539323875,
+        "time_s": 0.41,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 0.9185819539323875
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6920
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9096400876012624,
+        "time_s": 0.45,
+        "feature_dim": 326,
+        "metrics": {
+          "weighted_score": 0.9096400876012624
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6920
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6648465591759743,
+        "time_s": 0.96,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 0.6648465591759743
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6920
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9447779128813101,
+        "time_s": 0.73,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 0.9447779128813101
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6938
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9607021261676782,
+        "time_s": 0.73,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 0.9607021261676782
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6938
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9161640423709159,
+        "time_s": 0.89,
+        "feature_dim": 326,
+        "metrics": {
+          "weighted_score": 0.9161640423709159
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6938
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.8638518367305261,
+        "time_s": 1.24,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 0.8638518367305261
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6938
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9331059069412772,
+        "time_s": 0.59,
+        "feature_dim": 26,
+        "metrics": {
+          "weighted_score": 0.9331059069412772
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6938
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.9607147865651757,
+        "time_s": 0.62,
+        "feature_dim": 40,
+        "metrics": {
+          "weighted_score": 0.9607147865651757
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6938
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.8642572436705933,
+        "time_s": 0.75,
+        "feature_dim": 326,
+        "metrics": {
+          "weighted_score": 0.8642572436705933
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6938
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.7782446334342233,
+        "time_s": 1.29,
+        "feature_dim": 141,
+        "metrics": {
+          "weighted_score": 0.7782446334342233
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 6938
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.8852258852258852,
+    "best_bucketer": "last_activity",
+    "best_encoder": "index_latest_payload",
+    "best_score": 0.9697460703816259,
+    "elapsed_s": 59.1
+  },
+  "PermitLog|next_activity": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 7064,
+    "comparison": [
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3665667656085107,
+        "time_s": 6.0,
+        "feature_dim": 187,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.3665667656085107,
+            "f1_micro": 0.5691498387917868,
+            "primary": 0.3665667656085107
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.020136886458493698,
+        "time_s": 6.2,
+        "feature_dim": 228,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.020136886458493698,
+            "f1_micro": 0.09273714576616325,
+            "primary": 0.020136886458493698
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5765565666980703,
+        "time_s": 11.67,
+        "feature_dim": 796,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.5765565666980703,
+            "f1_micro": 0.8187680298659427,
+            "primary": 0.5765565666980703
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.10331448798754281,
+        "time_s": 279.3,
+        "feature_dim": 9052,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.10331448798754281,
+            "f1_micro": 0.20312234854912609,
+            "primary": 0.10331448798754281
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.24103183847774662,
+        "time_s": 18.89,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 0.24103183847774662
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.35999498342486014,
+        "time_s": 18.05,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 0.35999498342486014
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.2831549340446484,
+        "time_s": 20.13,
+        "feature_dim": 796,
+        "metrics": {
+          "weighted_score": 0.2831549340446484
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3717539143314937,
+        "time_s": 229.92,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 0.3717539143314937
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3146686131756958,
+        "time_s": 20.11,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 0.3146686131756958
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3979321768502625,
+        "time_s": 15.35,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 0.3979321768502625
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5371202713868845,
+        "time_s": 14.96,
+        "feature_dim": 796,
+        "metrics": {
+          "weighted_score": 0.5371202713868845
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6173790921791076,
+        "time_s": 381.27,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 0.6173790921791076
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3106219507011278,
+        "time_s": 16.36,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 0.3106219507011278
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5759478481279829,
+        "time_s": 16.66,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 0.5759478481279829
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5086332316494466,
+        "time_s": 18.74,
+        "feature_dim": 796,
+        "metrics": {
+          "weighted_score": 0.5086332316494466
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.59161350408619,
+        "time_s": 395.68,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 0.59161350408619
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3261338535450548,
+        "time_s": 14.64,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 0.3261338535450548
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3605379814505989,
+        "time_s": 10.41,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 0.3605379814505989
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5249786544864286,
+        "time_s": 19.24,
+        "feature_dim": 796,
+        "metrics": {
+          "weighted_score": 0.5249786544864286
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6012108803913252,
+        "time_s": 385.14,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 0.6012108803913252
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.3665667656085107,
+    "best_bucketer": "prefix_len_bins",
+    "best_encoder": "embedding",
+    "best_score": 0.6173790921791076,
+    "elapsed_s": 2235.8
+  },
+  "PermitLog|remaining_time": {
+    "status": "success",
+    "is_classification": false,
+    "primary_metric": "mae_sec",
+    "n_cases": 7064,
+    "comparison": [
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 1867666.309374544,
+        "time_s": 0.44,
+        "feature_dim": 187,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 1867666.309374544,
+            "mae_days": 21.61650821035352,
+            "median_ae_sec": 1018852.3431753295,
+            "median_ae_days": 11.792272490455202,
+            "primary": 1867666.309374544
+          }
+        },
+        "details": {
+          "train": 52522,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 1760171.6855908562,
+        "time_s": 0.47,
+        "feature_dim": 228,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 1760171.6855908562,
+            "mae_days": 20.37235747211639,
+            "median_ae_sec": 905465.0398059135,
+            "median_ae_days": 10.479919442198073,
+            "primary": 1760171.6855908562
+          }
+        },
+        "details": {
+          "train": 52522,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 2847587.5373062473,
+        "time_s": 0.48,
+        "feature_dim": 89,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2847587.5373062473,
+            "mae_days": 32.95818908919268,
+            "median_ae_sec": 2146305.207795783,
+            "median_ae_days": 24.84149546059934,
+            "primary": 2847587.5373062473
+          }
+        },
+        "details": {
+          "train": 52522,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 1828755.8551606846,
+        "time_s": 39.64,
+        "feature_dim": 9052,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 1828755.8551606846,
+            "mae_days": 21.166155731026443,
+            "median_ae_sec": 1020388.8946208288,
+            "median_ae_days": 11.810056650704038,
+            "primary": 1828755.8551606846
+          }
+        },
+        "details": {
+          "train": 52522,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1743617.5102109532,
+        "time_s": 1.16,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 1743617.5102109532
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1706599.517498268,
+        "time_s": 1.51,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 1706599.517498268
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2739274.2549311337,
+        "time_s": 2.39,
+        "feature_dim": 89,
+        "metrics": {
+          "weighted_score": 2739274.2549311337
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1729190.9823051284,
+        "time_s": 33.3,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 1729190.9823051284
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1845289.313887128,
+        "time_s": 0.6,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 1845289.313887128
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1747421.8746102983,
+        "time_s": 0.56,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 1747421.8746102983
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2835766.4998793225,
+        "time_s": 0.57,
+        "feature_dim": 89,
+        "metrics": {
+          "weighted_score": 2835766.4998793225
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1784018.3882379404,
+        "time_s": 37.23,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 1784018.3882379404
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1837954.3431313166,
+        "time_s": 0.67,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 1837954.3431313166
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1739050.6089785113,
+        "time_s": 0.64,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 1739050.6089785113
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2786266.0366434893,
+        "time_s": 0.71,
+        "feature_dim": 89,
+        "metrics": {
+          "weighted_score": 2786266.0366434893
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1764161.9934118667,
+        "time_s": 38.87,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 1764161.9934118667
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1837873.2567508088,
+        "time_s": 0.41,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 1837873.2567508088
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1738300.8911859829,
+        "time_s": 0.43,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 1738300.8911859829
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2811648.920826691,
+        "time_s": 0.49,
+        "feature_dim": 89,
+        "metrics": {
+          "weighted_score": 2811648.920826691
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 1761565.1947160426,
+        "time_s": 30.41,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 1761565.1947160426
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 1867666.309374544,
+    "best_bucketer": "last_activity",
+    "best_encoder": "aggregation",
+    "best_score": 1706599.517498268,
+    "elapsed_s": 432.1
+  },
+  "PermitLog|outcome": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 7064,
+    "comparison": [
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5447108375117288,
+        "time_s": 2.21,
+        "feature_dim": 187,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.5447108375117288,
+            "f1_micro": 0.9674189716612931,
+            "primary": 0.5447108375117288
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.596278613783729,
+        "time_s": 1.66,
+        "feature_dim": 228,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.596278613783729,
+            "f1_micro": 0.973188528762939,
+            "primary": 0.596278613783729
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.578612772245222,
+        "time_s": 2.33,
+        "feature_dim": 796,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.578612772245222,
+            "f1_micro": 0.9557101646020703,
+            "primary": 0.578612772245222
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.29765888039534066,
+        "time_s": 89.43,
+        "feature_dim": 9052,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.29765888039534066,
+            "f1_micro": 0.9406075004242321,
+            "primary": 0.29765888039534066
+          }
+        },
+        "details": {
+          "train": 54816,
+          "val": 11786,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.519483383776836,
+        "time_s": 8.9,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 0.519483383776836
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5488118583981504,
+        "time_s": 8.88,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 0.5488118583981504
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5027862359276464,
+        "time_s": 9.96,
+        "feature_dim": 796,
+        "metrics": {
+          "weighted_score": 0.5027862359276464
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.36513189642858723,
+        "time_s": 110.19,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 0.36513189642858723
+        },
+        "details": {
+          "buckets": 20,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11232
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.528301307246162,
+        "time_s": 4.73,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 0.528301307246162
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6210909790498481,
+        "time_s": 4.13,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 0.6210909790498481
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5166449608248641,
+        "time_s": 3.88,
+        "feature_dim": 796,
+        "metrics": {
+          "weighted_score": 0.5166449608248641
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.33194097617620943,
+        "time_s": 108.79,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 0.33194097617620943
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11729
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5326233850326391,
+        "time_s": 4.1,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 0.5326233850326391
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5620408795919104,
+        "time_s": 4.96,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 0.5620408795919104
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5078464120660897,
+        "time_s": 5.99,
+        "feature_dim": 796,
+        "metrics": {
+          "weighted_score": 0.5078464120660897
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3737884970336041,
+        "time_s": 118.53,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 0.3737884970336041
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5140109561079382,
+        "time_s": 5.12,
+        "feature_dim": 187,
+        "metrics": {
+          "weighted_score": 0.5140109561079382
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6121603014032346,
+        "time_s": 3.58,
+        "feature_dim": 228,
+        "metrics": {
+          "weighted_score": 0.6121603014032346
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5196062230137067,
+        "time_s": 4.32,
+        "feature_dim": 796,
+        "metrics": {
+          "weighted_score": 0.5196062230137067
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.36659794705686743,
+        "time_s": 102.24,
+        "feature_dim": 9052,
+        "metrics": {
+          "weighted_score": 0.36659794705686743
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 11786
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.5447108375117288,
+    "best_bucketer": "prefix_len_bins",
+    "best_encoder": "aggregation",
+    "best_score": 0.6210909790498481,
+    "elapsed_s": 955.1
+  },
+  "BPIC15_1|next_activity": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 1199,
+    "comparison": [
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.03821713263732653,
+        "time_s": 7.19,
+        "feature_dim": 288,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.03821713263732653,
+            "f1_micro": 0.06979642708766098,
+            "primary": 0.03821713263732653
+          }
+        },
+        "details": {
+          "train": 23033,
+          "val": 4814,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.053544390841736365,
+        "time_s": 8.81,
+        "feature_dim": 517,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.053544390841736365,
+            "f1_micro": 0.10531782301620274,
+            "primary": 0.053544390841736365
+          }
+        },
+        "details": {
+          "train": 23033,
+          "val": 4814,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.04045375796256393,
+        "time_s": 8.39,
+        "feature_dim": 911,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.04045375796256393,
+            "f1_micro": 0.0783132530120482,
+            "primary": 0.04045375796256393
+          }
+        },
+        "details": {
+          "train": 23033,
+          "val": 4814,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.07835207794623136,
+        "time_s": 144.5,
+        "feature_dim": 1227,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.07835207794623136,
+            "f1_micro": 0.1408392189447445,
+            "primary": 0.07835207794623136
+          }
+        },
+        "details": {
+          "train": 23033,
+          "val": 4814,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.2962656394889579,
+        "time_s": 9.66,
+        "feature_dim": 288,
+        "metrics": {
+          "weighted_score": 0.2962656394889579
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1816
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.3253549854787466,
+        "time_s": 8.52,
+        "feature_dim": 517,
+        "metrics": {
+          "weighted_score": 0.3253549854787466
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1816
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.33514389315221077,
+        "time_s": 8.98,
+        "feature_dim": 911,
+        "metrics": {
+          "weighted_score": 0.33514389315221077
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1816
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.34278000410725185,
+        "time_s": 39.2,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 0.34278000410725185
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1816
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.14272925540912543,
+        "time_s": 18.79,
+        "feature_dim": 288,
+        "metrics": {
+          "weighted_score": 0.14272925540912543
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.10368122844411984,
+        "time_s": 14.99,
+        "feature_dim": 517,
+        "metrics": {
+          "weighted_score": 0.10368122844411984
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.1043748302905733,
+        "time_s": 15.58,
+        "feature_dim": 911,
+        "metrics": {
+          "weighted_score": 0.1043748302905733
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.14128493731514977,
+        "time_s": 129.07,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 0.14128493731514977
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.13045019635018562,
+        "time_s": 16.37,
+        "feature_dim": 288,
+        "metrics": {
+          "weighted_score": 0.13045019635018562
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.16540972491500425,
+        "time_s": 15.47,
+        "feature_dim": 517,
+        "metrics": {
+          "weighted_score": 0.16540972491500425
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.07311121437370917,
+        "time_s": 16.68,
+        "feature_dim": 911,
+        "metrics": {
+          "weighted_score": 0.07311121437370917
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.2062583454672422,
+        "time_s": 153.24,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 0.2062583454672422
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.02991350931128313,
+        "time_s": 10.12,
+        "feature_dim": 288,
+        "metrics": {
+          "weighted_score": 0.02991350931128313
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.03110397012408642,
+        "time_s": 9.95,
+        "feature_dim": 517,
+        "metrics": {
+          "weighted_score": 0.03110397012408642
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.03268901229023905,
+        "time_s": 10.66,
+        "feature_dim": 911,
+        "metrics": {
+          "weighted_score": 0.03268901229023905
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.08709301875300275,
+        "time_s": 110.28,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 0.08709301875300275
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4814
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.03821713263732653,
+    "best_bucketer": "last_activity",
+    "best_encoder": "embedding",
+    "best_score": 0.34278000410725185,
+    "elapsed_s": 866.5
+  },
+  "BPIC15_1|remaining_time": {
+    "status": "success",
+    "is_classification": false,
+    "primary_metric": "mae_sec",
+    "n_cases": 1199,
+    "comparison": [
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 4232851.885514812,
+        "time_s": 0.13,
+        "feature_dim": 278,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 4232851.885514812,
+            "mae_days": 48.99134126753254,
+            "median_ae_sec": 1369403.060628332,
+            "median_ae_days": 15.849572460976065,
+            "primary": 4232851.885514812
+          }
+        },
+        "details": {
+          "train": 21032,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 4197883.623034359,
+        "time_s": 0.23,
+        "feature_dim": 502,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 4197883.623034359,
+            "mae_days": 48.586616007342116,
+            "median_ae_sec": 1354497.749964675,
+            "median_ae_days": 15.677057291257812,
+            "primary": 4197883.623034359
+          }
+        },
+        "details": {
+          "train": 21032,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 5274922.506767134,
+        "time_s": 0.2,
+        "feature_dim": 66,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 5274922.506767134,
+            "mae_days": 61.05234382832331,
+            "median_ae_sec": 2670075.89263686,
+            "median_ae_days": 30.90365616477847,
+            "primary": 5274922.506767134
+          }
+        },
+        "details": {
+          "train": 21032,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 4202301.555620823,
+        "time_s": 3.0,
+        "feature_dim": 1227,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 4202301.555620823,
+            "mae_days": 48.63774948635212,
+            "median_ae_sec": 1271186.253828366,
+            "median_ae_days": 14.712803863754237,
+            "primary": 4202301.555620823
+          }
+        },
+        "details": {
+          "train": 21032,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 5161329.0349108195,
+        "time_s": 0.51,
+        "feature_dim": 278,
+        "metrics": {
+          "weighted_score": 5161329.0349108195
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1817
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 5169648.08739537,
+        "time_s": 0.64,
+        "feature_dim": 502,
+        "metrics": {
+          "weighted_score": 5169648.08739537
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1817
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 5902898.584455941,
+        "time_s": 0.75,
+        "feature_dim": 66,
+        "metrics": {
+          "weighted_score": 5902898.584455941
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1817
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4994218.395478271,
+        "time_s": 2.68,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 4994218.395478271
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1817
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4295001.970035883,
+        "time_s": 0.56,
+        "feature_dim": 278,
+        "metrics": {
+          "weighted_score": 4295001.970035883
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4247073.6061717095,
+        "time_s": 0.67,
+        "feature_dim": 502,
+        "metrics": {
+          "weighted_score": 4247073.6061717095
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 5261617.114683595,
+        "time_s": 0.7,
+        "feature_dim": 66,
+        "metrics": {
+          "weighted_score": 5261617.114683595
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4225697.921124365,
+        "time_s": 6.44,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 4225697.921124365
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4318539.044061517,
+        "time_s": 0.47,
+        "feature_dim": 278,
+        "metrics": {
+          "weighted_score": 4318539.044061517
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4234534.271901341,
+        "time_s": 0.57,
+        "feature_dim": 502,
+        "metrics": {
+          "weighted_score": 4234534.271901341
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 5271531.503799555,
+        "time_s": 0.71,
+        "feature_dim": 66,
+        "metrics": {
+          "weighted_score": 5271531.503799555
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4251299.743247382,
+        "time_s": 5.32,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 4251299.743247382
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4285831.038128236,
+        "time_s": 0.33,
+        "feature_dim": 278,
+        "metrics": {
+          "weighted_score": 4285831.038128236
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4211268.005613437,
+        "time_s": 0.46,
+        "feature_dim": 502,
+        "metrics": {
+          "weighted_score": 4211268.005613437
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 5261945.841794443,
+        "time_s": 0.48,
+        "feature_dim": 66,
+        "metrics": {
+          "weighted_score": 5261945.841794443
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 4230999.992632615,
+        "time_s": 4.65,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 4230999.992632615
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 4232851.885514812,
+    "best_bucketer": "no_bucket",
+    "best_encoder": "aggregation",
+    "best_score": 4197883.623034359,
+    "elapsed_s": 100.3
+  },
+  "BPIC15_1|outcome": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 1199,
+    "comparison": [
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.016017924143086466,
+        "time_s": 2.91,
+        "feature_dim": 288,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.016017924143086466,
+            "f1_micro": 0.06187913907284768,
+            "primary": 0.016017924143086466
+          }
+        },
+        "details": {
+          "train": 23076,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.0230221123099815,
+        "time_s": 3.75,
+        "feature_dim": 517,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.0230221123099815,
+            "f1_micro": 0.04677152317880795,
+            "primary": 0.0230221123099815
+          }
+        },
+        "details": {
+          "train": 23076,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.0349441832247584,
+        "time_s": 3.65,
+        "feature_dim": 911,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.0349441832247584,
+            "f1_micro": 0.07139900662251655,
+            "primary": 0.0349441832247584
+          }
+        },
+        "details": {
+          "train": 23076,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.03596988147143955,
+        "time_s": 70.73,
+        "feature_dim": 1227,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.03596988147143955,
+            "f1_micro": 0.14610927152317882,
+            "primary": 0.03596988147143955
+          }
+        },
+        "details": {
+          "train": 23076,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.1539521626695088,
+        "time_s": 20.08,
+        "feature_dim": 288,
+        "metrics": {
+          "weighted_score": 0.1539521626695088
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1817
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.16732925294476783,
+        "time_s": 21.54,
+        "feature_dim": 517,
+        "metrics": {
+          "weighted_score": 0.16732925294476783
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1817
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.20103637140672428,
+        "time_s": 17.74,
+        "feature_dim": 911,
+        "metrics": {
+          "weighted_score": 0.20103637140672428
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1817
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.19816896962829358,
+        "time_s": 84.32,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 0.19816896962829358
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 1817
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.15794386966541335,
+        "time_s": 18.28,
+        "feature_dim": 288,
+        "metrics": {
+          "weighted_score": 0.15794386966541335
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.13459055634567543,
+        "time_s": 17.34,
+        "feature_dim": 517,
+        "metrics": {
+          "weighted_score": 0.13459055634567543
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.10632911331793828,
+        "time_s": 16.97,
+        "feature_dim": 911,
+        "metrics": {
+          "weighted_score": 0.10632911331793828
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.13832479400077402,
+        "time_s": 144.2,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 0.13832479400077402
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.15377156484903962,
+        "time_s": 14.89,
+        "feature_dim": 288,
+        "metrics": {
+          "weighted_score": 0.15377156484903962
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.1636433147451402,
+        "time_s": 17.06,
+        "feature_dim": 517,
+        "metrics": {
+          "weighted_score": 0.1636433147451402
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.14712756225288984,
+        "time_s": 12.71,
+        "feature_dim": 911,
+        "metrics": {
+          "weighted_score": 0.14712756225288984
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.12444294332131914,
+        "time_s": 123.6,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 0.12444294332131914
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.028196643950324236,
+        "time_s": 5.61,
+        "feature_dim": 288,
+        "metrics": {
+          "weighted_score": 0.028196643950324236
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.07666632867085707,
+        "time_s": 6.71,
+        "feature_dim": 517,
+        "metrics": {
+          "weighted_score": 0.07666632867085707
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.08323405708449427,
+        "time_s": 7.22,
+        "feature_dim": 911,
+        "metrics": {
+          "weighted_score": 0.08323405708449427
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.02109671801477581,
+        "time_s": 72.48,
+        "feature_dim": 1227,
+        "metrics": {
+          "weighted_score": 0.02109671801477581
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 4832
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.016017924143086466,
+    "best_bucketer": "last_activity",
+    "best_encoder": "index_latest_payload",
+    "best_score": 0.20103637140672428,
+    "elapsed_s": 773.4
+  },
+  "BPI_Challenge_2013_closed_problems|next_activity": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 1486,
+    "comparison": [
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6612071528908037,
+        "time_s": 0.17,
+        "feature_dim": 91,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.6612071528908037,
+            "f1_micro": 0.7042440318302388,
+            "primary": 0.6612071528908037
+          }
+        },
+        "details": {
+          "train": 3646,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6727941140460159,
+        "time_s": 0.21,
+        "feature_dim": 96,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.6727941140460159,
+            "f1_micro": 0.7095490716180372,
+            "primary": 0.6727941140460159
+          }
+        },
+        "details": {
+          "train": 3646,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.49532439652463073,
+        "time_s": 0.24,
+        "feature_dim": 211,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.49532439652463073,
+            "f1_micro": 0.7029177718832891,
+            "primary": 0.49532439652463073
+          }
+        },
+        "details": {
+          "train": 3646,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4877716642817314,
+        "time_s": 1.6,
+        "feature_dim": 650,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4877716642817314,
+            "f1_micro": 0.6962864721485411,
+            "primary": 0.4877716642817314
+          }
+        },
+        "details": {
+          "train": 3646,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6064061471350082,
+        "time_s": 0.21,
+        "feature_dim": 91,
+        "metrics": {
+          "weighted_score": 0.6064061471350082
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 744
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.632379091990226,
+        "time_s": 0.21,
+        "feature_dim": 96,
+        "metrics": {
+          "weighted_score": 0.632379091990226
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 744
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4940775310659122,
+        "time_s": 0.24,
+        "feature_dim": 211,
+        "metrics": {
+          "weighted_score": 0.4940775310659122
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 744
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6020657334850656,
+        "time_s": 1.42,
+        "feature_dim": 650,
+        "metrics": {
+          "weighted_score": 0.6020657334850656
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 744
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6506914575404071,
+        "time_s": 0.23,
+        "feature_dim": 91,
+        "metrics": {
+          "weighted_score": 0.6506914575404071
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 731
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6663004170461241,
+        "time_s": 0.25,
+        "feature_dim": 96,
+        "metrics": {
+          "weighted_score": 0.6663004170461241
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 731
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6717122104874625,
+        "time_s": 0.26,
+        "feature_dim": 211,
+        "metrics": {
+          "weighted_score": 0.6717122104874625
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 731
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6439638436044685,
+        "time_s": 1.64,
+        "feature_dim": 650,
+        "metrics": {
+          "weighted_score": 0.6439638436044685
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 731
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5955451222238793,
+        "time_s": 0.34,
+        "feature_dim": 91,
+        "metrics": {
+          "weighted_score": 0.5955451222238793
+        },
+        "details": {
+          "buckets": 4,
+          "min_bucket_samples": 100,
+          "total_val_samples": 630
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.528022703549719,
+        "time_s": 0.35,
+        "feature_dim": 96,
+        "metrics": {
+          "weighted_score": 0.528022703549719
+        },
+        "details": {
+          "buckets": 4,
+          "min_bucket_samples": 100,
+          "total_val_samples": 630
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6009723589698396,
+        "time_s": 0.4,
+        "feature_dim": 211,
+        "metrics": {
+          "weighted_score": 0.6009723589698396
+        },
+        "details": {
+          "buckets": 4,
+          "min_bucket_samples": 100,
+          "total_val_samples": 630
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5668369226285852,
+        "time_s": 2.15,
+        "feature_dim": 650,
+        "metrics": {
+          "weighted_score": 0.5668369226285852
+        },
+        "details": {
+          "buckets": 4,
+          "min_bucket_samples": 100,
+          "total_val_samples": 630
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6367716113006893,
+        "time_s": 0.27,
+        "feature_dim": 91,
+        "metrics": {
+          "weighted_score": 0.6367716113006893
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 724
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6370202639865417,
+        "time_s": 0.28,
+        "feature_dim": 96,
+        "metrics": {
+          "weighted_score": 0.6370202639865417
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 724
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6505299642934907,
+        "time_s": 0.33,
+        "feature_dim": 211,
+        "metrics": {
+          "weighted_score": 0.6505299642934907
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 724
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6539385599333148,
+        "time_s": 1.81,
+        "feature_dim": 650,
+        "metrics": {
+          "weighted_score": 0.6539385599333148
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 724
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.6612071528908037,
+    "best_bucketer": "no_bucket",
+    "best_encoder": "aggregation",
+    "best_score": 0.6727941140460159,
+    "elapsed_s": 20.1
+  },
+  "BPI_Challenge_2013_closed_problems|remaining_time": {
+    "status": "success",
+    "is_classification": false,
+    "primary_metric": "mae_sec",
+    "n_cases": 1486,
+    "comparison": [
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 7054229.206227922,
+        "time_s": 0.05,
+        "feature_dim": 88,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 7054229.206227922,
+            "mae_days": 81.64617136837873,
+            "median_ae_sec": 2879104.5775891324,
+            "median_ae_days": 33.322969648022365,
+            "primary": 7054229.206227922
+          }
+        },
+        "details": {
+          "train": 3395,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 7100498.959258861,
+        "time_s": 0.06,
+        "feature_dim": 93,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 7100498.959258861,
+            "mae_days": 82.18170091734792,
+            "median_ae_sec": 2924147.3408370954,
+            "median_ae_days": 33.844297926355274,
+            "primary": 7100498.959258861
+          }
+        },
+        "details": {
+          "train": 3395,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 2515799.867468749,
+        "time_s": 0.06,
+        "feature_dim": 49,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2515799.867468749,
+            "mae_days": 29.118054021629042,
+            "median_ae_sec": 1599826.7973647083,
+            "median_ae_days": 18.516513858387828,
+            "primary": 2515799.867468749
+          }
+        },
+        "details": {
+          "train": 3395,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 2328374.2208717987,
+        "time_s": 0.48,
+        "feature_dim": 650,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 2328374.2208717987,
+            "mae_days": 26.948775704534707,
+            "median_ae_sec": 1478571.4609205208,
+            "median_ae_days": 17.11309561250603,
+            "primary": 2328374.2208717987
+          }
+        },
+        "details": {
+          "train": 3395,
+          "val": 754,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 7395622.07117471,
+        "time_s": 0.07,
+        "feature_dim": 88,
+        "metrics": {
+          "weighted_score": 7395622.07117471
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 744
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 7447554.4129209155,
+        "time_s": 0.08,
+        "feature_dim": 93,
+        "metrics": {
+          "weighted_score": 7447554.4129209155
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 744
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2858653.736436663,
+        "time_s": 0.08,
+        "feature_dim": 49,
+        "metrics": {
+          "weighted_score": 2858653.736436663
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 744
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2398225.6426200974,
+        "time_s": 0.51,
+        "feature_dim": 650,
+        "metrics": {
+          "weighted_score": 2398225.6426200974
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 744
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 7738357.317541988,
+        "time_s": 0.07,
+        "feature_dim": 88,
+        "metrics": {
+          "weighted_score": 7738357.317541988
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 731
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 7779774.128949652,
+        "time_s": 0.07,
+        "feature_dim": 93,
+        "metrics": {
+          "weighted_score": 7779774.128949652
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 731
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2546310.8202678133,
+        "time_s": 0.08,
+        "feature_dim": 49,
+        "metrics": {
+          "weighted_score": 2546310.8202678133
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 731
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2416841.1356670363,
+        "time_s": 0.5,
+        "feature_dim": 650,
+        "metrics": {
+          "weighted_score": 2416841.1356670363
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 731
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 8445827.616044069,
+        "time_s": 0.09,
+        "feature_dim": 88,
+        "metrics": {
+          "weighted_score": 8445827.616044069
+        },
+        "details": {
+          "buckets": 4,
+          "min_bucket_samples": 100,
+          "total_val_samples": 630
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 8446410.26540911,
+        "time_s": 0.1,
+        "feature_dim": 93,
+        "metrics": {
+          "weighted_score": 8446410.26540911
+        },
+        "details": {
+          "buckets": 4,
+          "min_bucket_samples": 100,
+          "total_val_samples": 630
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 3250627.1370632406,
+        "time_s": 0.1,
+        "feature_dim": 49,
+        "metrics": {
+          "weighted_score": 3250627.1370632406
+        },
+        "details": {
+          "buckets": 4,
+          "min_bucket_samples": 100,
+          "total_val_samples": 630
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2938743.2328317,
+        "time_s": 0.61,
+        "feature_dim": 650,
+        "metrics": {
+          "weighted_score": 2938743.2328317
+        },
+        "details": {
+          "buckets": 4,
+          "min_bucket_samples": 100,
+          "total_val_samples": 630
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 7608708.12911326,
+        "time_s": 0.07,
+        "feature_dim": 88,
+        "metrics": {
+          "weighted_score": 7608708.12911326
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 745
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 7586513.419682413,
+        "time_s": 0.07,
+        "feature_dim": 93,
+        "metrics": {
+          "weighted_score": 7586513.419682413
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 745
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2622052.0592605886,
+        "time_s": 0.08,
+        "feature_dim": 49,
+        "metrics": {
+          "weighted_score": 2622052.0592605886
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 745
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 2376577.4922268842,
+        "time_s": 0.55,
+        "feature_dim": 650,
+        "metrics": {
+          "weighted_score": 2376577.4922268842
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 745
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 7054229.206227922,
+    "best_bucketer": "no_bucket",
+    "best_encoder": "embedding",
+    "best_score": 2328374.2208717987,
+    "elapsed_s": 11.0
+  },
+  "BPI_Challenge_2013_closed_problems|outcome": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "",
+    "n_cases": 1486,
+    "comparison": [
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 96,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 211,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 650,
+        "metrics": {},
+        "details": {
+          "note": "skipped: train has <2 classes"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.01,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 96,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 211,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 650,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 96,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 211,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 650,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 96,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 211,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 650,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 91,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 96,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 211,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": null,
+        "time_s": 0.0,
+        "feature_dim": 650,
+        "metrics": {},
+        "details": {
+          "note": "no buckets met constraints (min_bucket_samples=100)"
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": null,
+    "best_bucketer": null,
+    "best_encoder": null,
+    "best_score": null,
+    "elapsed_s": 7.4
+  },
+  "issues|next_activity": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 66613,
+    "comparison": [
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5566443070505128,
+        "time_s": 5.65,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.5566443070505128,
+            "f1_micro": 0.783808416355008,
+            "primary": 0.5566443070505128
+          }
+        },
+        "details": {
+          "train": 149077,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6723667211068165,
+        "time_s": 4.09,
+        "feature_dim": 154,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.6723667211068165,
+            "f1_micro": 0.8558722775700054,
+            "primary": 0.6723667211068165
+          }
+        },
+        "details": {
+          "train": 149077,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6815949327326666,
+        "time_s": 5.18,
+        "feature_dim": 587,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.6815949327326666,
+            "f1_micro": 0.8628806687828027,
+            "primary": 0.6815949327326666
+          }
+        },
+        "details": {
+          "train": 149077,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.7102175516390827,
+        "time_s": 58.3,
+        "feature_dim": 526,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.7102175516390827,
+            "f1_micro": 0.8804487884597253,
+            "primary": 0.7102175516390827
+          }
+        },
+        "details": {
+          "train": 149077,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5894098833014161,
+        "time_s": 6.07,
+        "feature_dim": 138,
+        "metrics": {
+          "weighted_score": 0.5894098833014161
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31716
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6124179063316106,
+        "time_s": 6.44,
+        "feature_dim": 154,
+        "metrics": {
+          "weighted_score": 0.6124179063316106
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31716
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6210218785996681,
+        "time_s": 6.91,
+        "feature_dim": 587,
+        "metrics": {
+          "weighted_score": 0.6210218785996681
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31716
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6329120742791212,
+        "time_s": 45.14,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 0.6329120742791212
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31716
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5377717798533325,
+        "time_s": 5.68,
+        "feature_dim": 138,
+        "metrics": {
+          "weighted_score": 0.5377717798533325
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31782
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6646450174539912,
+        "time_s": 5.85,
+        "feature_dim": 154,
+        "metrics": {
+          "weighted_score": 0.6646450174539912
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31782
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6811472827758501,
+        "time_s": 6.65,
+        "feature_dim": 587,
+        "metrics": {
+          "weighted_score": 0.6811472827758501
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31782
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.70620737689916,
+        "time_s": 67.67,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 0.70620737689916
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31782
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.49390598888921317,
+        "time_s": 7.1,
+        "feature_dim": 138,
+        "metrics": {
+          "weighted_score": 0.49390598888921317
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5927417397117298,
+        "time_s": 6.98,
+        "feature_dim": 154,
+        "metrics": {
+          "weighted_score": 0.5927417397117298
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4461173487060932,
+        "time_s": 7.76,
+        "feature_dim": 587,
+        "metrics": {
+          "weighted_score": 0.4461173487060932
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6263923521425561,
+        "time_s": 67.44,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 0.6263923521425561
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5104939516460217,
+        "time_s": 5.7,
+        "feature_dim": 138,
+        "metrics": {
+          "weighted_score": 0.5104939516460217
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6288053975561189,
+        "time_s": 5.99,
+        "feature_dim": 154,
+        "metrics": {
+          "weighted_score": 0.6288053975561189
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6447083178036377,
+        "time_s": 6.28,
+        "feature_dim": 587,
+        "metrics": {
+          "weighted_score": 0.6447083178036377
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "next_activity",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.66245108531927,
+        "time_s": 60.29,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 0.66245108531927
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.5566443070505128,
+    "best_bucketer": "no_bucket",
+    "best_encoder": "embedding",
+    "best_score": 0.7102175516390827,
+    "elapsed_s": 641.9
+  },
+  "issues|remaining_time": {
+    "status": "success",
+    "is_classification": false,
+    "primary_metric": "mae_sec",
+    "n_cases": 66613,
+    "comparison": [
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 22278983.73412088,
+        "time_s": 0.5,
+        "feature_dim": 137,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 22278983.73412088,
+            "mae_days": 257.8586080338065,
+            "median_ae_sec": 891600.4657970597,
+            "median_ae_days": 10.319449835614117,
+            "primary": 22278983.73412088
+          }
+        },
+        "details": {
+          "train": 124800,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 22232395.722372938,
+        "time_s": 0.49,
+        "feature_dim": 153,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 22232395.722372938,
+            "mae_days": 257.319394934872,
+            "median_ae_sec": 880806.3358542256,
+            "median_ae_days": 10.194517776090574,
+            "primary": 22232395.722372938
+          }
+        },
+        "details": {
+          "train": 124800,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 23215453.703132477,
+        "time_s": 0.5,
+        "feature_dim": 54,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 23215453.703132477,
+            "mae_days": 268.6973808232926,
+            "median_ae_sec": 1619508.180434904,
+            "median_ae_days": 18.7443076439225,
+            "primary": 23215453.703132477
+          }
+        },
+        "details": {
+          "train": 124800,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "mae_sec",
+        "primary_score": 22436860.7811649,
+        "time_s": 4.46,
+        "feature_dim": 526,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 22436860.7811649,
+            "mae_days": 259.68588867089005,
+            "median_ae_sec": 835989.0644761135,
+            "median_ae_days": 9.675799357362425,
+            "primary": 22436860.7811649
+          }
+        },
+        "details": {
+          "train": 124800,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22268509.81777889,
+        "time_s": 1.18,
+        "feature_dim": 137,
+        "metrics": {
+          "weighted_score": 22268509.81777889
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31716
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22262458.107759204,
+        "time_s": 1.21,
+        "feature_dim": 153,
+        "metrics": {
+          "weighted_score": 22262458.107759204
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31716
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 23276447.845269807,
+        "time_s": 1.17,
+        "feature_dim": 54,
+        "metrics": {
+          "weighted_score": 23276447.845269807
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31716
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 21947277.994672686,
+        "time_s": 7.11,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 21947277.994672686
+        },
+        "details": {
+          "buckets": 13,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31716
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22271674.983039528,
+        "time_s": 0.68,
+        "feature_dim": 137,
+        "metrics": {
+          "weighted_score": 22271674.983039528
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31782
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22227612.51222688,
+        "time_s": 0.71,
+        "feature_dim": 153,
+        "metrics": {
+          "weighted_score": 22227612.51222688
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31782
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 23223798.0907909,
+        "time_s": 0.75,
+        "feature_dim": 54,
+        "metrics": {
+          "weighted_score": 23223798.0907909
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31782
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22229443.16029944,
+        "time_s": 6.04,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 22229443.16029944
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31782
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22261870.64015862,
+        "time_s": 0.89,
+        "feature_dim": 137,
+        "metrics": {
+          "weighted_score": 22261870.64015862
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22209888.180369746,
+        "time_s": 0.93,
+        "feature_dim": 153,
+        "metrics": {
+          "weighted_score": 22209888.180369746
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 23211976.882484857,
+        "time_s": 0.94,
+        "feature_dim": 54,
+        "metrics": {
+          "weighted_score": 23211976.882484857
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22297043.268002566,
+        "time_s": 6.69,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 22297043.268002566
+        },
+        "details": {
+          "buckets": 6,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22253652.15952578,
+        "time_s": 0.65,
+        "feature_dim": 137,
+        "metrics": {
+          "weighted_score": 22253652.15952578
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22217245.779970158,
+        "time_s": 0.71,
+        "feature_dim": 153,
+        "metrics": {
+          "weighted_score": 22217245.779970158
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 23218841.375722457,
+        "time_s": 0.71,
+        "feature_dim": 54,
+        "metrics": {
+          "weighted_score": 23218841.375722457
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "remaining_time",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "mae_sec",
+        "primary_score": 22328413.77947862,
+        "time_s": 5.78,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 22328413.77947862
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 22278983.73412088,
+    "best_bucketer": "last_activity",
+    "best_encoder": "embedding",
+    "best_score": 21947277.994672686,
+    "elapsed_s": 247.7
+  },
+  "issues|outcome": {
+    "status": "success",
+    "is_classification": true,
+    "primary_metric": "f1_macro",
+    "n_cases": 66613,
+    "comparison": [
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "last_state",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.33319184837004084,
+        "time_s": 1.34,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.33319184837004084,
+            "f1_micro": 0.9991514503912756,
+            "primary": 0.33319184837004084
+          }
+        },
+        "details": {
+          "train": 149075,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "aggregation",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4665933075528448,
+        "time_s": 1.36,
+        "feature_dim": 154,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.4665933075528448,
+            "f1_micro": 0.9995285835507087,
+            "primary": 0.4665933075528448
+          }
+        },
+        "details": {
+          "train": 149075,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "index_latest_payload",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.46659854856035005,
+        "time_s": 1.74,
+        "feature_dim": 587,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.46659854856035005,
+            "f1_micro": 0.9995600113139947,
+            "primary": 0.46659854856035005
+          }
+        },
+        "details": {
+          "train": 149075,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "no_bucket",
+        "encoding": "embedding",
+        "mode": "global_model",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4814290854090911,
+        "time_s": 13.14,
+        "feature_dim": 526,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.4814290854090911,
+            "f1_micro": 0.999654294603853,
+            "primary": 0.4814290854090911
+          }
+        },
+        "details": {
+          "train": 149075,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.41829382578125496,
+        "time_s": 1.24,
+        "feature_dim": 138,
+        "metrics": {
+          "weighted_score": 0.41829382578125496
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 20485
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6601171117279466,
+        "time_s": 1.2,
+        "feature_dim": 154,
+        "metrics": {
+          "weighted_score": 0.6601171117279466
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 20485
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6601171117279466,
+        "time_s": 1.42,
+        "feature_dim": 587,
+        "metrics": {
+          "weighted_score": 0.6601171117279466
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 20485
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "last_activity",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.660125255950633,
+        "time_s": 7.39,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 0.660125255950633
+        },
+        "details": {
+          "buckets": 3,
+          "min_bucket_samples": 100,
+          "total_val_samples": 20485
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.33315589493199216,
+        "time_s": 1.25,
+        "feature_dim": 138,
+        "metrics": {
+          "weighted_score": 0.33315589493199216
+        },
+        "details": {
+          "buckets": 1,
+          "min_bucket_samples": 100,
+          "total_val_samples": 27254
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.48140806812759235,
+        "time_s": 1.22,
+        "feature_dim": 154,
+        "metrics": {
+          "weighted_score": 0.48140806812759235
+        },
+        "details": {
+          "buckets": 1,
+          "min_bucket_samples": 100,
+          "total_val_samples": 27254
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.46657489492135157,
+        "time_s": 1.4,
+        "feature_dim": 587,
+        "metrics": {
+          "weighted_score": 0.46657489492135157
+        },
+        "details": {
+          "buckets": 1,
+          "min_bucket_samples": 100,
+          "total_val_samples": 27254
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_bins",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.4736169161869932,
+        "time_s": 11.32,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 0.4736169161869932
+        },
+        "details": {
+          "buckets": 1,
+          "min_bucket_samples": 100,
+          "total_val_samples": 27254
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.5576986924689122,
+        "time_s": 1.85,
+        "feature_dim": 138,
+        "metrics": {
+          "weighted_score": 0.5576986924689122
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6140085494799636,
+        "time_s": 1.91,
+        "feature_dim": 154,
+        "metrics": {
+          "weighted_score": 0.6140085494799636
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.551844412860526,
+        "time_s": 2.17,
+        "feature_dim": 587,
+        "metrics": {
+          "weighted_score": 0.551844412860526
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "prefix_len_adaptive",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.7202893885536079,
+        "time_s": 13.49,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 0.7202893885536079
+        },
+        "details": {
+          "buckets": 5,
+          "min_bucket_samples": 100,
+          "total_val_samples": 31819
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "last_state",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.40502383424529736,
+        "time_s": 1.39,
+        "feature_dim": 138,
+        "metrics": {
+          "weighted_score": 0.40502383424529736
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 29940
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "aggregation",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6964818094313104,
+        "time_s": 1.43,
+        "feature_dim": 154,
+        "metrics": {
+          "weighted_score": 0.6964818094313104
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 29940
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "index_latest_payload",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6964818094313104,
+        "time_s": 1.73,
+        "feature_dim": 587,
+        "metrics": {
+          "weighted_score": 0.6964818094313104
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 29940
+        }
+      },
+      {
+        "task": "outcome",
+        "bucketing": "cluster",
+        "encoding": "embedding",
+        "mode": "per_bucket_models",
+        "primary_metric": "f1_macro",
+        "primary_score": 0.6964818094313104,
+        "time_s": 12.03,
+        "feature_dim": 526,
+        "metrics": {
+          "weighted_score": 0.6964818094313104
+        },
+        "details": {
+          "buckets": 2,
+          "min_bucket_samples": 100,
+          "total_val_samples": 29940
+        }
+      }
+    ],
+    "baseline_bucketer": "no_bucket",
+    "baseline_encoder": "last_state",
+    "baseline_score": 0.33319184837004084,
+    "best_bucketer": "prefix_len_adaptive",
+    "best_encoder": "embedding",
+    "best_score": 0.7202893885536079,
+    "elapsed_s": 319.4
+  }
+}

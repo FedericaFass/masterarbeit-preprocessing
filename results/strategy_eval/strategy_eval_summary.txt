@@ -1,0 +1,464 @@
+===============================================================================================
+  Log: DomesticDeclarations  |  Task: next_activity
+  Cases after preprocessing: 10,366  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  cluster                embedding                       60.41%       +37.5%     +0.0% << best
+  prefix_len_bins        embedding                       59.20%       +34.7%     -2.0%
+  cluster                index_latest_payload            58.62%       +33.4%     -3.0%
+  no_bucket              index_latest_payload            58.48%       +33.1%     -3.2%
+  prefix_len_bins        index_latest_payload            57.91%       +31.8%     -4.1%
+  no_bucket              embedding                       57.64%       +31.2%     -4.6%
+  last_activity          embedding                       55.93%       +27.3%     -7.4%
+  prefix_len_adaptive    embedding                       55.55%       +26.4%     -8.0%
+  cluster                aggregation                     55.31%       +25.9%     -8.4%
+  prefix_len_adaptive    index_latest_payload            53.82%       +22.5%    -10.9%
+  prefix_len_bins        aggregation                     53.45%       +21.6%    -11.5%
+  last_activity          index_latest_payload            53.18%       +21.0%    -12.0%
+  no_bucket              aggregation                     52.33%       +19.1%    -13.4%
+  prefix_len_adaptive    aggregation                     50.80%       +15.6%    -15.9%
+  last_activity          last_state                      49.27%       +12.1%    -18.4%
+  last_activity          aggregation                     48.82%       +11.1%    -19.2%
+  cluster                last_state                      45.13%        +2.7%    -25.3%
+  prefix_len_bins        last_state                      44.31%        +0.9%    -26.6%
+  no_bucket              last_state                      43.94%        +0.0%    -27.3% << baseline
+  prefix_len_adaptive    last_state                      38.08%       -13.3%    -37.0%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):    43.94%
+  Best      (cluster                embedding       ):    60.41%   [+37.5% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: DomesticDeclarations  |  Task: remaining_time
+  Cases after preprocessing: 10,366  |  Metric: MAE days (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  last_activity          embedding                       3.608 d        +7.5%     +0.0% << best
+  cluster                embedding                       3.725 d        +4.5%     -3.2%
+  prefix_len_adaptive    embedding                       3.727 d        +4.5%     -3.3%
+  last_activity          aggregation                     3.749 d        +3.9%     -3.9%
+  no_bucket              embedding                       3.759 d        +3.7%     -4.2%
+  last_activity          last_state                      3.764 d        +3.5%     -4.3%
+  prefix_len_bins        embedding                       3.776 d        +3.2%     -4.7%
+  cluster                aggregation                     3.851 d        +1.3%     -6.7%
+  prefix_len_adaptive    aggregation                     3.856 d        +1.2%     -6.9%
+  no_bucket              aggregation                     3.867 d        +0.9%     -7.2%
+  prefix_len_bins        aggregation                     3.875 d        +0.7%     -7.4%
+  prefix_len_adaptive    last_state                      3.884 d        +0.5%     -7.6%
+  cluster                last_state                      3.892 d        +0.3%     -7.9%
+  prefix_len_bins        last_state                      3.900 d        +0.0%     -8.1%
+  no_bucket              last_state                      3.902 d        +0.0%     -8.2% << baseline
+  cluster                index_latest_payload            4.646 d       -19.1%    -28.8%
+  last_activity          index_latest_payload            4.646 d       -19.1%    -28.8%
+  prefix_len_adaptive    index_latest_payload            4.655 d       -19.3%    -29.0%
+  prefix_len_bins        index_latest_payload            4.677 d       -19.9%    -29.7%
+  no_bucket              index_latest_payload            4.689 d       -20.2%    -30.0%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):    3.902 d
+  Best      (last_activity          embedding       ):    3.608 d   [+7.5% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: DomesticDeclarations  |  Task: outcome
+  Cases after preprocessing: 10,366  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  last_activity          index_latest_payload            96.97%        +9.5%     +0.0% << best
+  cluster                aggregation                     96.07%        +8.5%     -0.9%
+  prefix_len_adaptive    aggregation                     96.07%        +8.5%     -0.9%
+  last_activity          last_state                      95.57%        +8.0%     -1.4%
+  prefix_len_bins        last_state                      95.37%        +7.7%     -1.7%
+  prefix_len_adaptive    last_state                      94.48%        +6.7%     -2.6%
+  cluster                last_state                      93.31%        +5.4%     -3.8%
+  no_bucket              index_latest_payload            92.96%        +5.0%     -4.1%
+  prefix_len_bins        aggregation                     91.86%        +3.8%     -5.3%
+  prefix_len_adaptive    index_latest_payload            91.62%        +3.5%     -5.5%
+  prefix_len_bins        index_latest_payload            90.96%        +2.8%     -6.2%
+  no_bucket              last_state                      88.52%        +0.0%     -8.7% << baseline
+  cluster                index_latest_payload            86.43%        -2.4%    -10.9%
+  prefix_len_adaptive    embedding                       86.39%        -2.4%    -10.9%
+  last_activity          aggregation                     84.54%        -4.5%    -12.8%
+  last_activity          embedding                       79.41%       -10.3%    -18.1%
+  cluster                embedding                       77.82%       -12.1%    -19.7%
+  no_bucket              aggregation                     68.47%       -22.7%    -29.4%
+  prefix_len_bins        embedding                       66.48%       -24.9%    -31.4%
+  no_bucket              embedding                       62.21%       -29.7%    -35.8%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):    88.52%
+  Best      (last_activity          index_latest_payload):    96.97%   [+9.5% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: PermitLog  |  Task: next_activity
+  Cases after preprocessing: 7,064  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  prefix_len_bins        embedding                       61.74%       +68.4%     +0.0% << best
+  cluster                embedding                       60.12%       +64.0%     -2.6%
+  prefix_len_adaptive    embedding                       59.16%       +61.4%     -4.2%
+  no_bucket              index_latest_payload            57.66%       +57.3%     -6.6%
+  prefix_len_adaptive    aggregation                     57.59%       +57.1%     -6.7%
+  prefix_len_bins        index_latest_payload            53.71%       +46.5%    -13.0%
+  cluster                index_latest_payload            52.50%       +43.2%    -15.0%
+  prefix_len_adaptive    index_latest_payload            50.86%       +38.8%    -17.6%
+  prefix_len_bins        aggregation                     39.79%        +8.6%    -35.5%
+  last_activity          embedding                       37.18%        +1.4%    -39.8%
+  no_bucket              last_state                      36.66%        +0.0%    -40.6% << baseline
+  cluster                aggregation                     36.05%        -1.6%    -41.6%
+  last_activity          aggregation                     36.00%        -1.8%    -41.7%
+  cluster                last_state                      32.61%       -11.0%    -47.2%
+  prefix_len_bins        last_state                      31.47%       -14.2%    -49.0%
+  prefix_len_adaptive    last_state                      31.06%       -15.3%    -49.7%
+  last_activity          index_latest_payload            28.32%       -22.8%    -54.1%
+  last_activity          last_state                      24.10%       -34.2%    -61.0%
+  no_bucket              embedding                       10.33%       -71.8%    -83.3%
+  no_bucket              aggregation                      2.01%       -94.5%    -96.7%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):    36.66%
+  Best      (prefix_len_bins        embedding       ):    61.74%   [+68.4% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: PermitLog  |  Task: remaining_time
+  Cases after preprocessing: 7,064  |  Metric: MAE days (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  last_activity          aggregation                    19.752 d        +8.6%     +0.0% << best
+  last_activity          embedding                      20.014 d        +7.4%     -1.3%
+  cluster                aggregation                    20.119 d        +6.9%     -1.9%
+  prefix_len_adaptive    aggregation                    20.128 d        +6.9%     -1.9%
+  last_activity          last_state                     20.181 d        +6.6%     -2.2%
+  prefix_len_bins        aggregation                    20.225 d        +6.4%     -2.4%
+  no_bucket              aggregation                    20.372 d        +5.8%     -3.1%
+  cluster                embedding                      20.388 d        +5.7%     -3.2%
+  prefix_len_adaptive    embedding                      20.419 d        +5.5%     -3.4%
+  prefix_len_bins        embedding                      20.648 d        +4.5%     -4.5%
+  no_bucket              embedding                      21.166 d        +2.1%     -7.2%
+  cluster                last_state                     21.272 d        +1.6%     -7.7%
+  prefix_len_adaptive    last_state                     21.273 d        +1.6%     -7.7%
+  prefix_len_bins        last_state                     21.358 d        +1.2%     -8.1%
+  no_bucket              last_state                     21.617 d        +0.0%     -9.4% << baseline
+  last_activity          index_latest_payload           31.705 d       -46.7%    -60.5%
+  prefix_len_adaptive    index_latest_payload           32.248 d       -49.2%    -63.3%
+  cluster                index_latest_payload           32.542 d       -50.5%    -64.8%
+  prefix_len_bins        index_latest_payload           32.821 d       -51.8%    -66.2%
+  no_bucket              index_latest_payload           32.958 d       -52.5%    -66.9%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):   21.617 d
+  Best      (last_activity          aggregation     ):   19.752 d   [+8.6% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: PermitLog  |  Task: outcome
+  Cases after preprocessing: 7,064  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  prefix_len_bins        aggregation                     62.11%       +14.0%     +0.0% << best
+  cluster                aggregation                     61.22%       +12.4%     -1.4%
+  no_bucket              aggregation                     59.63%        +9.5%     -4.0%
+  no_bucket              index_latest_payload            57.86%        +6.2%     -6.8%
+  prefix_len_adaptive    aggregation                     56.20%        +3.2%     -9.5%
+  last_activity          aggregation                     54.88%        +0.8%    -11.6%
+  no_bucket              last_state                      54.47%        +0.0%    -12.3% << baseline
+  prefix_len_adaptive    last_state                      53.26%        -2.2%    -14.2%
+  prefix_len_bins        last_state                      52.83%        -3.0%    -14.9%
+  cluster                index_latest_payload            51.96%        -4.6%    -16.3%
+  last_activity          last_state                      51.95%        -4.6%    -16.4%
+  prefix_len_bins        index_latest_payload            51.66%        -5.2%    -16.8%
+  cluster                last_state                      51.40%        -5.6%    -17.2%
+  prefix_len_adaptive    index_latest_payload            50.78%        -6.8%    -18.2%
+  last_activity          index_latest_payload            50.28%        -7.7%    -19.0%
+  prefix_len_adaptive    embedding                       37.38%       -31.4%    -39.8%
+  cluster                embedding                       36.66%       -32.7%    -41.0%
+  last_activity          embedding                       36.51%       -33.0%    -41.2%
+  prefix_len_bins        embedding                       33.19%       -39.1%    -46.6%
+  no_bucket              embedding                       29.77%       -45.4%    -52.1%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):    54.47%
+  Best      (prefix_len_bins        aggregation     ):    62.11%   [+14.0% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: BPIC15_1  |  Task: next_activity
+  Cases after preprocessing: 1,199  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  last_activity          embedding                       34.28%      +796.9%     +0.0% << best
+  last_activity          index_latest_payload            33.51%      +776.9%     -2.2%
+  last_activity          aggregation                     32.54%      +751.3%     -5.1%
+  last_activity          last_state                      29.63%      +675.2%    -13.6%
+  prefix_len_adaptive    embedding                       20.63%      +439.7%    -39.8%
+  prefix_len_adaptive    aggregation                     16.54%      +332.8%    -51.7%
+  prefix_len_bins        last_state                      14.27%      +273.5%    -58.4%
+  prefix_len_bins        embedding                       14.13%      +269.7%    -58.8%
+  prefix_len_adaptive    last_state                      13.05%      +241.3%    -61.9%
+  prefix_len_bins        index_latest_payload            10.44%      +173.1%    -69.6%
+  prefix_len_bins        aggregation                     10.37%      +171.3%    -69.8%
+  cluster                embedding                        8.71%      +127.9%    -74.6%
+  no_bucket              embedding                        7.84%      +105.0%    -77.1%
+  prefix_len_adaptive    index_latest_payload             7.31%       +91.3%    -78.7%
+  no_bucket              aggregation                      5.35%       +40.1%    -84.4%
+  no_bucket              index_latest_payload             4.05%        +5.9%    -88.2%
+  no_bucket              last_state                       3.82%        +0.0%    -88.9% << baseline
+  cluster                index_latest_payload             3.27%       -14.5%    -90.5%
+  cluster                aggregation                      3.11%       -18.6%    -90.9%
+  cluster                last_state                       2.99%       -21.7%    -91.3%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):     3.82%
+  Best      (last_activity          embedding       ):    34.28%   [+796.9% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: BPIC15_1  |  Task: remaining_time
+  Cases after preprocessing: 1,199  |  Metric: MAE days (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  no_bucket              aggregation                    48.587 d        +0.8%     +0.0% << best
+  no_bucket              embedding                      48.638 d        +0.7%     -0.1%
+  cluster                aggregation                    48.742 d        +0.5%     -0.3%
+  prefix_len_bins        embedding                      48.909 d        +0.2%     -0.7%
+  cluster                embedding                      48.970 d        +0.0%     -0.8%
+  no_bucket              last_state                     48.991 d        +0.0%     -0.8% << baseline
+  prefix_len_adaptive    aggregation                    49.011 d        -0.0%     -0.9%
+  prefix_len_bins        aggregation                    49.156 d        -0.3%     -1.2%
+  prefix_len_adaptive    embedding                      49.205 d        -0.4%     -1.3%
+  cluster                last_state                     49.605 d        -1.3%     -2.1%
+  prefix_len_bins        last_state                     49.711 d        -1.5%     -2.3%
+  prefix_len_adaptive    last_state                     49.983 d        -2.0%     -2.9%
+  last_activity          embedding                      57.803 d       -18.0%    -19.0%
+  last_activity          last_state                     59.738 d       -21.9%    -23.0%
+  last_activity          aggregation                    59.834 d       -22.1%    -23.1%
+  prefix_len_bins        index_latest_payload           60.898 d       -24.3%    -25.3%
+  cluster                index_latest_payload           60.902 d       -24.3%    -25.3%
+  prefix_len_adaptive    index_latest_payload           61.013 d       -24.5%    -25.6%
+  no_bucket              index_latest_payload           61.052 d       -24.6%    -25.7%
+  last_activity          index_latest_payload           68.321 d       -39.5%    -40.6%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):   48.991 d
+  Best      (no_bucket              aggregation     ):   48.587 d   [+0.8% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: BPIC15_1  |  Task: outcome
+  Cases after preprocessing: 1,199  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  last_activity          index_latest_payload            20.10%     +1155.1%     +0.0% << best
+  last_activity          embedding                       19.82%     +1137.2%     -1.4%
+  last_activity          aggregation                     16.73%      +944.6%    -16.8%
+  prefix_len_adaptive    aggregation                     16.36%      +921.6%    -18.6%
+  prefix_len_bins        last_state                      15.79%      +886.0%    -21.4%
+  last_activity          last_state                      15.40%      +861.1%    -23.4%
+  prefix_len_adaptive    last_state                      15.38%      +860.0%    -23.5%
+  prefix_len_adaptive    index_latest_payload            14.71%      +818.5%    -26.8%
+  prefix_len_bins        embedding                       13.83%      +763.6%    -31.2%
+  prefix_len_bins        aggregation                     13.46%      +740.2%    -33.1%
+  prefix_len_adaptive    embedding                       12.44%      +676.9%    -38.1%
+  prefix_len_bins        index_latest_payload            10.63%      +563.8%    -47.1%
+  cluster                index_latest_payload             8.32%      +419.6%    -58.6%
+  cluster                aggregation                      7.67%      +378.6%    -61.9%
+  no_bucket              embedding                        3.60%      +124.6%    -82.1%
+  no_bucket              index_latest_payload             3.49%      +118.2%    -82.6%
+  cluster                last_state                       2.82%       +76.0%    -86.0%
+  no_bucket              aggregation                      2.30%       +43.7%    -88.5%
+  cluster                embedding                        2.11%       +31.7%    -89.5%
+  no_bucket              last_state                       1.60%        +0.0%    -92.0% << baseline
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):     1.60%
+  Best      (last_activity          index_latest_payload):    20.10%   [+1155.1% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: BPI_Challenge_2013_closed_problems  |  Task: next_activity
+  Cases after preprocessing: 1,486  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  no_bucket              aggregation                     67.28%        +1.8%     +0.0% << best
+  prefix_len_bins        index_latest_payload            67.17%        +1.6%     -0.2%
+  prefix_len_bins        aggregation                     66.63%        +0.8%     -1.0%
+  no_bucket              last_state                      66.12%        +0.0%     -1.7% << baseline
+  cluster                embedding                       65.39%        -1.1%     -2.8%
+  prefix_len_bins        last_state                      65.07%        -1.6%     -3.3%
+  cluster                index_latest_payload            65.05%        -1.6%     -3.3%
+  prefix_len_bins        embedding                       64.40%        -2.6%     -4.3%
+  cluster                aggregation                     63.70%        -3.7%     -5.3%
+  cluster                last_state                      63.68%        -3.7%     -5.4%
+  last_activity          aggregation                     63.24%        -4.4%     -6.0%
+  last_activity          last_state                      60.64%        -8.3%     -9.9%
+  last_activity          embedding                       60.21%        -8.9%    -10.5%
+  prefix_len_adaptive    index_latest_payload            60.10%        -9.1%    -10.7%
+  prefix_len_adaptive    last_state                      59.55%        -9.9%    -11.5%
+  prefix_len_adaptive    embedding                       56.68%       -14.3%    -15.7%
+  prefix_len_adaptive    aggregation                     52.80%       -20.1%    -21.5%
+  no_bucket              index_latest_payload            49.53%       -25.1%    -26.4%
+  last_activity          index_latest_payload            49.41%       -25.3%    -26.6%
+  no_bucket              embedding                       48.78%       -26.2%    -27.5%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):    66.12%
+  Best      (no_bucket              aggregation     ):    67.28%   [+1.8% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: BPI_Challenge_2013_closed_problems  |  Task: remaining_time
+  Cases after preprocessing: 1,486  |  Metric: MAE days (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  no_bucket              embedding                      26.949 d       +67.0%     +0.0% << best
+  cluster                embedding                      27.507 d       +66.3%     -2.1%
+  last_activity          embedding                      27.757 d       +66.0%     -3.0%
+  prefix_len_bins        embedding                      27.973 d       +65.7%     -3.8%
+  no_bucket              index_latest_payload           29.118 d       +64.3%     -8.0%
+  prefix_len_bins        index_latest_payload           29.471 d       +63.9%     -9.4%
+  cluster                index_latest_payload           30.348 d       +62.8%    -12.6%
+  last_activity          index_latest_payload           33.086 d       +59.5%    -22.8%
+  prefix_len_adaptive    embedding                      34.013 d       +58.3%    -26.2%
+  prefix_len_adaptive    index_latest_payload           37.623 d       +53.9%    -39.6%
+  no_bucket              last_state                     81.646 d        +0.0%   -203.0% << baseline
+  no_bucket              aggregation                    82.182 d        -0.7%   -205.0%
+  last_activity          last_state                     85.597 d        -4.8%   -217.6%
+  last_activity          aggregation                    86.199 d        -5.6%   -219.9%
+  cluster                aggregation                    87.807 d        -7.5%   -225.8%
+  cluster                last_state                     88.064 d        -7.9%   -226.8%
+  prefix_len_bins        last_state                     89.564 d        -9.7%   -232.4%
+  prefix_len_bins        aggregation                    90.044 d       -10.3%   -234.1%
+  prefix_len_adaptive    last_state                     97.753 d       -19.7%   -262.7%
+  prefix_len_adaptive    aggregation                    97.759 d       -19.7%   -262.8%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):   81.646 d
+  Best      (no_bucket              embedding       ):   26.949 d   [+67.0% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: BPI_Challenge_2013_closed_problems  |  Task: outcome
+  Cases after preprocessing: 1,486  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  no_bucket              last_state                     SKIPPED                         ()
+  no_bucket              aggregation                    SKIPPED                         ()
+  no_bucket              index_latest_payload           SKIPPED                         ()
+  no_bucket              embedding                      SKIPPED                         ()
+  last_activity          last_state                     SKIPPED                         ()
+  last_activity          aggregation                    SKIPPED                         ()
+  last_activity          index_latest_payload           SKIPPED                         ()
+  last_activity          embedding                      SKIPPED                         ()
+  prefix_len_bins        last_state                     SKIPPED                         ()
+  prefix_len_bins        aggregation                    SKIPPED                         ()
+  prefix_len_bins        index_latest_payload           SKIPPED                         ()
+  prefix_len_bins        embedding                      SKIPPED                         ()
+  prefix_len_adaptive    last_state                     SKIPPED                         ()
+  prefix_len_adaptive    aggregation                    SKIPPED                         ()
+  prefix_len_adaptive    index_latest_payload           SKIPPED                         ()
+  prefix_len_adaptive    embedding                      SKIPPED                         ()
+  cluster                last_state                     SKIPPED                         ()
+  cluster                aggregation                    SKIPPED                         ()
+  cluster                index_latest_payload           SKIPPED                         ()
+  cluster                embedding                      SKIPPED                         ()
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):       N/A
+  Best      (N/A                    N/A             ):       N/A   [N/A vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: issues  |  Task: next_activity
+  Cases after preprocessing: 66,613  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  no_bucket              embedding                       71.02%       +27.6%     +0.0% << best
+  prefix_len_bins        embedding                       70.62%       +26.9%     -0.6%
+  no_bucket              index_latest_payload            68.16%       +22.4%     -4.0%
+  prefix_len_bins        index_latest_payload            68.11%       +22.4%     -4.1%
+  no_bucket              aggregation                     67.24%       +20.8%     -5.3%
+  prefix_len_bins        aggregation                     66.46%       +19.4%     -6.4%
+  cluster                embedding                       66.25%       +19.0%     -6.7%
+  cluster                index_latest_payload            64.47%       +15.8%     -9.2%
+  last_activity          embedding                       63.29%       +13.7%    -10.9%
+  cluster                aggregation                     62.88%       +13.0%    -11.5%
+  prefix_len_adaptive    embedding                       62.64%       +12.5%    -11.8%
+  last_activity          index_latest_payload            62.10%       +11.6%    -12.6%
+  last_activity          aggregation                     61.24%       +10.0%    -13.8%
+  prefix_len_adaptive    aggregation                     59.27%        +6.5%    -16.5%
+  last_activity          last_state                      58.94%        +5.9%    -17.0%
+  no_bucket              last_state                      55.66%        +0.0%    -21.6% << baseline
+  prefix_len_bins        last_state                      53.78%        -3.4%    -24.3%
+  cluster                last_state                      51.05%        -8.3%    -28.1%
+  prefix_len_adaptive    last_state                      49.39%       -11.3%    -30.5%
+  prefix_len_adaptive    index_latest_payload            44.61%       -19.9%    -37.2%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):    55.66%
+  Best      (no_bucket              embedding       ):    71.02%   [+27.6% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: issues  |  Task: remaining_time
+  Cases after preprocessing: 66,613  |  Metric: MAE days (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  last_activity          embedding                     254.019 d        +1.5%     +0.0% << best
+  prefix_len_adaptive    aggregation                   257.059 d        +0.3%     -1.2%
+  cluster                aggregation                   257.144 d        +0.3%     -1.2%
+  prefix_len_bins        aggregation                   257.264 d        +0.2%     -1.3%
+  prefix_len_bins        embedding                     257.285 d        +0.2%     -1.3%
+  no_bucket              aggregation                   257.319 d        +0.2%     -1.3%
+  cluster                last_state                    257.565 d        +0.1%     -1.4%
+  prefix_len_adaptive    last_state                    257.661 d        +0.1%     -1.4%
+  last_activity          aggregation                   257.667 d        +0.1%     -1.4%
+  last_activity          last_state                    257.737 d        +0.0%     -1.5%
+  prefix_len_bins        last_state                    257.774 d        +0.0%     -1.5%
+  no_bucket              last_state                    257.859 d        +0.0%     -1.5% << baseline
+  prefix_len_adaptive    embedding                     258.068 d        -0.1%     -1.6%
+  cluster                embedding                     258.431 d        -0.2%     -1.7%
+  no_bucket              embedding                     259.686 d        -0.7%     -2.2%
+  prefix_len_adaptive    index_latest_payload          268.657 d        -4.2%     -5.8%
+  no_bucket              index_latest_payload          268.697 d        -4.2%     -5.8%
+  cluster                index_latest_payload          268.737 d        -4.2%     -5.8%
+  prefix_len_bins        index_latest_payload          268.794 d        -4.2%     -5.8%
+  last_activity          index_latest_payload          269.403 d        -4.5%     -6.1%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):  257.859 d
+  Best      (last_activity          embedding       ):  254.019 d   [+1.5% vs baseline]
+===============================================================================================
+
+===============================================================================================
+  Log: issues  |  Task: outcome
+  Cases after preprocessing: 66,613  |  Metric: F1_macro (val)
+===============================================================================================
+  Bucketer               Encoder                          Score  vs baseline   vs best
+-----------------------------------------------------------------------------------------------
+  prefix_len_adaptive    embedding                       72.03%      +116.2%     +0.0% << best
+  cluster                aggregation                     69.65%      +109.0%     -3.3%
+  cluster                index_latest_payload            69.65%      +109.0%     -3.3%
+  cluster                embedding                       69.65%      +109.0%     -3.3%
+  last_activity          embedding                       66.01%       +98.1%     -8.4%
+  last_activity          aggregation                     66.01%       +98.1%     -8.4%
+  last_activity          index_latest_payload            66.01%       +98.1%     -8.4%
+  prefix_len_adaptive    aggregation                     61.40%       +84.3%    -14.8%
+  prefix_len_adaptive    last_state                      55.77%       +67.4%    -22.6%
+  prefix_len_adaptive    index_latest_payload            55.18%       +65.6%    -23.4%
+  no_bucket              embedding                       48.14%       +44.5%    -33.2%
+  prefix_len_bins        aggregation                     48.14%       +44.5%    -33.2%
+  prefix_len_bins        embedding                       47.36%       +42.1%    -34.2%
+  no_bucket              index_latest_payload            46.66%       +40.0%    -35.2%
+  no_bucket              aggregation                     46.66%       +40.0%    -35.2%
+  prefix_len_bins        index_latest_payload            46.66%       +40.0%    -35.2%
+  last_activity          last_state                      41.83%       +25.5%    -41.9%
+  cluster                last_state                      40.50%       +21.6%    -43.8%
+  no_bucket              last_state                      33.32%        +0.0%    -53.7% << baseline
+  prefix_len_bins        last_state                      33.32%        -0.0%    -53.7%
+-----------------------------------------------------------------------------------------------
+  Baseline  (no_bucket              last_state      ):    33.32%
+  Best      (prefix_len_adaptive    embedding       ):    72.03%   [+116.2% vs baseline]
+===============================================================================================

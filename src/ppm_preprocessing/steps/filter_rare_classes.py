@@ -149,7 +149,7 @@ class FilterRareClassesStep(Step):
         print(
             f"[FilterRareClasses] Removed {len(rare_classes)} rare classes "
             f"({n_removed} rows, {qc['rows_removed_pct']:.1f}%)  |  "
-            f"Classes: {classes_before} → {classes_after}  |  "
+            f"Classes: {classes_before} -> {classes_after}  |  "
             f"Threshold: {min_samples} train samples"
         )
 

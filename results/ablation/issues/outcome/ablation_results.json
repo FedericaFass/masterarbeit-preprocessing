@@ -1,0 +1,520 @@
+{
+  "log": "issues",
+  "task": "outcome",
+  "bucketer": "no_bucket",
+  "encoding": "last_state",
+  "stages": [
+    {
+      "stage": " 1  Baseline (load + NormalizeSchema only)",
+      "status": "success",
+      "primary_score": 0.3331127775327158,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 280992,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 214061,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 2.75,
+        "feature_dim": 130,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3331127775327158,
+            "f1_micro": 0.9986775402248181,
+            "primary": 0.3331127775327158
+          }
+        },
+        "details": {
+          "train": 150409,
+          "val": 31759,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 2  + Deduplicate Events",
+      "status": "success",
+      "primary_score": 0.3331127775327158,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 280992,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 214061,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.25,
+        "feature_dim": 130,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3331127775327158,
+            "f1_micro": 0.9986775402248181,
+            "primary": 0.3331127775327158
+          }
+        },
+        "details": {
+          "train": 150409,
+          "val": 31759,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 3  + Clean & Sort (types, nulls, timestamp order)",
+      "status": "success",
+      "primary_score": 0.3331456632573269,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 280992,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 214061,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.27,
+        "feature_dim": 130,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3331456632573269,
+            "f1_micro": 0.9988746131482698,
+            "primary": 0.3331456632573269
+          }
+        },
+        "details": {
+          "train": 149882,
+          "val": 31989,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 4  + Stable Sort (tie-breaking by record index)",
+      "status": "success",
+      "primary_score": 0.3331456632573269,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 280992,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 214061,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.33,
+        "feature_dim": 130,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3331456632573269,
+            "f1_micro": 0.9988746131482698,
+            "primary": 0.3331456632573269
+          }
+        },
+        "details": {
+          "train": 149882,
+          "val": 31989,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 5  + Time Features in Prefix Extraction",
+      "status": "success",
+      "primary_score": 0.3332134573788862,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 280992,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 214061,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.51,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3332134573788862,
+            "f1_micro": 0.9992810028447279,
+            "primary": 0.3332134573788862
+          }
+        },
+        "details": {
+          "train": 149882,
+          "val": 31989,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 6  + Repair Timestamps",
+      "status": "success",
+      "primary_score": 0.3332134573788862,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 280992,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 214061,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.48,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3332134573788862,
+            "f1_micro": 0.9992810028447279,
+            "primary": 0.3332134573788862
+          }
+        },
+        "details": {
+          "train": 149882,
+          "val": 31989,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 7  + Filter Short Cases (< 2 events)",
+      "status": "success",
+      "primary_score": 0.3332134573788862,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 280992,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 214061,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.53,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3332134573788862,
+            "f1_micro": 0.9992810028447279,
+            "primary": 0.3332134573788862
+          }
+        },
+        "details": {
+          "train": 149882,
+          "val": 31989,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 8  + Normalize Activities",
+      "status": "success",
+      "primary_score": 0.3332134573788862,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 280992,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 214061,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.54,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3332134573788862,
+            "f1_micro": 0.9992810028447279,
+            "primary": 0.3332134573788862
+          }
+        },
+        "details": {
+          "train": 149882,
+          "val": 31989,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 9  + Filter Infrequent Activities (< 0.5%)",
+      "status": "success",
+      "primary_score": 0.3331970906956759,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 279785,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 212877,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.54,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3331970906956759,
+            "f1_micro": 0.9991828781545617,
+            "primary": 0.3331970906956759
+          }
+        },
+        "details": {
+          "train": 149077,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "10  + Filter Zero-Duration Cases",
+      "status": "success",
+      "primary_score": 0.3331970906956759,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 279785,
+      "n_cases_filtered": 66613,
+      "n_prefix_rows": 212877,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.57,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.3331970906956759,
+            "f1_micro": 0.9991828781545617,
+            "primary": 0.3331970906956759
+          }
+        },
+        "details": {
+          "train": 149077,
+          "val": 31819,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "11  + Filter Long Cases (p99 threshold)",
+      "status": "success",
+      "primary_score": 0.2498861124702627,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 267287,
+      "n_cases_filtered": 65978,
+      "n_prefix_rows": 201309,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 1.04,
+        "feature_dim": 139,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.2498861124702627,
+            "f1_micro": 0.9990893146249326,
+            "primary": 0.2498861124702627
+          }
+        },
+        "details": {
+          "train": 141501,
+          "val": 29648,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "12  + Filter Consecutive Duplicate Events",
+      "status": "success",
+      "primary_score": 0.2498859015849307,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 228960,
+      "n_cases_filtered": 65978,
+      "n_prefix_rows": 162982,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.86,
+        "feature_dim": 138,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.2498859015849307,
+            "f1_micro": 0.9990876290797495,
+            "primary": 0.2498859015849307
+          }
+        },
+        "details": {
+          "train": 114328,
+          "val": 24113,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "13  + Impute Missing Attributes",
+      "status": "success",
+      "primary_score": 0.24989627847155957,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 228960,
+      "n_cases_filtered": 65978,
+      "n_prefix_rows": 162982,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.86,
+        "feature_dim": 137,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.24989627847155957,
+            "f1_micro": 0.9991705718906814,
+            "primary": 0.24989627847155957
+          }
+        },
+        "details": {
+          "train": 114328,
+          "val": 24113,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "14  + Filter Rare Variants",
+      "status": "success",
+      "primary_score": 0.33320163308310285,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 228434,
+      "n_cases_filtered": 65891,
+      "n_prefix_rows": 162543,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.88,
+        "feature_dim": 137,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.33320163308310285,
+            "f1_micro": 0.9992101105845181,
+            "primary": 0.33320163308310285
+          }
+        },
+        "details": {
+          "train": 114021,
+          "val": 24054,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "15  + Outlier Removal (IQR on case duration)",
+      "status": "success",
+      "primary_score": 0.33320163308310285,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 228434,
+      "n_cases_filtered": 65891,
+      "n_prefix_rows": 162543,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.89,
+        "feature_dim": 137,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.33320163308310285,
+            "f1_micro": 0.9992101105845181,
+            "primary": 0.33320163308310285
+          }
+        },
+        "details": {
+          "train": 114021,
+          "val": 24054,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "16  + Filter Rare Classes",
+      "status": "success",
+      "primary_score": 0.33320163308310285,
+      "primary_metric": "f1_macro",
+      "n_events_load": 280992,
+      "n_cases_load": 66613,
+      "n_events_filtered": 228434,
+      "n_cases_filtered": 65891,
+      "n_prefix_rows": 162543,
+      "extra_metrics": {
+        "task": "outcome",
+        "time_s": 0.89,
+        "feature_dim": 137,
+        "metrics": {
+          "task": "outcome",
+          "task_type": "multiclass_classification",
+          "label_col": "label_outcome",
+          "metrics": {
+            "f1_macro": 0.33320163308310285,
+            "f1_micro": 0.9992101105845181,
+            "primary": 0.33320163308310285
+          }
+        },
+        "details": {
+          "train": 114021,
+          "val": 24054,
+          "model_type": null
+        }
+      },
+      "error": null
+    }
+  ]
+}

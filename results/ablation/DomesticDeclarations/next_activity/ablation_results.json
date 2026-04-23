@@ -1,0 +1,520 @@
+{
+  "log": "DomesticDeclarations",
+  "task": "next_activity",
+  "bucketer": "no_bucket",
+  "encoding": "last_state",
+  "stages": [
+    {
+      "stage": " 1  Baseline (load + NormalizeSchema only)",
+      "status": "success",
+      "primary_score": 0.2990257473467638,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56437,
+      "n_cases_filtered": 10500,
+      "n_prefix_rows": 45937,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 2.24,
+        "feature_dim": 18,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.2990257473467638,
+            "f1_micro": 0.6445906432748538,
+            "primary": 0.2990257473467638
+          }
+        },
+        "details": {
+          "train": 32098,
+          "val": 6840,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 2  + Deduplicate Events",
+      "status": "success",
+      "primary_score": 0.2990257473467638,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56437,
+      "n_cases_filtered": 10500,
+      "n_prefix_rows": 45937,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.84,
+        "feature_dim": 18,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.2990257473467638,
+            "f1_micro": 0.6445906432748538,
+            "primary": 0.2990257473467638
+          }
+        },
+        "details": {
+          "train": 32098,
+          "val": 6840,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 3  + Clean & Sort (types, nulls, timestamp order)",
+      "status": "success",
+      "primary_score": 0.31939581237879733,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56437,
+      "n_cases_filtered": 10500,
+      "n_prefix_rows": 45937,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.86,
+        "feature_dim": 18,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.31939581237879733,
+            "f1_micro": 0.6368115942028986,
+            "primary": 0.31939581237879733
+          }
+        },
+        "details": {
+          "train": 32135,
+          "val": 6900,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 4  + Stable Sort (tie-breaking by record index)",
+      "status": "success",
+      "primary_score": 0.31939581237879733,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56437,
+      "n_cases_filtered": 10500,
+      "n_prefix_rows": 45937,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.82,
+        "feature_dim": 18,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.31939581237879733,
+            "f1_micro": 0.6368115942028986,
+            "primary": 0.31939581237879733
+          }
+        },
+        "details": {
+          "train": 32135,
+          "val": 6900,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 5  + Time Features in Prefix Extraction",
+      "status": "success",
+      "primary_score": 0.4054025516570425,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56437,
+      "n_cases_filtered": 10500,
+      "n_prefix_rows": 45937,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 1.04,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4054025516570425,
+            "f1_micro": 0.735072463768116,
+            "primary": 0.4054025516570425
+          }
+        },
+        "details": {
+          "train": 32135,
+          "val": 6900,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 6  + Repair Timestamps",
+      "status": "success",
+      "primary_score": 0.4054025516570425,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56437,
+      "n_cases_filtered": 10500,
+      "n_prefix_rows": 45937,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 1.0,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4054025516570425,
+            "f1_micro": 0.735072463768116,
+            "primary": 0.4054025516570425
+          }
+        },
+        "details": {
+          "train": 32135,
+          "val": 6900,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 7  + Filter Short Cases (< 2 events)",
+      "status": "success",
+      "primary_score": 0.4120139733248177,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56303,
+      "n_cases_filtered": 10366,
+      "n_prefix_rows": 45937,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 1.04,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4120139733248177,
+            "f1_micro": 0.7445613024059934,
+            "primary": 0.4120139733248177
+          }
+        },
+        "details": {
+          "train": 32132,
+          "val": 6941,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 8  + Normalize Activities",
+      "status": "success",
+      "primary_score": 0.4120139733248177,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56303,
+      "n_cases_filtered": 10366,
+      "n_prefix_rows": 45937,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 1.05,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4120139733248177,
+            "f1_micro": 0.7445613024059934,
+            "primary": 0.4120139733248177
+          }
+        },
+        "details": {
+          "train": 32132,
+          "val": 6941,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 9  + Filter Infrequent Activities (< 0.5%)",
+      "status": "success",
+      "primary_score": 0.4393682094441203,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56299,
+      "n_cases_filtered": 10366,
+      "n_prefix_rows": 45933,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.92,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4393682094441203,
+            "f1_micro": 0.7404899135446686,
+            "primary": 0.4393682094441203
+          }
+        },
+        "details": {
+          "train": 32129,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "10  + Filter Zero-Duration Cases",
+      "status": "success",
+      "primary_score": 0.4393682094441203,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 56299,
+      "n_cases_filtered": 10366,
+      "n_prefix_rows": 45933,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.9,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4393682094441203,
+            "f1_micro": 0.7404899135446686,
+            "primary": 0.4393682094441203
+          }
+        },
+        "details": {
+          "train": 32129,
+          "val": 6940,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "11  + Filter Long Cases (p99 threshold)",
+      "status": "success",
+      "primary_score": 0.46757641139365486,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 55396,
+      "n_cases_filtered": 10297,
+      "n_prefix_rows": 45099,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.89,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.46757641139365486,
+            "f1_micro": 0.7504770292088654,
+            "primary": 0.46757641139365486
+          }
+        },
+        "details": {
+          "train": 31526,
+          "val": 6813,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "12  + Filter Consecutive Duplicate Events",
+      "status": "success",
+      "primary_score": 0.46757641139365486,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 55396,
+      "n_cases_filtered": 10297,
+      "n_prefix_rows": 45099,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.96,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.46757641139365486,
+            "f1_micro": 0.7504770292088654,
+            "primary": 0.46757641139365486
+          }
+        },
+        "details": {
+          "train": 31526,
+          "val": 6813,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "13  + Impute Missing Attributes",
+      "status": "success",
+      "primary_score": 0.46757641139365486,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 55396,
+      "n_cases_filtered": 10297,
+      "n_prefix_rows": 45099,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.88,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.46757641139365486,
+            "f1_micro": 0.7504770292088654,
+            "primary": 0.46757641139365486
+          }
+        },
+        "details": {
+          "train": 31526,
+          "val": 6813,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "14  + Filter Rare Variants",
+      "status": "success",
+      "primary_score": 0.4532291875025995,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 55183,
+      "n_cases_filtered": 10270,
+      "n_prefix_rows": 44913,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.89,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4532291875025995,
+            "f1_micro": 0.7470149253731343,
+            "primary": 0.4532291875025995
+          }
+        },
+        "details": {
+          "train": 31558,
+          "val": 6700,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "15  + Outlier Removal (IQR on case duration)",
+      "status": "success",
+      "primary_score": 0.4532291875025995,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 55183,
+      "n_cases_filtered": 10270,
+      "n_prefix_rows": 44913,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.89,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4532291875025995,
+            "f1_micro": 0.7470149253731343,
+            "primary": 0.4532291875025995
+          }
+        },
+        "details": {
+          "train": 31558,
+          "val": 6700,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "16  + Filter Rare Classes",
+      "status": "success",
+      "primary_score": 0.4532291875025995,
+      "primary_metric": "f1_macro",
+      "n_events_load": 56437,
+      "n_cases_load": 10500,
+      "n_events_filtered": 55183,
+      "n_cases_filtered": 10270,
+      "n_prefix_rows": 44913,
+      "extra_metrics": {
+        "task": "next_activity",
+        "time_s": 0.88,
+        "feature_dim": 26,
+        "metrics": {
+          "task": "next_activity",
+          "task_type": "multiclass_classification",
+          "label_col": "label_next_activity",
+          "metrics": {
+            "f1_macro": 0.4532291875025995,
+            "f1_micro": 0.7470149253731343,
+            "primary": 0.4532291875025995
+          }
+        },
+        "details": {
+          "train": 31558,
+          "val": 6700,
+          "model_type": null
+        }
+      },
+      "error": null
+    }
+  ]
+}

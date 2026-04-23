@@ -129,6 +129,7 @@ def run_pipeline(
     min_variant_count: int = 5,
     concept_drift_window: bool = False,
     since_date: str = "",
+    filter_long_cases: bool = True,
     filter_consecutive_duplicates: bool = False,
     impute_missing: bool = False,
     col_mapping: dict | None = None,
@@ -376,11 +377,12 @@ def run_pipeline(
         if zdur_qc.get("zero_duration_cases_removed", 0):
             _progress(f"Zero-duration cases removed: {zdur_qc['zero_duration_cases_removed']} ({zdur_qc.get('zero_duration_pct', 0):.1f}%)")
 
-        # 2a-v: Filter max case length (p99)
-        ctx = _run_step(FilterCaseLengthStep(), ctx, "Filtering extreme-length cases (p99)...")
-        clen_qc = ctx.artifacts.get("filter_case_length_qc", {})
-        if clen_qc.get("long_cases_removed", 0):
-            _progress(f"Long cases removed: {clen_qc['long_cases_removed']} ({clen_qc.get('long_cases_pct', 0):.1f}%), threshold={clen_qc.get('computed_threshold')}")
+        # 2a-v: Filter max case length (p99) — optional
+        if filter_long_cases:
+            ctx = _run_step(FilterCaseLengthStep(), ctx, "Filtering extreme-length cases (p99)...")
+            clen_qc = ctx.artifacts.get("filter_case_length_qc", {})
+            if clen_qc.get("long_cases_removed", 0):
+                _progress(f"Long cases removed: {clen_qc['long_cases_removed']} ({clen_qc.get('long_cases_pct', 0):.1f}%), threshold={clen_qc.get('computed_threshold')}")
 
         # 2b-opt: Optional — filter consecutive duplicate events
         if filter_consecutive_duplicates:
@@ -678,6 +680,7 @@ def run_pipeline(
             "avg_case_duration_days": avg_case_duration_days,
             "model_bundle_path": str(model_bundle_path),
             "model_bundle_exists": model_bundle_path.exists(),
+            "log_qc": ctx.artifacts.get("qc_report", {}),
         }
 
     except Exception as e:
@@ -708,6 +711,7 @@ def run_strategy_search_only(
     min_variant_count: int = 5,
     concept_drift_window: bool = False,
     since_date: str = "",
+    filter_long_cases: bool = True,
     filter_consecutive_duplicates: bool = False,
     impute_missing: bool = False,
     col_mapping: Dict[str, str] | None = None,
@@ -879,7 +883,8 @@ def run_strategy_search_only(
         ctx = _run_step(NormalizeActivitiesStep(), ctx, "Normalizing activity labels...")
         ctx = _run_step(FilterInfrequentActivitiesStep(), ctx, "Filtering infrequent activities...")
         ctx = _run_step(FilterZeroDurationCasesStep(), ctx, "Filtering zero-duration cases...")
-        ctx = _run_step(FilterCaseLengthStep(), ctx, "Filtering extreme-length cases (p99)...")
+        if filter_long_cases:
+            ctx = _run_step(FilterCaseLengthStep(), ctx, "Filtering extreme-length cases (p99)...")
 
         if filter_consecutive_duplicates:
             ctx = _run_step(FilterConsecutiveDuplicatesStep(), ctx, "Filtering consecutive duplicate events...")

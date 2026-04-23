@@ -1029,6 +1029,20 @@
                         </div>
                     </div>
 
+                    <!-- Filter Long Cases (optional) -->
+                    <div class="option-row">
+                        <div class="opt-text">
+                            <strong>Filter Long Cases (p99)</strong>
+                            <span>Remove cases longer than the 99th percentile of case lengths. Reduces outliers but can hurt performance if long cases carry important outcome information.</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label class="toggle">
+                                <input type="checkbox" id="filterLongCasesToggle" checked onchange="onConfigChange()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Filter Consecutive Duplicates (optional) -->
                     <div class="option-row">
                         <div class="opt-text">
@@ -1977,6 +1991,7 @@
             fd.append('since_date', document.getElementById('sinceDate').value || '');
             fd.append('rare_variant_filter', document.getElementById('rareVariantToggle').checked ? 'true' : 'false');
             fd.append('min_variant_count', document.getElementById('minVariantCount').value);
+            fd.append('filter_long_cases', document.getElementById('filterLongCasesToggle').checked ? 'true' : 'false');
             fd.append('filter_consecutive_duplicates', document.getElementById('consecDupToggle').checked ? 'true' : 'false');
             fd.append('impute_missing', document.getElementById('imputeMissingToggle').checked ? 'true' : 'false');
 
@@ -2372,6 +2387,7 @@
             fd.append('since_date', document.getElementById('sinceDate').value || '');
             fd.append('rare_variant_filter', document.getElementById('rareVariantToggle').checked ? 'true' : 'false');
             fd.append('min_variant_count', document.getElementById('minVariantCount').value);
+            fd.append('filter_long_cases', document.getElementById('filterLongCasesToggle').checked ? 'true' : 'false');
             fd.append('filter_consecutive_duplicates', document.getElementById('consecDupToggle').checked ? 'true' : 'false');
             fd.append('impute_missing', document.getElementById('imputeMissingToggle').checked ? 'true' : 'false');
 

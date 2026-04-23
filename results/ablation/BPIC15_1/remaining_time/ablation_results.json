@@ -1,0 +1,552 @@
+{
+  "log": "BPIC15_1",
+  "task": "remaining_time",
+  "bucketer": "no_bucket",
+  "encoding": "last_state",
+  "stages": [
+    {
+      "stage": " 1  Baseline (load + NormalizeSchema only)",
+      "status": "success",
+      "primary_score": 6373143.648263027,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52217,
+      "n_cases_load": 1199,
+      "n_events_filtered": 52217,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32741,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.09,
+        "feature_dim": 281,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6373143.648263027,
+            "mae_days": 73.76323666971096,
+            "median_ae_sec": 3720444.5,
+            "median_ae_days": 43.06070023148148,
+            "primary": 6373143.648263027
+          }
+        },
+        "details": {
+          "train": 23094,
+          "val": 4836,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 2  + Deduplicate Events",
+      "status": "success",
+      "primary_score": 6371854.522539289,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 52198,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32739,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.09,
+        "feature_dim": 281,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6371854.522539289,
+            "mae_days": 73.74831623309362,
+            "median_ae_sec": 3732853.5,
+            "median_ae_days": 43.20432291666667,
+            "primary": 6371854.522539289
+          }
+        },
+        "details": {
+          "train": 23092,
+          "val": 4836,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 3  + Clean & Sort (types, nulls, timestamp order)",
+      "status": "success",
+      "primary_score": 6371854.522539289,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 52198,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32739,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.09,
+        "feature_dim": 281,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6371854.522539289,
+            "mae_days": 73.74831623309362,
+            "median_ae_sec": 3732853.5,
+            "median_ae_days": 43.20432291666667,
+            "primary": 6371854.522539289
+          }
+        },
+        "details": {
+          "train": 23092,
+          "val": 4836,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 4  + Stable Sort (tie-breaking by record index)",
+      "status": "success",
+      "primary_score": 6371854.522539289,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 52198,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32739,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.08,
+        "feature_dim": 281,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6371854.522539289,
+            "mae_days": 73.74831623309362,
+            "median_ae_sec": 3732853.5,
+            "median_ae_days": 43.20432291666667,
+            "primary": 6371854.522539289
+          }
+        },
+        "details": {
+          "train": 23092,
+          "val": 4836,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 5  + Time Features in Prefix Extraction",
+      "status": "success",
+      "primary_score": 6366840.346980976,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 52198,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32739,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.08,
+        "feature_dim": 289,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6366840.346980976,
+            "mae_days": 73.6902817937613,
+            "median_ae_sec": 3727622.5,
+            "median_ae_days": 43.14377893518518,
+            "primary": 6366840.346980976
+          }
+        },
+        "details": {
+          "train": 23092,
+          "val": 4836,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 6  + Repair Timestamps",
+      "status": "success",
+      "primary_score": 6366840.346980976,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 52198,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32739,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.08,
+        "feature_dim": 289,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6366840.346980976,
+            "mae_days": 73.6902817937613,
+            "median_ae_sec": 3727622.5,
+            "median_ae_days": 43.14377893518518,
+            "primary": 6366840.346980976
+          }
+        },
+        "details": {
+          "train": 23092,
+          "val": 4836,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 7  + Filter Short Cases (< 2 events)",
+      "status": "success",
+      "primary_score": 6366840.346980976,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 52198,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32739,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.1,
+        "feature_dim": 289,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6366840.346980976,
+            "mae_days": 73.6902817937613,
+            "median_ae_sec": 3727622.5,
+            "median_ae_days": 43.14377893518518,
+            "primary": 6366840.346980976
+          }
+        },
+        "details": {
+          "train": 23092,
+          "val": 4836,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 8  + Normalize Activities",
+      "status": "success",
+      "primary_score": 6366840.346980976,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 52198,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32739,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.08,
+        "feature_dim": 289,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6366840.346980976,
+            "mae_days": 73.6902817937613,
+            "median_ae_sec": 3727622.5,
+            "median_ae_days": 43.14377893518518,
+            "primary": 6366840.346980976
+          }
+        },
+        "details": {
+          "train": 23092,
+          "val": 4836,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": " 9  + Filter Infrequent Activities (< 0.5%)",
+      "status": "success",
+      "primary_score": 6372275.489031457,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 51955,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32716,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.08,
+        "feature_dim": 288,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6372275.489031457,
+            "mae_days": 73.75318853045668,
+            "median_ae_sec": 3831238.0,
+            "median_ae_days": 44.34303240740741,
+            "primary": 6372275.489031457
+          }
+        },
+        "details": {
+          "train": 23076,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "10  + Filter Zero-Duration Cases",
+      "status": "success",
+      "primary_score": 6372275.489031457,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 51955,
+      "n_cases_filtered": 1199,
+      "n_prefix_rows": 32716,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.09,
+        "feature_dim": 288,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6372275.489031457,
+            "mae_days": 73.75318853045668,
+            "median_ae_sec": 3831238.0,
+            "median_ae_days": 44.34303240740741,
+            "primary": 6372275.489031457
+          }
+        },
+        "details": {
+          "train": 23076,
+          "val": 4832,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "11  + Filter Long Cases (p99 threshold)",
+      "status": "success",
+      "primary_score": 6933407.621039553,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 50879,
+      "n_cases_filtered": 1187,
+      "n_prefix_rows": 32356,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.08,
+        "feature_dim": 291,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6933407.621039553,
+            "mae_days": 80.24777339166148,
+            "median_ae_sec": 3494383.0,
+            "median_ae_days": 40.44424768518518,
+            "primary": 6933407.621039553
+          }
+        },
+        "details": {
+          "train": 22683,
+          "val": 4829,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "12  + Filter Consecutive Duplicate Events",
+      "status": "success",
+      "primary_score": 6913895.448218724,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 50758,
+      "n_cases_filtered": 1187,
+      "n_prefix_rows": 32350,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.09,
+        "feature_dim": 291,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 6913895.448218724,
+            "mae_days": 80.02193805808709,
+            "median_ae_sec": 3484548.5,
+            "median_ae_days": 40.330422453703704,
+            "primary": 6913895.448218724
+          }
+        },
+        "details": {
+          "train": 22678,
+          "val": 4828,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "13  + Impute Missing Attributes",
+      "status": "success",
+      "primary_score": 9139146.39892295,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 50758,
+      "n_cases_filtered": 1187,
+      "n_prefix_rows": 32350,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.09,
+        "feature_dim": 290,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 9139146.39892295,
+            "mae_days": 105.77715739494155,
+            "median_ae_sec": 5080272.0,
+            "median_ae_days": 58.79944444444445,
+            "primary": 9139146.39892295
+          }
+        },
+        "details": {
+          "train": 22678,
+          "val": 4828,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "14  + Filter Rare Variants",
+      "status": "success",
+      "primary_score": 15096119.333333334,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 469,
+      "n_cases_filtered": 44,
+      "n_prefix_rows": 399,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.0,
+        "feature_dim": 60,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 15096119.333333334,
+            "mae_days": 174.72360339506173,
+            "median_ae_sec": 15933713.0,
+            "median_ae_days": 184.41797453703703,
+            "primary": 15096119.333333334
+          }
+        },
+        "details": {
+          "train": 253,
+          "val": 36,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "15  + Outlier Removal (IQR on case duration)",
+      "status": "success",
+      "primary_score": 15096119.333333334,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 469,
+      "n_cases_filtered": 44,
+      "n_prefix_rows": 399,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.0,
+        "feature_dim": 60,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 15096119.333333334,
+            "mae_days": 174.72360339506173,
+            "median_ae_sec": 15933713.0,
+            "median_ae_days": 184.41797453703703,
+            "primary": 15096119.333333334
+          }
+        },
+        "details": {
+          "train": 253,
+          "val": 36,
+          "model_type": null
+        }
+      },
+      "error": null
+    },
+    {
+      "stage": "16  + Filter Rare Classes",
+      "status": "success",
+      "primary_score": 15096119.333333334,
+      "primary_metric": "mae_sec",
+      "n_events_load": 52198,
+      "n_cases_load": 1199,
+      "n_events_filtered": 469,
+      "n_cases_filtered": 44,
+      "n_prefix_rows": 399,
+      "extra_metrics": {
+        "task": "remaining_time",
+        "time_s": 0.0,
+        "feature_dim": 60,
+        "metrics": {
+          "task": "remaining_time",
+          "task_type": "regression",
+          "label_col": "label_remaining_time_sec",
+          "metrics": {
+            "mae_sec": 15096119.333333334,
+            "mae_days": 174.72360339506173,
+            "median_ae_sec": 15933713.0,
+            "median_ae_days": 184.41797453703703,
+            "primary": 15096119.333333334
+          }
+        },
+        "details": {
+          "train": 253,
+          "val": 36,
+          "model_type": null
+        }
+      },
+      "error": null
+    }
+  ]
+}
